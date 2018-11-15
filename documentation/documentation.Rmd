@@ -1,0 +1,45 @@
+---
+author:
+  - name: Anna Michalek
+    affiliation: European Central Bank
+    email: \email{anna.michalek@ecb.int}
+  - name: Alain Quartier-La-Tente
+    affiliation: Insee
+    email: \email{alain.quartier@gmail.com}
+title:
+  formatted: "\\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software"
+  # If you use tex in the formatted title, also supply version without
+  plain:     "A Capitalized Title: Something about a Package foo"
+  # For running headers, if needed
+  short:     "\\pkg{RJDemetra}: A Capitalized Title"
+abstract: >
+  The abstract of the article.
+keywords:
+  # at least one keyword must be supplied
+  formatted: ["\\proglang{R}", seasonal adjustment, time series]
+  plain:     [R, seasonal adjustment, time series]
+preamble: >
+  \usepackage{amsmath}
+output: rticles::jss_article
+---
+
+# Introduction
+
+This template demonstrates some of the basic latex you'll need to know to create a JSS article.
+
+## Code formatting
+
+Don't use markdown, instead use the more precise latex commands:
+
+* \proglang{Java}
+* \pkg{plyr}
+* \code{print("abc")}
+
+# R code
+
+Can be inserted in regular R markdown blocks.
+
+```{r}
+x <- 1:10
+x
+```
