@@ -33,215 +33,164 @@ The abstract of the article.
 
 % Pandoc header
 
-\usepackage{amsmath}
+\usepackage{amsmath} \usepackage{booktabs} \usepackage{longtable} \usepackage{array} \usepackage{multirow} \usepackage{wrapfig} \usepackage{float} \usepackage{pdflscape} \usepackage{tabu} \usepackage{threeparttable} \usepackage{threeparttablex} \usepackage[normalem]{ulem} \usepackage{makecell}
 
 \begin{document}
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
-This template demonstrates some of the basic latex you'll need to know
-to create a JSS article.
+The package \pkg{RJDemetra} provides a R interface to the seasonal
+adjustment software JDemetra+. Note that, JDemetra+ being implemented in
+Java, \pkg{RJDemetra} relies on the \pkg{rJava} package and Java SE 8 or
+later version is required. The two leading seasonal adjustment methods
+TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the
+specifications defined in JDemetra+.
 
-\hypertarget{code-formatting}{%
-\subsection{Code formatting}\label{code-formatting}}
+\hypertarget{seasonal-adjustment-in-brief}{%
+\subsection{Seasonal adjustment in
+brief}\label{seasonal-adjustment-in-brief}}
 
-Don't use markdown, instead use the more precise latex commands:
+Mention the two SA methods and the two steps of adjustment:
+pre-adjustment and the decomposition. Briefly present the differences in
+the decomposition.
+
+\hypertarget{using-the-r-package-rjdemetra}{%
+\subsection{Using the R package
+RJDemetra}\label{using-the-r-package-rjdemetra}}
+
+The \pkg{RJDemetra} package alows to:
 
 \begin{itemize}
+\tightlist
 \item
-  \proglang{Java}
+  create and modify model specifications
 \item
-  \pkg{plyr}
+  create and modify models
 \item
-  \code{print("abc")}
+  import/export workspaces
 \end{itemize}
 
-\hypertarget{r-code}{%
-\section{R code}\label{r-code}}
+\hypertarget{estimate-a-predefined-regarima-and-sa-model}{%
+\section{Estimate a predefined regarima and SA
+model}\label{estimate-a-predefined-regarima-and-sa-model}}
 
-Can be inserted in regular R markdown blocks.
+The package allows to estimate regarima and SA models using predefined
+specifications.
 
 \begin{CodeChunk}
 
 \begin{CodeInput}
 R> library(RJDemetra)
-R> y <- structure(c(90.5, 92.6, 101.9, 95.2, 92.1, 103.3, 91.8, 65.5, 
-R+ 99, 102.8, 94.3, 93.1, 90.9, 89.6, 99.9, 93.3, 88.3, 103, 89.7, 
-R+ 65.1, 98.2, 100.8, 95.8, 93.2, 89.4, 89, 99.5, 93, 89.1, 101.3, 
-R+ 89.4, 64.1, 94.9, 98.6, 92.2, 90.5, 85.3, 84.3, 93.2, 87.8, 83.5, 
-R+ 95.4, 86.2, 60.1, 92.1, 95.8, 88.1, 88.3, 84.9, 84, 94.1, 90.1, 
-R+ 86.8, 100.4, 90.8, 64.5, 96.8, 101, 96.6, 96.3, 90.4, 90.5, 100.4, 
-R+ 94.5, 89.7, 103.7, 93.8, 65.5, 99.7, 101.8, 94.6, 98.1, 90.3, 
-R+ 88.8, 100.7, 93.8, 91.2, 104.4, 92.3, 67.2, 100.2, 102.3, 96.9, 
-R+ 97.2, 90.5, 91.6, 104, 99.7, 93.9, 108.8, 98.2, 73.4, 105.8, 
-R+ 111.8, 102.4, 105.4, 99.2, 99, 109.4, 103, 100.7, 114.8, 104.9, 
-R+ 73.3, 109.6, 112.7, 105.9, 105.1, 100.5, 98.6, 111.8, 104.3, 
-R+ 101.3, 117.4, 106.6, 74.9, 113.4, 118.2, 110.9, 109.8, 104.8, 
-R+ 104.9, 118.9, 110.2, 108, 122.5, 111.8, 80.5, 117.5, 121.7, 114.3, 
-R+ 115.5, 108.8, 109.2, 123.7, 111.8, 108.4, 124.7, 111.1, 84.2, 
-R+ 117.8, 121, 111.6, 109.2, 106.6, 107, 121.4, 112.8, 106.4, 122.2, 
-R+ 109.7, 82.3, 117.1, 118.7, 113, 106.4, 105.4, 105.7, 120.1, 111.1, 
-R+ 102.8, 118.3, 108.8, 78.7, 115.9, 119.9, 110.8, 107.9, 105.8, 
-R+ 107, 120, 112.1, 105.8, 123.6, 112, 78.4, 120, 122, 112, 108.4, 
-R+ 109.1, 106.7, 117.9, 113.5, 106.8, 122.3, 110.3, 80, 121.4, 118.4, 
-R+ 115.2, 109.8, 107.3, 106.3, 121.9, 112.5, 110.8, 126.7, 112.5, 
-R+ 82.5, 122.2, 121.9, 113.7, 111.7, 109.5, 110, 123.8, 114.2, 112.6, 
-R+ 127, 115.2, 85.7, 121.2, 124.7, 115.2, 111, 111.4, 112.2, 123, 
-R+ 116.8, 108.4, 122.1, 112.6, 81.9, 117.3, 116.3, 102.4, 97.8, 
-R+ 91.7, 90.4, 100.1, 93.2, 91.4, 105.5, 96.8, 71.6, 104.5, 104.8, 
-R+ 99.3, 92.9, 93.7, 93.5, 106.8, 99.9, 96.9, 108.9, 101.7, 73.2, 
-R+ 107.2, 108.2, 102.5, 97.9, 100.4, 102, 112, 103.7, 102.9, 111.3, 
-R+ 105, 76.6, 108.4, 109.7, 106, 98.4, 97.8, 97.6, 110.2, 102.3, 
-R+ 97, 108.8, 102.5, 77.5, 106.6, 105.2, 99.3, 95.7, 94.3, 95.9, 
-R+ 106.3, 102.5, 96.8, 108.2, 100.7, 74.3, 104.6, 106.1, 101, 95.2, 
-R+ 95, 97.2, 107.4, 101.7, 93.6, 107.7, 100.6, 74.3, 105.5, 105.3, 
-R+ 98.5, 96.8, 95.3, 96.6, 108.8, 101.9, 96.5, 110, 99.9, 76.9, 
-R+ 107.1, 108, 101.8, 97.3, 98.5, 97.9, 107.4, 103.4, 96.9, 107.8, 
-R+ 99.6, 77.5, 106.2, 106.5, 104.2, 97.1, 97.4, 97.5, 112, 103, 
-R+ 100.4, 111.2, 103.4, 79.3, 109.7, 114, 107.7, 101.4), .Tsp = c(1990, 
-R+ 2017.91666666667, 12), class = "ts")
-R> myspec1 <- x13_spec_def(spec = c("RSA5c"))
-R> myspec1
+R> myseries <- ipi_c_eu[, "FR"]
+R> mysa <- x13_def(myseries, spec=c("RSA5c"))
 \end{CodeInput}
+\end{CodeChunk}
 
-\begin{CodeOutput}
-$regarima
-$estimate
-           span tolerance
-Predefined  All     1e-07
-User_modif <NA>        NA
-Final       All     1e-07
+\hypertarget{sa-object-structure}{%
+\section{SA object structure}\label{sa-object-structure}}
 
-$transform
-           tfunction adjust aicdiff
-Predefined      Auto   None      -2
-User_modif      <NA>   <NA>      NA
-Final           Auto   None      -2
+\begingroup\fontsize{7}{9}\selectfont
 
-$regression
-$regression$userdef
-$regression$userdef$specification
-           outlier outlier.coef variables variables.coef
-Predefined   FALSE        FALSE     FALSE          FALSE
-User_modif      NA           NA        NA             NA
-Final        FALSE        FALSE     FALSE          FALSE
+\begin{longtable}[t]{lllll}
+\caption{\label{tab:unnamed-chunk-2}SA object structure}\\
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
+\cmidrule(l{2pt}r{2pt}){4-5}
+\multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em x13/x13\_def} & \multicolumn{1}{c}{\em  tramoseats/tramoseats\_def} \\
+\cmidrule(l{2pt}r{2pt}){4-4} \cmidrule(l{2pt}r{2pt}){5-5}
+Object & Level & Type & Class & Class\\
+\midrule
+sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
+\textbf{\hspace{1em}regarima} & \textbf{1} & \textbf{list} & \textbf{regarima, X13} & \textbf{regarima, TRAMO\_SEATS}\\
+\hspace{2em}specification & 2 & list &  & \\
+\hspace{3em}estimate & 3 & data.frame &  & \\
+\hspace{3em}transform & 3 & data.frame &  & \\
+\addlinespace
+\hspace{3em}regression & 3 & list &  & \\
+\hspace{4em}userdef & 4 & list &  & \\
+\hspace{5em}specification & 5 & data.frame &  & \\
+\hspace{5em}outliers & 5 & data.frame or NA(empty) &  & \\
+\hspace{5em}variables & 5 & list &  & \\
+\addlinespace
+\hspace{6em}series & 6 & mts, ts, matrix or NA(empty) &  & \\
+\hspace{6em}description & 6 & data.frame or NA(empty) &  & \\
+\hspace{4em}trading.days & 4 & data.frame &  & \\
+\hspace{4em}easter & 4 & data.frame &  & \\
+\hspace{3em}outliers & 3 & data.frame &  & \\
+\addlinespace
+\hspace{3em}arima & 3 & list &  & \\
+\hspace{4em}specification & 4 & data.frame &  & \\
+\hspace{4em}coefficients & 4 & data.frame or NA(empty) &  & \\
+\hspace{3em}forecast & 3 & data.frame &  & \\
+\hspace{3em}span & 3 & data.frame &  & \\
+\addlinespace
+\hspace{2em}arma & 2 & vector - numeric &  & \\
+\hspace{2em}arima.coefficients & 2 & matrix &  & \\
+\hspace{2em}regression.coefficients & 2 & matrix &  & \\
+\hspace{2em}loglik & 2 & matrix &  & \\
+\hspace{2em}model & 2 & list &  \vphantom{1} & \\
+\addlinespace
+\hspace{3em}spec\_rslt & 3 & data.frame &  & \\
+\hspace{3em}effects & 3 & mts, ts, matrix &  & \\
+\hspace{2em}residuals & 2 & ts &  & \\
+\hspace{2em}residuals.stat & 2 & list &  & \\
+\hspace{3em}st.error & 3 & numeric &  & \\
+\addlinespace
+\hspace{3em}tests & 3 & data.frame & regarima\_rtests, data.frame & \\
+\hspace{2em}forecast & 2 & mts, ts, matrix &  & \\
+\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11}\\
+\hspace{2em}specification & 2 & data.frame & X11\_spec, data.frame & \\
+\hspace{2em}mode & 2 & character &  \vphantom{1} & \\
+\addlinespace
+\hspace{2em}mstats & 2 & matrix &  & \\
+\hspace{2em}si\_ratio & 2 & mts, ts, matrix &  & \\
+\hspace{2em}s\_filter & 2 & vector - character &  & \\
+\hspace{2em}t\_filter & 2 & character &  & \\
+\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{} & \textbf{decomposition\_SEATS}\\
+\addlinespace
+\hspace{2em}specification & 2 & data.frame & seats\_spec, data.frame & \\
+\hspace{2em}mode & 2 & character &  & \\
+\hspace{2em}model & 2 & list &  & \\
+\hspace{3em}model & 3 & matrix or empty list &  & \\
+\hspace{3em}sa & 3 & matrix or empty list &  & \\
+\addlinespace
+\hspace{3em}trend & 3 & matrix or empty list &  & \\
+\hspace{3em}seasonal & 3 & matrix or empty list &  & \\
+\hspace{3em}transitory & 3 & matrix or empty list &  & \\
+\hspace{3em}irregular & 3 & matrix or empty list &  & \\
+\hspace{2em}linearized & 2 & mts, ts, matrix &  & \\
+\addlinespace
+\hspace{2em}components & 2 & mts, ts, matrix &  & \\
+\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final}\\
+\hspace{2em}series & 2 & mts, ts, matrix &  & \\
+\hspace{2em}forecasts & 2 & mts, ts, matrix &  & \\
+\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics}\\
+\addlinespace
+\hspace{2em}variance\_decomposition & 2 & data.frame &  & \\
+\hspace{2em}combined\_test & 2 & list & combined\_test & \\
+\hspace{3em}tests\_for\_stable\_seasonality & 3 & data.frame &  & \\
+\hspace{3em}combined\_seasonality\_test & 3 & character &  & \\
+\hspace{2em}residuals\_test & 2 & data.frame &  & \\
+\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined}\\
+\bottomrule
+\end{longtable}\endgroup{}
 
-$regression$userdef$outliers
-$regression$userdef$outliers$Predefined
-[1] NA
+\hypertarget{regarima}{%
+\subsection{Regarima}\label{regarima}}
 
-$regression$userdef$outliers$Final
-[1] NA
+Here we can also present the output: print and graphs.
 
-
-$regression$userdef$variables
-$regression$userdef$variables$Predefined
-$regression$userdef$variables$Predefined$series
-[1] NA
-
-$regression$userdef$variables$Predefined$description
-[1] NA
-
-
-$regression$userdef$variables$Final
-$regression$userdef$variables$Final$series
-[1] NA
-
-$regression$userdef$variables$Final$description
-[1] NA
-
-
-
-
-$regression$trading.days
-                option autoadjust leapyear stocktd   test
-Predefined TradingDays       TRUE LeapYear       0 Remove
-User_modif        <NA>         NA     <NA>      NA   <NA>
-Final      TradingDays       TRUE LeapYear       0 Remove
-
-$regression$easter
-           enabled julian duration test
-Predefined    TRUE  FALSE        8  Add
-User_modif      NA     NA       NA <NA>
-Final         TRUE  FALSE        8  Add
-
-
-$outliers
-           enabled span   ao   tc   ls    so usedefcv cv method tcrate
-Predefined    TRUE  All TRUE TRUE TRUE FALSE     TRUE  4 AddOne    0.7
-User_modif      NA <NA>   NA   NA   NA    NA       NA NA   <NA>     NA
-Final         TRUE  All TRUE TRUE TRUE FALSE     TRUE  4 AddOne    0.7
-
-$arima
-$arima$specification
-           enabled automdl.acceptdefault automdl.cancel automdl.ub1
-Predefined    TRUE                 FALSE            0.1    1.041667
-User_modif      NA                    NA             NA          NA
-Final         TRUE                 FALSE            0.1    1.041667
-           automdl.ub2 automdl.mixed automdl.balanced automdl.armalimit
-Predefined        0.88          TRUE            FALSE                 1
-User_modif          NA            NA               NA                NA
-Final             0.88          TRUE            FALSE                 1
-           automdl.reducecv automdl.ljungboxlimit automdl.ubfinal arima.mu
-Predefined          0.14286                  0.95            1.05    FALSE
-User_modif               NA                    NA              NA       NA
-Final               0.14286                  0.95            1.05    FALSE
-           arima.p arima.d arima.q arima.bp arima.bd arima.bq arima.coef
-Predefined       0       1       1        0        1        1      FALSE
-User_modif      NA      NA      NA       NA       NA       NA         NA
-Final            0       1       1        0        1        1      FALSE
-
-$arima$coefficients
-$arima$coefficients$Predefined
-[1] NA
-
-$arima$coefficients$Final
-[1] NA
-
-
-
-$forecast
-           horizon
-Predefined      -2
-User_modif      NA
-Final           -2
-
-$span
-         type         d0         d1 n0 n1
-estimate  All 1900-01-01 2020-12-31  0  0
-outlier   All 1900-01-01 2020-12-31  0  0
-
-attr(,"class")
-[1] "regarima_spec" "X13"          
-
-$x11
-            x11.mode x11.seasonalComp x11.lsigma x11.usigma x11.trendAuto
-Predefined Undefined             TRUE        1.5        2.5          TRUE
-User_modif      <NA>               NA         NA         NA            NA
-Final      Undefined             TRUE        1.5        2.5          TRUE
-           x11.trendma x11.seasonalma x11.fcasts x11.bcasts
-Predefined          13            Msr         -1          0
-User_modif          NA           <NA>         NA         NA
-Final               13            Msr         -1          0
-           x11.excludeFcasts
-Predefined             FALSE
-User_modif                NA
-Final                  FALSE
-
-attr(,"class")
-[1] "SA_spec" "X13"    
-\end{CodeOutput}
+\begin{CodeChunk}
 
 \begin{CodeInput}
-R> myreg1 <- x13(y, spec = myspec1)
-R> print(myreg1, enable_print_style = FALSE)
+R> library(RJDemetra)
+R> myseries <- ipi_c_eu[, "FR"]
+R> mysa <- x13_def(myseries, spec=c("RSA5c"))
+R> mysa$regarima
 \end{CodeInput}
 
 \begin{CodeOutput}
-
-
-RegARIMA
 y = regression model + arima (0, 1, 1, 0, 1, 1)
 Log-transformation: no
 Coefficients:
@@ -265,106 +214,48 @@ LS (5-2008)  -5.020079      1.257
 
 Residual standard error: 1.665 on 323 degrees of freedom
 Log likelihood = -624.7, aic =  1277 aicc =  1279, bic(corrected for length) = 1.252
-
-
-
-Decomposition
-Monitoring and Quality Assessment Statistics: 
-      M stats
-M(1)    0.061
-M(2)    0.033
-M(3)    0.840
-M(4)    0.420
-M(5)    0.697
-M(6)    0.236
-M(7)    0.075
-M(8)    0.206
-M(9)    0.055
-M(10)   0.166
-Q       0.272
-Q-M2    0.301
-
-Final filters: 
-Seasonal filter:  3x5
-Trend filter:  13 terms Henderson moving average
-
-
-Final
-Last observed values
-             y       sa        t            s          i
-Jan 2017  97.4 100.8114 100.6915  -3.41138724  0.1198412
-Feb 2017  97.5 100.3129 101.0507  -2.81292129 -0.7377402
-Mar 2017 112.0 102.3507 101.5023   9.64931855  0.8483317
-Apr 2017 103.0 101.2637 101.9608   1.73628825 -0.6971084
-May 2017 100.4 103.0054 102.3694  -2.60542262  0.6359951
-Jun 2017 111.2 102.4641 102.7599   8.73585142 -0.2957736
-Jul 2017 103.4 103.4507 103.1325  -0.05071812  0.3182150
-Aug 2017  79.3 103.3966 103.5091 -24.09656399 -0.1125714
-Sep 2017 109.7 103.2231 103.8871   6.47686943 -0.6640036
-Oct 2017 114.0 106.9659 104.2566   7.03410972  2.7093305
-Nov 2017 107.7 105.4628 104.5657   2.23724550  0.8970898
-Dec 2017 101.4 104.4099 104.8237  -3.00989466 -0.4138486
-
-Forecasts:
-               y_f     sa_f      t_f         s_f         i_f
-Jan 2018 102.00877 104.9065 105.0038  -2.8977705 -0.09720660
-Feb 2018 102.14378 105.0529 105.1506  -2.9091625 -0.09761841
-Mar 2018 113.92764 105.4072 105.3021   8.5204140  0.10515354
-Apr 2018 107.88844 105.4548 105.4869   2.4336221 -0.03210021
-May 2018 102.83006 105.7518 105.7343  -2.9217368  0.01749135
-Jun 2018 115.26921 105.9309 106.0232   9.3383460 -0.09234653
-Jul 2018 106.09888 106.4237 106.3248  -0.3248322  0.09889228
-Aug 2018  82.95525 106.5440 106.6390 -23.5887165 -0.09503822
-Sep 2018 112.41847 106.6179 106.9320   5.8005883 -0.31411494
-Oct 2018 115.41327 107.8929 107.1812   7.5203393  0.71172901
-Nov 2018 109.88167 107.2964 107.3766   2.5852407 -0.08013772
-Dec 2018 103.58107 107.2605 107.5126  -3.6794200 -0.25212937
-
-
-Diagnostics
- Relative contribution of the components to the stationary portion of the variance in the original series, after the removal of the long term trend 
- Trend computed by Hodrick-Prescott filter (cycle length = 8.0 years)
-           Component
- Cycle         1.646
- Seasonal     49.667
- Irregular     0.411
- TD & Hol.     0.057
- Others       49.814
- Total       101.596
-
- Residual seasonality tests 
-                                      P.value
- qs test on sa                          0.955
- qs test on i                           1.000
- f-test on sa (seasonal dummies)        0.966
- f-test on i (seasonal dummies)         0.923
- Residual seasonality (entire series)   0.987
- Residual seasonality (last 3 years)    0.897
- f-test on sa (td)                      0.006
- f-test on i (td)                       0.093
-
- Combined test in the entire series 
- Non parametric tests for stable seasonality
-                                                          P.value
-   Kruskall-Wallis test                                      0.000
-   Test for the presence of seasonality assuming stability   0.000
-   Evolutive seasonality test                                0.013
- 
- Identifiable seasonality present
-
- Combined test in the last 3 years 
- Non parametric tests for stable seasonality
-                                                          P.value
-   Kruskall-Wallis test                                      0.000
-   Test for the presence of seasonality assuming stability   0.000
-   Evolutive seasonality test                                0.373
- 
- Identifiable seasonality present
-
-
-Additional output variables
 \end{CodeOutput}
 \end{CodeChunk}
+
+\hypertarget{decomposition}{%
+\subsection{Decomposition}\label{decomposition}}
+
+\hypertarget{final}{%
+\subsection{Final}\label{final}}
+
+\hypertarget{diagnostics}{%
+\subsection{Diagnostics}\label{diagnostics}}
+
+\hypertarget{user-defined}{%
+\subsection{user defined}\label{user-defined}}
+
+\hypertarget{model-specification-creation-and-modification}{%
+\section{Model specification: creation and
+modification}\label{model-specification-creation-and-modification}}
+
+The model specification can be defined from an exisitng model
+specification or an estimated model, as each of the estimated model
+contains also its specification.
+
+\hypertarget{x13}{%
+\subsection{X13}\label{x13}}
+
+\hypertarget{tramoseats}{%
+\subsection{TRAMOSEATS}\label{tramoseats}}
+
+\hypertarget{regarima-1}{%
+\subsection{Regarima}\label{regarima-1}}
+
+\hypertarget{wrong-specifications-corrections}{%
+\subsection{Wrong specifications
+corrections}\label{wrong-specifications-corrections}}
+
+Parler des corrections automatiques ?
+
+\hypertarget{gestion-dun-workspace}{%
+\section{Gestion d'un workspace}\label{gestion-dun-workspace}}
+
+Mise en garde sur ce que l'on ne peut pas faire (problèmes d'imports)
 
 
 
