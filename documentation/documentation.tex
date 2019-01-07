@@ -55,9 +55,8 @@ Mention the two SA methods and the two steps of adjustment:
 pre-adjustment and the decomposition. Briefly present the differences in
 the decomposition.
 
-\hypertarget{using-the-r-package-rjdemetra}{%
-\subsection{Using the R package
-RJDemetra}\label{using-the-r-package-rjdemetra}}
+\hypertarget{rjdemetra-basics}{%
+\section{RJDemetra basics}\label{rjdemetra-basics}}
 
 The \pkg{RJDemetra} package alows to:
 
@@ -68,8 +67,31 @@ The \pkg{RJDemetra} package alows to:
 \item
   create and modify models
 \item
-  import/export workspaces
+  import/export JDemetra+ workspaces
 \end{itemize}
+
+\hypertarget{dataset}{%
+\subsection{Dataset}\label{dataset}}
+
+In this package we include the sts\_inpr\_m database of Eurostat, which
+contains the monthly industrial production indices in manufacturing in
+the European Union. It contains 37 time series from january 1990 to
+december 2017 which are considered to be affect by seasonal and working
+day effects. The data is a \code{ts} object and can be accessed using
+the \code{ipi_c_eu} object. The following snippet of code plot the
+industrial production index of the Euro aera:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> library(RJDemetra)
+R> plot(ipi_c_eu[, "EA19"])
+\end{CodeInput}
+
+
+\begin{center}\includegraphics{documentation_files/figure-latex/unnamed-chunk-2-1} \end{center}
+
+\end{CodeChunk}
 
 \hypertarget{estimate-a-predefined-regarima-and-sa-model}{%
 \section{Estimate a predefined regarima and SA
@@ -93,7 +115,7 @@ R> mysa <- x13_def(myseries, spec=c("RSA5c"))
 \begingroup\fontsize{7}{9}\selectfont
 
 \begin{longtable}[t]{lllll}
-\caption{\label{tab:unnamed-chunk-2}SA object structure}\\
+\caption{\label{tab:unnamed-chunk-4}SA object structure}\\
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
 \cmidrule(l{2pt}r{2pt}){4-5}
@@ -217,6 +239,42 @@ Log likelihood = -624.7, aic =  1277 aicc =  1279, bic(corrected for length) = 1
 \end{CodeOutput}
 \end{CodeChunk}
 
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> library(RJDemetra)
+R> myseries <- ipi_c_eu[, "FR"]
+R> mysa <- x13_def(myseries, spec=c("RSA5c"))
+R> mysa$regarima
+\end{CodeInput}
+
+\begin{CodeOutput}
+y = regression model + arima (0, 1, 1, 0, 1, 1)
+Log-transformation: no
+Coefficients:
+          Estimate Std. Error
+Theta(1)   -0.5270      0.048
+BTheta(1)  -0.4865      0.051
+
+              Estimate Std. Error
+Monday       -0.133839      0.164
+Tuesday      -0.002384      0.163
+Wednesday     0.241712      0.163
+Thursday     -0.531275      0.163
+Friday        0.432474      0.164
+Saturday      0.152956      0.163
+Leap year    -0.045977      0.501
+Easter [1]   -1.094082      0.335
+LS (11-2008) -8.441602      1.307
+LS (1-2009)  -7.274012      1.306
+LS (5-2008)  -5.020079      1.257
+
+
+Residual standard error: 1.665 on 323 degrees of freedom
+Log likelihood = -624.7, aic =  1277 aicc =  1279, bic(corrected for length) = 1.252
+\end{CodeOutput}
+\end{CodeChunk}
+
 \hypertarget{decomposition}{%
 \subsection{Decomposition}\label{decomposition}}
 
@@ -233,7 +291,70 @@ Log likelihood = -624.7, aic =  1277 aicc =  1279, bic(corrected for length) = 1
 \section{Model specification: creation and
 modification}\label{model-specification-creation-and-modification}}
 
-The model specification can be defined from an exisitng model
+Like in JDemetra+, the \pkg{RJDemetra} package contains pre-defined
+specifications that can be used to:
+
+\begin{itemize}
+\tightlist
+\item
+  pre-adjust a timeseries with TRAMO (\code{regarima_def_tramoseats()})
+  or RegARIMA (\code{regarima_def_x13()});\\
+\item
+  seasonally adjust a time series with TRAMO/SEATS
+  (\code{tramoseats_def()}) and X-13ARIMA-SEATS (\code{x13_def()}).
+\end{itemize}
+
+They are described in tables \ref{tab:pre_def_ts} and
+\ref{tab:pre_def_x13}. They correspond to the most commonly used
+specifications and users are recommended to start their analysis with
+one of those specification. Pre-defined specifications are identical for
+pre-adjustment and for seasonal adjustment.
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-7}\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
+\toprule
+\multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
+\cmidrule(l{2pt}r{2pt}){1-2}
+TRAMO & TRAMO-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
+\midrule
+TR0 & RSA0 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
+TR1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
+TR2 & RSA2 & test & no & test & no & test & test & (0,1,1)(0,1,1)\\
+TR3 & RSA3 & test & no & no & no & no & test & AMI\\
+TR4 & RSA4 & test & no & test & no & test & test & AMI\\
+\addlinespace
+TR5 & RSA5 & test & no & no & yes & test (Standard) & test & AMI\\
+TRfull (default) & RSAfull (default) & test & yes & no & test & test (Include Easter) & test & AMI\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-7}\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
+\toprule
+\multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
+\cmidrule(l{2pt}r{2pt}){1-2}
+RegARIMA & X-13ARIMA-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
+\midrule
+RG0 & X11 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
+RG1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
+RG2c & RSA2c & test & test & test & no & test & test & (0,1,1)(0,1,1)\\
+RG3 & RSA3 & test & no & no & no & no & test & AMI\\
+RG4c & RSA4c & test & test & test & no & test & test & AMI\\
+RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The model specification can be defined from an existing model
 specification or an estimated model, as each of the estimated model
 contains also its specification.
 
@@ -252,8 +373,9 @@ corrections}\label{wrong-specifications-corrections}}
 
 Parler des corrections automatiques ?
 
-\hypertarget{gestion-dun-workspace}{%
-\section{Gestion d'un workspace}\label{gestion-dun-workspace}}
+\hypertarget{manipulate-jdemetra-workspaces}{%
+\section{Manipulate JDemetra+
+workspaces}\label{manipulate-jdemetra-workspaces}}
 
 Mise en garde sur ce que l'on ne peut pas faire (problèmes d'imports)
 
