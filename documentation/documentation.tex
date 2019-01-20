@@ -239,42 +239,6 @@ Log likelihood = -624.7, aic =  1277 aicc =  1279, bic(corrected for length) = 1
 \end{CodeOutput}
 \end{CodeChunk}
 
-\begin{CodeChunk}
-
-\begin{CodeInput}
-R> library(RJDemetra)
-R> myseries <- ipi_c_eu[, "FR"]
-R> mysa <- x13_def(myseries, spec=c("RSA5c"))
-R> mysa$regarima
-\end{CodeInput}
-
-\begin{CodeOutput}
-y = regression model + arima (0, 1, 1, 0, 1, 1)
-Log-transformation: no
-Coefficients:
-          Estimate Std. Error
-Theta(1)   -0.5270      0.048
-BTheta(1)  -0.4865      0.051
-
-              Estimate Std. Error
-Monday       -0.133839      0.164
-Tuesday      -0.002384      0.163
-Wednesday     0.241712      0.163
-Thursday     -0.531275      0.163
-Friday        0.432474      0.164
-Saturday      0.152956      0.163
-Leap year    -0.045977      0.501
-Easter [1]   -1.094082      0.335
-LS (11-2008) -8.441602      1.307
-LS (1-2009)  -7.274012      1.306
-LS (5-2008)  -5.020079      1.257
-
-
-Residual standard error: 1.665 on 323 degrees of freedom
-Log likelihood = -624.7, aic =  1277 aicc =  1279, bic(corrected for length) = 1.252
-\end{CodeOutput}
-\end{CodeChunk}
-
 \hypertarget{decomposition}{%
 \subsection{Decomposition}\label{decomposition}}
 
@@ -312,7 +276,7 @@ pre-adjustment and for seasonal adjustment.
 
 \begin{table}
 
-\caption{\label{tab:unnamed-chunk-7}\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
+\caption{\label{tab:unnamed-chunk-6}\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
 \begin{tabular}[t]{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
@@ -335,7 +299,7 @@ TRfull (default) & RSAfull (default) & test & yes & no & test & test (Include Ea
 
 \begin{table}
 
-\caption{\label{tab:unnamed-chunk-7}\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
+\caption{\label{tab:unnamed-chunk-6}\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
 \begin{tabular}[t]{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
