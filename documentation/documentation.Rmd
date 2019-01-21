@@ -58,10 +58,65 @@ options(enable_print_style = FALSE)
 
 The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. Note that, JDemetra+ being implemented in Java, \pkg{RJDemetra} relies on the \pkg{rJava} package and Java SE 8 or later version is required. The two leading seasonal adjustment methods TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the specifications defined in JDemetra+.
 
+This article is structured as following.In the first section the .. is presented. 
+
 ## Seasonal adjustment in brief 
 
-Mention the two SA methods and the two steps of adjustment: pre-adjustment and the decomposition. Briefly present the differences in the decomposition. 
+The **first step** of seasonal adjustment, both in X-12ARIMA/X-13ARIMA-SEATS and TRAMO-SEATS+, consists of pre-adjusting the time series by removing from it the deterministic effects and estimating missing observations. Among deterministic effects, we distinguish outliers, calendar and regression effects. In this step, also forecasts and backcasts of the pre-adjusted series are estimated which allows applying linear filters at both ends of the series in the second step of the seasonal adjustment. The pre-adjustment, linearization, of the input series is achieved with a **RegARIMA** model (model with ARIMA errors) as specified below. 
 
+$$z_t=y_t\beta+x_t$$
+where
+
+* $z_t$ - is the original series;
+* $\beta = (\beta_1,...,\beta_n)$ - a vector of regression coefficients;
+* $y_t = (y_{1t},...,y_{nt})$ - $n$ regression variables (outliers, calendar effects, user-defined variables);
+* $x_t$ - a disturbance that follows the general ARIMA process:
+* $\phi(B)\delta(B)x_t=\theta(B)a_t$; $\phi(B), \delta(B)$ and $\theta(B)$ are the finite polynomials in $B$; $a_t$ is a white-noise variable with zero mean and a constant variance.
+
+ The polynomial $\phi(B)$ is a stationary autoregressive (AR) polynomial in $B$, which is a product of the stationary regular AR polynomial in $B$ and the stationary seasonal polynomial in $B^s$:
+
+$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi_{bp}B^{bps}$$
+
+ where:
+
+* $p$ - number of regular AR terms (in the package and in JDemetra+ $p \le 3$);
+* $bp$ - number of seasonal AR terms (in the package and in JDemetra+ $bp \le 1$);
+* $s$ - number of observations per year (frequency of the time series).
+ 
+ The polynomial $\theta(B)$ is an invertible moving average (MA) polynomial in $B$, which is a product of the invertible regular MA polynomial in $B$ and the invertible seasonal MA polynomial in $B^s$:
+
+ $$\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+...+\theta_qB^q)(1+\Theta_1B^s+...+\Theta_{bq}B^{bqs})$$
+
+ where:
+
+* $q$ - number of regular MA terms (in the package and in JDemetra+ $q \le 3$);
+* $bq$ - number of seasonal MA terms (in the package and in JDemetra+ $bq \le 1$);
+
+
+ The polynomial $\delta(B)$ is the non-stationary AR polynomial in $B$ (unit roots):
+
+$$\delta(B)=(1-B)^d(1-B^s)^{d_s}$$
+
+ where:
+
+* $d$ - regular differencing order (in the package and in JDemetra+ $d \le 1$);
+* $d_s$ - seasonal differencing order (in the package and in JDemetra+ $d_s \le 1$);
+
+
+In the **second part** of seasonal adjustment, called the **decomposition**, the pre-adjusted series is decomposed into the following components: trend-cycle (\code{t}), seasonal component (\code{s}) and irregular component (\code{i}). The decomposition can be: 
+
+* additive (\code{y = t + s + i})
+* multiplicative (\code{y = t * s * i}) 
+* log-additive (\code{log(y) = log(t)+log(s)+log(i)}) or
+* pseudo-additive (\code{y = t*(s+i-1)}) 
+
+The last two decompositions are available only under X13.
+
+The method of decomposing the pre-adjusted series differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS ("Signal Extraction in ARIMA Time Series") decomposes the observed series with a ARIMA-model based method. Whereas in X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by means of linear filters. More information on the TRAMO-SEATS+ method can be found on the Bank of Spain website ([link](www.bde.es)) and on X-12ARIMA/X-13ARIMA, on the U.S. Census Bureau website.
+
+As a result of seasonal adjustment, the final seasonally adjusted series (\code{sa}) shall be free of seasonal and calendar-related movements.
+
+More details on the methodlogy used in JDemetra+ can be found in the JDemetra manuals and user guides available at [link](https://ec.europa.eu/eurostat/cros/content/documentation_en).
 
 # RJDemetra basics
 
@@ -81,14 +136,51 @@ plot(ipi_c_eu[, "EA19"])
 ```
 
 # Estimate a predefined regarima and SA model
-The package allows to estimate regarima and SA models using predefined specifications. 
 
-```{r}
-library(RJDemetra)
-myseries <- ipi_c_eu[, "FR"]
-mysa <- x13_def(myseries, spec=c("RSA5c"))
+As in JDemetra+, \pkg{RJDemetra} package allows to perform seasonal adjustment using pre-defined model specifications. The specifications are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation methods. Also, only the  first step of seasonal adjustment -  RegARIMA estimation – is possible with pre-defined specifications. The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They correspond to the most commonly used specifications and users are recommended to start their analysis with one of those specification. Pre-defined specifications are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2).
+
+```{r, echo=FALSE, results='asis'}
+pre_def_spec_ts <- structure(list(TRAMO = c("TR0", "TR1", "TR2", "TR3", "TR4", "TR5", 
+"TRfull (default)"), `TRAMO-SEATS` = c("RSA0", "RSA1", "RSA2", "RSA3", 
+"RSA4", "RSA5", "RSAfull (default)"), `Trans-formation` = c("no", "test", 
+"test", "test", "test", "test", "test"), `Pre-adjust-ment for leap-year` = c("no", 
+"no", "no", "no", "no", "no", "yes"), `Working days` = c("no", 
+"no", "test", "no", "test", "no", "no"), `Trading days` = c("no", 
+"no", "no", "no", "no", "yes", "test"), `Easter effect` = c("no", 
+"no", "test", "no", "test", "test (Standard)", "test (Include Easter)"
+), Outliers = c("no", "test", "test", "test", "test", "test", 
+"test"), `ARIMA model` = c("(0,1,1)(0,1,1)", "(0,1,1)(0,1,1)", 
+"(0,1,1)(0,1,1)", "AMI", "AMI", "AMI", "AMI")), class = "data.frame", row.names = c(NA, 
+-7L))
+pre_def_spec_x13 <- structure(list(RegARIMA = c("RG0", "RG1", "RG2c", "RG3", "RG4c", 
+"RG5c (default)"), `X-13ARIMA-SEATS` = c("X11", "RSA1", "RSA2c", "RSA3", 
+"RSA4c", "RSA5 (default)"), `Trans-formation` = c("no", "test", "test", 
+"test", "test", "test"), `Pre-adjust-ment for leap-year` = c("no", 
+"no", "test", "no", "test", "test"), `Working days` = c("no", 
+"no", "test", "no", "test", "no"), `Trading days` = c("no", "no", 
+"no", "no", "no", "test"), `Easter effect` = c("no", "no", "test", 
+"no", "test", "test"), Outliers = c("no", "test", "test", "test", 
+"test", "test"), `ARIMA model` = c("(0,1,1)(0,1,1)", "(0,1,1)(0,1,1)", 
+"(0,1,1)(0,1,1)", "AMI", "AMI", "AMI")), class = "data.frame", row.names = c(NA, 
+-6L))
+
+kable(pre_def_spec_ts, "latex", booktabs = T, caption = "\\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS",align = "c") %>%
+  column_spec(c(2,3,5), width = "1.cm") %>%
+  column_spec(c(5,6,8), width = "0.9cm") %>% 
+  column_spec(c(4,7), width = "1.5cm") %>% 
+  kable_styling(font_size = 7) %>% 
+  add_header_above(c("Specification"=2, ""))
+
+kable(pre_def_spec_x13, "latex", booktabs = T, caption = "\\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS", align = "c") %>%
+  column_spec(c(3,5), width = "1.cm") %>%
+  column_spec(c(5,6,7,8), width = "0.9cm")%>% 
+  column_spec(c(2), width = "1.7cm") %>% 
+  column_spec(c(4), width = "1.4cm") %>% 
+  kable_styling(font_size = 7) %>% 
+  add_header_above(c("Specification"=2, ""))
 ```
 
+The model specification can be defined from an existing model specification or an estimated model, as each of the estimated model contains also its specification. 
 
 # SA object structure
 
@@ -142,57 +234,6 @@ mysa$regarima
 ## user defined
 
 # Model specification: creation and modification 
-
-Like in JDemetra+, the \pkg{RJDemetra} package contains pre-defined specifications that can be used to: 
-
-- pre-adjust a timeseries with TRAMO (\code{regarima_def_tramoseats()}) or RegARIMA (\code{regarima_def_x13()});  
-- seasonally adjust a time series with TRAMO/SEATS  (\code{tramoseats_def()}) and X-13ARIMA-SEATS  (\code{x13_def()}).
-
-They are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They correspond to the most commonly used specifications and users are recommended to start their analysis with one of those specification. Pre-defined specifications are identical for pre-adjustment and for seasonal adjustment.
-
-```{r, echo=FALSE, results='asis'}
-pre_def_spec_ts <- structure(list(TRAMO = c("TR0", "TR1", "TR2", "TR3", "TR4", "TR5", 
-"TRfull (default)"), `TRAMO-SEATS` = c("RSA0", "RSA1", "RSA2", "RSA3", 
-"RSA4", "RSA5", "RSAfull (default)"), `Trans-formation` = c("no", "test", 
-"test", "test", "test", "test", "test"), `Pre-adjust-ment for leap-year` = c("no", 
-"no", "no", "no", "no", "no", "yes"), `Working days` = c("no", 
-"no", "test", "no", "test", "no", "no"), `Trading days` = c("no", 
-"no", "no", "no", "no", "yes", "test"), `Easter effect` = c("no", 
-"no", "test", "no", "test", "test (Standard)", "test (Include Easter)"
-), Outliers = c("no", "test", "test", "test", "test", "test", 
-"test"), `ARIMA model` = c("(0,1,1)(0,1,1)", "(0,1,1)(0,1,1)", 
-"(0,1,1)(0,1,1)", "AMI", "AMI", "AMI", "AMI")), class = "data.frame", row.names = c(NA, 
--7L))
-pre_def_spec_x13 <- structure(list(RegARIMA = c("RG0", "RG1", "RG2c", "RG3", "RG4c", 
-"RG5c (default)"), `X-13ARIMA-SEATS` = c("X11", "RSA1", "RSA2c", "RSA3", 
-"RSA4c", "RSA5 (default)"), `Trans-formation` = c("no", "test", "test", 
-"test", "test", "test"), `Pre-adjust-ment for leap-year` = c("no", 
-"no", "test", "no", "test", "test"), `Working days` = c("no", 
-"no", "test", "no", "test", "no"), `Trading days` = c("no", "no", 
-"no", "no", "no", "test"), `Easter effect` = c("no", "no", "test", 
-"no", "test", "test"), Outliers = c("no", "test", "test", "test", 
-"test", "test"), `ARIMA model` = c("(0,1,1)(0,1,1)", "(0,1,1)(0,1,1)", 
-"(0,1,1)(0,1,1)", "AMI", "AMI", "AMI")), class = "data.frame", row.names = c(NA, 
--6L))
-
-kable(pre_def_spec_ts, "latex", booktabs = T, caption = "\\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS",align = "c") %>%
-  column_spec(c(2,3,5), width = "1.cm") %>%
-  column_spec(c(5,6,8), width = "0.9cm") %>% 
-  column_spec(c(4,7), width = "1.5cm") %>% 
-  kable_styling(font_size = 7) %>% 
-  add_header_above(c("Specification"=2, ""))
-
-kable(pre_def_spec_x13, "latex", booktabs = T, caption = "\\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS", align = "c") %>%
-  column_spec(c(3,5), width = "1.cm") %>%
-  column_spec(c(5,6,7,8), width = "0.9cm")%>% 
-  column_spec(c(2), width = "1.7cm") %>% 
-  column_spec(c(4), width = "1.4cm") %>% 
-  kable_styling(font_size = 7) %>% 
-  add_header_above(c("Specification"=2, ""))
-```
-
-
-The model specification can be defined from an existing model specification or an estimated model, as each of the estimated model contains also its specification. 
 
 ## X13
 
