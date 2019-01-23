@@ -174,7 +174,7 @@ As a result of seasonal adjustment, the final seasonally adjusted series
 (\code{sa}) shall be free of seasonal and calendar-related movements.
 
 More details on the methodlogy used in JDemetra+ can be found in the
-JDemetra manuals and user guides available at
+JDemetra+ manuals and user guides available at
 \href{https://ec.europa.eu/eurostat/cros/content/documentation_en}{link}.
 
 \hypertarget{rjdemetra-basics}{%
@@ -195,13 +195,13 @@ The \pkg{RJDemetra} package alows to:
 \hypertarget{dataset}{%
 \subsection{Dataset}\label{dataset}}
 
-In this package we include the sts\_inpr\_m database of Eurostat, which
-contains the monthly industrial production indices in manufacturing in
-the European Union. It contains 37 time series from january 1990 to
-december 2017 which are considered to be affect by seasonal and working
-day effects. The data is a \code{ts} object and can be accessed using
-the \code{ipi_c_eu} object. The following snippet of code plot the
-industrial production index of the Euro aera:
+In this package the sts\_inpr\_m database of Eurostat is included, which
+contains monthly industrial production indices in manufacturing in the
+European Union. It contains 37 time series from january 1990 to december
+2017 which are considered to be affected by seasonal and working day
+effects. The data is a \code{ts} object and can be accessed using the
+\code{ipi_c_eu} object. The following snippet of code plots the
+industrial production index of the euro aera (EA19):
 
 \begin{CodeChunk}
 
@@ -215,21 +215,23 @@ R> plot(ipi_c_eu[, "EA19"])
 
 \end{CodeChunk}
 
-\hypertarget{estimate-a-predefined-regarima-and-sa-model}{%
-\section{Estimate a predefined regarima and SA
-model}\label{estimate-a-predefined-regarima-and-sa-model}}
+\hypertarget{estimate-a-pre-defined-regarima-and-sa-model}{%
+\section{Estimate a pre-defined RegARIMA and SA
+model}\label{estimate-a-pre-defined-regarima-and-sa-model}}
 
-As in JDemetra+, \pkg{RJDemetra} package allows to perform seasonal
+As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal
 adjustment using pre-defined model specifications. The specifications
 are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation
-methods. Also, only the first step of seasonal adjustment - RegARIMA
-estimation -- is possible with pre-defined specifications. The
-pre-defined model specifications are described in tables
-\ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They correspond to the
-most commonly used specifications and users are recommended to start
-their analysis with one of those specification. Pre-defined
-specifications are identical for pre-adjustment (column 1) and for
-seasonal adjustment (column 2).
+methods. It is also possible to perform only the first step of seasonal
+adjustment; the RegARIMA estimation. The pre-defined model
+specifications are described in tables \ref{tab:pre_def_ts} and
+\ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1)
+and for seasonal adjustment (column 2). The pre-defined specifications
+correspond to most commonly used specifications and users are
+recommended to start their analysis with one of them. We will follow
+also this approach and later it will be presented how to modify model
+specifications, including the possibility to incorprate user-defined
+regressors (see section 5).
 
 \begin{table}
 
@@ -275,17 +277,70 @@ RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
 \end{tabular}
 \end{table}
 
-The model specification can be defined from an existing model
-specification or an estimated model, as each of the estimated model
-contains also its specification.
+The below code presents how to perform an estimation, with pre-defined
+specifications, of:
+
+\begin{itemize}
+\tightlist
+\item
+  RegARIMA
+
+  \begin{itemize}
+  \tightlist
+  \item
+    X-13ARIMA method:
+    \code{regarima_def_x13(series, spec = c("RG5c", "RG0", "RG1", "RG2c", "RG3","RG4c"))}
+  \item
+    TRAMO-SEATS method:
+    \code{regarima_def_tramoseats(series, spec = c("TRfull", "TR0","TR1", "TR2","TR3", "TR4","TR5"))}
+  \end{itemize}
+\item
+  Seasonal adjustment
+
+  \begin{itemize}
+  \tightlist
+  \item
+    X-13ARIMA method:
+    \code{x13_def(series, spec = c("RSA5c", "RSA0", "RSA1", "RSA2c", "RSA3","RSA4c"), userdefined = NULL)}
+  \item
+    TRAMO-SEATS method:
+    \code{tramoseats_def(series, spec = c("RSAfull", "RSA0", "RSA1", "RSA2", "RSA", "RSA4", "RSA5"), userdefined = NULL)}
+  \end{itemize}
+\end{itemize}
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> library(RJDemetra)
+R> myseries <- ipi_c_eu[, "EA19"]
+R> 
+R> regx13 <- regarima_def_x13(myseries, spec = "RG5c")
+R> regts <- regarima_def_tramoseats(myseries, spec = "TRfull")
+R> sax13 <- x13_def(myseries, spec = "RSA5c", userdefined = NULL)
+R> sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
+\end{CodeInput}
+\end{CodeChunk}
 
 \hypertarget{sa-object-structure}{%
 \section{SA object structure}\label{sa-object-structure}}
 
+In the previous section it was presented how to run a RegARIMA and
+complete seasonal adjustment estimation with pre-defined model
+specifications. Here the outcome will be described in detail.
+
+As a result of seasonal adjustment estimation (e.g.~function
+\code {x13_def} or \code {tramoseats_def}) a S3 class object
+(\code{sa_object}) is created. It has a class \code{c("SA","X13")} or
+\code{c("SA","TRAMO_SEATS")} depending on the used estimation method.
+The \code{sa_object} consits of lists of S3 class sub-objects. For each
+of the class \code{print, plot} methods are defined. The complete
+structure of the \code{sa_object} is presented in table
+\ref{tab:obj_tab}.
+
 \begingroup\fontsize{7}{9}\selectfont
 
 \begin{longtable}[t]{lllll}
-\caption{\label{tab:unnamed-chunk-4}SA object structure}\\
+\caption{\label{tab:unnamed-chunk-5}\label{tab:obj_tab}SA object structure}\\
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
 \cmidrule(l{2pt}r{2pt}){4-5}
