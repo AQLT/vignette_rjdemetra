@@ -58,10 +58,65 @@ options(enable_print_style = FALSE)
 
 The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. Note that, JDemetra+ being implemented in Java, \pkg{RJDemetra} relies on the \pkg{rJava} package and Java SE 8 or later version is required. The two leading seasonal adjustment methods TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the specifications defined in JDemetra+.
 
+This article is structured as following. In the first section the .. is presented. 
+
 ## Seasonal adjustment in brief 
 
-Mention the two SA methods and the two steps of adjustment: pre-adjustment and the decomposition. Briefly present the differences in the decomposition. 
+The **first step** of seasonal adjustment, both in X-12ARIMA/X-13ARIMA-SEATS and TRAMO-SEATS+, consists of pre-adjusting the time series by removing from it the deterministic effects and estimating missing observations. Among deterministic effects, we distinguish outliers, calendar and regression effects. In this step, also forecasts and backcasts of the pre-adjusted series are estimated which allows applying linear filters at both ends of the series in the second step of the seasonal adjustment. The pre-adjustment, linearization, of the input series is achieved with a **RegARIMA** model (model with ARIMA errors) as specified below. 
 
+$$z_t=y_t\beta+x_t$$
+where
+
+* $z_t$ - is the original series;
+* $\beta = (\beta_1,...,\beta_n)$ - a vector of regression coefficients;
+* $y_t = (y_{1t},...,y_{nt})$ - $n$ regression variables (outliers, calendar effects, user-defined variables);
+* $x_t$ - a disturbance that follows the general ARIMA process:
+* $\phi(B)\delta(B)x_t=\theta(B)a_t$; $\phi(B), \delta(B)$ and $\theta(B)$ are the finite polynomials in $B$; $a_t$ is a white-noise variable with zero mean and a constant variance.
+
+ The polynomial $\phi(B)$ is a stationary autoregressive (AR) polynomial in $B$, which is a product of the stationary regular AR polynomial in $B$ and the stationary seasonal polynomial in $B^s$:
+
+$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi_{bp}B^{bps}$$
+
+ where:
+
+* $p$ - number of regular AR terms (in the package and in JDemetra+ $p \le 3$);
+* $bp$ - number of seasonal AR terms (in the package and in JDemetra+ $bp \le 1$);
+* $s$ - number of observations per year (frequency of the time series).
+ 
+ The polynomial $\theta(B)$ is an invertible moving average (MA) polynomial in $B$, which is a product of the invertible regular MA polynomial in $B$ and the invertible seasonal MA polynomial in $B^s$:
+
+ $$\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+...+\theta_qB^q)(1+\Theta_1B^s+...+\Theta_{bq}B^{bqs})$$
+
+ where:
+
+* $q$ - number of regular MA terms (in the package and in JDemetra+ $q \le 3$);
+* $bq$ - number of seasonal MA terms (in the package and in JDemetra+ $bq \le 1$);
+
+
+The polynomial $\delta(B)$ is the non-stationary AR polynomial in $B$ (unit roots):
+
+$$\delta(B)=(1-B)^d(1-B^s)^{d_s}$$
+
+ where:
+
+* $d$ - regular differencing order (in the package and in JDemetra+ $d \le 1$);
+* $d_s$ - seasonal differencing order (in the package and in JDemetra+ $d_s \le 1$);
+
+
+In the **second part** of seasonal adjustment, called the **decomposition**, the pre-adjusted series is decomposed into the following components: trend-cycle (\code{t}), seasonal component (\code{s}) and irregular component (\code{i}). The decomposition can be: 
+
+* additive (\code{y = t + s + i})
+* multiplicative (\code{y = t * s * i}) 
+* log-additive (\code{log(y) = log(t)+log(s)+log(i)}) or
+* pseudo-additive (\code{y = t*(s+i-1)}) 
+
+The last two decompositions are available only under X13.
+
+The method of decomposing the pre-adjusted series differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS ("Signal Extraction in ARIMA Time Series") decomposes the observed series with a ARIMA-model based method. Whereas in X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by means of linear filters. More information on the TRAMO-SEATS+ method can be found on the Bank of Spain website ([link](www.bde.es)) and on X-12ARIMA/X-13ARIMA, on the U.S. Census Bureau website.
+
+As a result of seasonal adjustment, the final seasonally adjusted series (\code{sa}) shall be free of seasonal and calendar-related movements.
+
+More details on the methodlogy used in JDemetra+ can be found in the JDemetra+ manuals and user guides available at [link](https://ec.europa.eu/eurostat/cros/content/documentation_en).
 
 # RJDemetra basics
 
@@ -73,82 +128,17 @@ The \pkg{RJDemetra} package alows to:
 
 ## Dataset
 
-In this package we include the sts_inpr_m database of Eurostat, which contains the monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from january 1990 to december 2017 which are considered to be affect by seasonal and working day effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plot the industrial production index of the Euro aera:
+In this package the sts_inpr_m database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from january 1990 to december 2017 which are considered to be affected by seasonal and working day effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro aera (EA19):
 
 ```{r}
 library(RJDemetra)
 plot(ipi_c_eu[, "EA19"])
 ```
 
-# Estimate a predefined regarima and SA model
-The package allows to estimate regarima and SA models using predefined specifications. 
+# Estimate a pre-defined RegARIMA and SA model
 
-```{r}
-library(RJDemetra)
-myseries <- ipi_c_eu[, "FR"]
-mysa <- x13_def(myseries, spec=c("RSA5c"))
-```
-
-
-# SA object structure
-
-```{r echo=FALSE, results='asis'}
-object=c("sa_object","regarima","specification","estimate","transform","regression","userdef","specification","outliers","variables","series","description","trading.days","easter","outliers","arima","specification","coefficients","forecast","span","arma","arima.coefficients","regression.coefficients","loglik","model","spec_rslt","effects","residuals","residuals.stat","st.error","tests","forecast","decomposition","specification","mode","mstats","si_ratio","s_filter","t_filter","decomposition","specification","mode","model","model","sa","trend","seasonal","transitory","irregular","linearized","components","final","series","forecasts","diagnostics","variance_decomposition","combined_test","tests_for_stable_seasonality","combined_seasonality_test","residuals_test","user_defined")
-type=c("list","list","list","data.frame","data.frame","list","list","data.frame","data.frame or NA(empty)","list","mts, ts, matrix or NA(empty)","data.frame or NA(empty)","data.frame","data.frame","data.frame","list","data.frame","data.frame or NA(empty)","data.frame","data.frame","vector - numeric","matrix","matrix","matrix","list","data.frame","mts, ts, matrix","ts","list","numeric","data.frame","mts, ts, matrix","list","data.frame","character","matrix","mts, ts, matrix","vector - character","character","list","data.frame","character","list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","mts, ts, matrix","mts, ts, matrix","list","mts, ts, matrix","mts, ts, matrix","list","data.frame","list","data.frame","character","data.frame","list")
-class1=c("SA, X13","regarima, X13","","","","","","","","","","","","","","","","","","","","","","","","","","","","","regarima_rtests, data.frame","","decomposition_X11","X11_spec, data.frame","","","","","","","seats_spec, data.frame","","","","","","","","","","","final","","","diagnostics","","combined_test","","","","user_defined")
-class2=c("SA, TRAMO_SEATS","regarima, TRAMO_SEATS","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","decomposition_SEATS","","","","","","","","","","","","","","","","","","","","","")
-level=c(0,1,2,3,3,3,4,5,5,5,6,6,4,4,3,3,4,4,3,3,2,2,2,2,2,3,3,2,2,3,3,2,1,2,2,2,2,2,2,1,2,2,2,3,3,3,3,3,3,2,2,1,2,2,1,2,2,3,3,2,1)
-
-obj_tab <-data.frame(cbind(object,level,type,class1,class2),stringsAsFactors = FALSE)
-
-obj_tab[obj_tab[,"level"]==1,1] <- paste0("\\hspace{1em}",obj_tab[obj_tab[,"level"]==1,1])
-obj_tab[obj_tab[,"level"]==2,1] <- paste0("\\hspace{2em}",obj_tab[obj_tab[,"level"]==2,1])
-obj_tab[obj_tab[,"level"]==3,1] <- paste0("\\hspace{3em}",obj_tab[obj_tab[,"level"]==3,1])
-obj_tab[obj_tab[,"level"]==4,1] <- paste0("\\hspace{4em}",obj_tab[obj_tab[,"level"]==4,1])
-obj_tab[obj_tab[,"level"]==5,1] <- paste0("\\hspace{5em}",obj_tab[obj_tab[,"level"]==5,1])
-obj_tab[obj_tab[,"level"]==6,1] <- paste0("\\hspace{6em}",obj_tab[obj_tab[,"level"]==6,1])
-
-obj_tab <- apply(obj_tab, 2, function(x)gsub("_","\\_",x,fixed = TRUE))
-colnames(obj_tab)=c("Object","Level","Type","Class","Class")
-
-kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "SA object structure")%>%
-  
-  add_header_above(c(" "," "," ","x13/x13_def"," tramoseats/tramoseats_def"), italic = T)%>%
-  
-  add_header_above(c(" "," "," ","When adjusted with:" = 2))%>%
-  
-  row_spec(c(2,33,40,52,55,61), bold = T)%>% 
-  
-  kable_styling(font_size = 7)
-  
-```
-
-## Regarima
-
-Here we can also present the output: print and graphs.
-```{r}
-library(RJDemetra)
-myseries <- ipi_c_eu[, "FR"]
-mysa <- x13_def(myseries, spec=c("RSA5c"))
-mysa$regarima
-```
-
-## Decomposition
-
-## Final
-
-## Diagnostics
-
-## user defined
-
-# Model specification: creation and modification 
-
-Like in JDemetra+, the \pkg{RJDemetra} package contains pre-defined specifications that can be used to: 
-
-- pre-adjust a timeseries with TRAMO (\code{regarima_def_tramoseats()}) or RegARIMA (\code{regarima_def_x13()});  
-- seasonally adjust a time series with TRAMO/SEATS  (\code{tramoseats_def()}) and X-13ARIMA-SEATS  (\code{x13_def()}).
-
-They are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They correspond to the most commonly used specifications and users are recommended to start their analysis with one of those specification. Pre-defined specifications are identical for pre-adjustment and for seasonal adjustment.
+As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal adjustment using pre-defined model specifications. The specifications are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation methods. It is also possible to perform only the  first step of seasonal adjustment; the RegARIMA estimation. The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2).
+The pre-defined specifications correspond to most commonly used specifications and users are recommended to start their analysis with one of them. In section 5 it is presented how to modify model specifications, including the possibility to incorprate user-defined regressors.   
 
 ```{r, echo=FALSE, results='asis'}
 pre_def_spec_ts <- structure(list(TRAMO = c("TR0", "TR1", "TR2", "TR3", "TR4", "TR5", 
@@ -191,8 +181,87 @@ kable(pre_def_spec_x13, "latex", booktabs = T, caption = "\\label{tab:pre_def_x1
   add_header_above(c("Specification"=2, ""))
 ```
 
+The below code presents how to perform an estimation, with pre-defined specifications, of:
 
-The model specification can be defined from an existing model specification or an estimated model, as each of the estimated model contains also its specification. 
+* RegARIMA
+  + X-13ARIMA method: \code{regarima_def_x13(series, spec = c("RG5c", "RG0", "RG1", "RG2c", "RG3","RG4c"))} 
+  + TRAMO-SEATS method: \code{regarima_def_tramoseats(series, spec = c("TRfull", "TR0","TR1", "TR2","TR3", "TR4","TR5"))} 
+* Seasonal adjustment
+  + X-13ARIMA method: \code{x13_def(series, spec = c("RSA5c", "RSA0", "RSA1", "RSA2c", "RSA3","RSA4c"), userdefined = NULL)} 
+  + TRAMO-SEATS method: \code{tramoseats_def(series, spec = c("RSAfull", "RSA0", "RSA1", "RSA2", "RSA", "RSA4", "RSA5"), userdefined = NULL)}
+
+
+```{r}
+library(RJDemetra)
+myseries <- ipi_c_eu[, "EA19"]
+
+regx13 <- regarima_def_x13(myseries, spec = "RG5c")
+regts <- regarima_def_tramoseats(myseries, spec = "TRfull")
+sax13 <- x13_def(myseries, spec = "RSA5c", userdefined = NULL)
+sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
+```
+
+
+# SA object structure
+
+In the previous section it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
+
+As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. The first column gives the name of \code{sa_object} sub-components, the second the level of the sub-components, the third their type, and the fourth and fifth the name of the new created S3 classe (if any). Where the forth column corresponds to the case when the estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated with TRAMO-SEATS+. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see column 4 and 5). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see next sub-sections). Finally, when estimating RegARIMA only the regarima object is created.
+
+```{r echo=FALSE, results='asis'}
+object=c("sa_object","regarima","specification","estimate","transform","regression","userdef","specification","outliers","variables","series","description","trading.days","easter","outliers","arima","specification","coefficients","forecast","span","arma","arima.coefficients","regression.coefficients","loglik","model","spec_rslt","effects","residuals","residuals.stat","st.error","tests","forecast","decomposition","specification","mode","mstats","si_ratio","s_filter","t_filter","decomposition","specification","mode","model","model","sa","trend","seasonal","transitory","irregular","linearized","components","final","series","forecasts","diagnostics","variance_decomposition","combined_test","tests_for_stable_seasonality","combined_seasonality_test","residuals_test","user_defined")
+type=c("list","list","list","data.frame","data.frame","list","list","data.frame","data.frame or NA(empty)","list","mts, ts, matrix or NA(empty)","data.frame or NA(empty)","data.frame","data.frame","data.frame","list","data.frame","data.frame or NA(empty)","data.frame","data.frame","vector - numeric","matrix","matrix","matrix","list","data.frame","mts, ts, matrix","ts","list","numeric","data.frame","mts, ts, matrix","list","data.frame","character","matrix","mts, ts, matrix","vector - character","character","list","data.frame","character","list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","mts, ts, matrix","mts, ts, matrix","list","mts, ts, matrix","mts, ts, matrix","list","data.frame","list","data.frame","character","data.frame","list")
+class1=c("SA, X13","regarima, X13","","","","","","","","","","","","","","","","","","","","","","","","","","","","","regarima_rtests, data.frame","","decomposition_X11","X11_spec, data.frame","","","","","","","seats_spec, data.frame","","","","","","","","","","","final","","","diagnostics","","combined_test","","","","user_defined")
+class2=c("SA, TRAMO_SEATS","regarima, TRAMO_SEATS","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","decomposition_SEATS","","","","","","","","","","","","","","","","","","","","","")
+level=c(0,1,2,3,3,3,4,5,5,5,6,6,4,4,3,3,4,4,3,3,2,2,2,2,2,3,3,2,2,3,3,2,1,2,2,2,2,2,2,1,2,2,2,3,3,3,3,3,3,2,2,1,2,2,1,2,2,3,3,2,1)
+
+obj_tab <-data.frame(cbind(object,level,type,class1,class2),stringsAsFactors = FALSE)
+
+obj_tab[obj_tab[,"level"]==1,1] <- paste0("\\hspace{1em}",obj_tab[obj_tab[,"level"]==1,1])
+obj_tab[obj_tab[,"level"]==2,1] <- paste0("\\hspace{2em}",obj_tab[obj_tab[,"level"]==2,1])
+obj_tab[obj_tab[,"level"]==3,1] <- paste0("\\hspace{3em}",obj_tab[obj_tab[,"level"]==3,1])
+obj_tab[obj_tab[,"level"]==4,1] <- paste0("\\hspace{4em}",obj_tab[obj_tab[,"level"]==4,1])
+obj_tab[obj_tab[,"level"]==5,1] <- paste0("\\hspace{5em}",obj_tab[obj_tab[,"level"]==5,1])
+obj_tab[obj_tab[,"level"]==6,1] <- paste0("\\hspace{6em}",obj_tab[obj_tab[,"level"]==6,1])
+
+obj_tab <- apply(obj_tab, 2, function(x)gsub("_","\\_",x,fixed = TRUE))
+colnames(obj_tab)=c("Object","Level","Type","Class","Class")
+
+kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "\\label{tab:obj_tab}SA object structure")%>%
+  
+  add_header_above(c(" "," "," ","x13/x13_def"," tramoseats/tramoseats_def"), italic = T)%>%
+  
+  add_header_above(c(" "," "," ","When adjusted with:" = 2))%>%
+  
+  row_spec(c(2,33,40,52,55,61), bold = T)%>% 
+  
+  kable_styling(font_size = 7)
+  
+```
+
+## Regarima
+
+Here we can also present the output: print and graphs.
+```{r}
+library(RJDemetra)
+myseries <- ipi_c_eu[, "EA19"]
+sax13 <- x13_def(myseries, spec = "RSA5c", userdefined = NULL)
+sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
+## PRINT THE RESULTS:
+sax13$regarima
+## PLOT THE RESULTS:
+#plot(sax13$regarima)
+```
+
+## Decomposition
+
+## Final
+
+## Diagnostics
+
+## user defined
+
+# Model specification: creation and modification 
 
 ## X13
 
@@ -202,7 +271,6 @@ The model specification can be defined from an existing model specification or a
 
 ## Wrong specifications corrections
 Parler des corrections automatiques ?
-  
   
 # Manipulate JDemetra+ workspaces
   Mise en garde sur ce que l'on ne peut pas faire (problèmes d'imports)
