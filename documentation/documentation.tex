@@ -11,7 +11,7 @@ Anna Michalek\\European Central Bank \And Alain Quartier-La-Tente\\Insee
 
 \Plainauthor{Anna Michalek, Alain Quartier-La-Tente}
 \Plaintitle{A Capitalized Title: Something about a Package foo}
-\Shorttitle{\pkg{RJDemetra}: A Capitalized Title}
+\Shorttitle{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 
 \Abstract{
 The abstract of the article.
@@ -211,7 +211,7 @@ R> plot(ipi_c_eu[, "EA19"])
 \end{CodeInput}
 
 
-\begin{center}\includegraphics{documentation_files/figure-latex/unnamed-chunk-2-1} \end{center}
+\begin{center}\includegraphics{img/img-basic_raw_data_plot-1} \end{center}
 
 \end{CodeChunk}
 
@@ -232,15 +232,15 @@ recommended to start their analysis with one of them. In section 5 it is
 presented how to modify model specifications, including the possibility
 to incorprate user-defined regressors.
 
-\begin{table}
+\begin{table}[t]
 
-\caption{\label{tab:unnamed-chunk-3}\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
+\caption{\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{2pt}r{2pt}){1-2}
+\cmidrule(l{3pt}r{3pt}){1-2}
 TRAMO & TRAMO-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 TR0 & RSA0 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -255,15 +255,15 @@ TRfull (default) & RSAfull (default) & test & yes & no & test & test (Include Ea
 \end{tabular}
 \end{table}
 
-\begin{table}
+\begin{table}[t]
 
-\caption{\label{tab:unnamed-chunk-3}\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
+\caption{\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{2pt}r{2pt}){1-2}
+\cmidrule(l{3pt}r{3pt}){1-2}
 RegARIMA & X-13ARIMA-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 RG0 & X11 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -271,6 +271,7 @@ RG1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
 RG2c & RSA2c & test & test & test & no & test & test & (0,1,1)(0,1,1)\\
 RG3 & RSA3 & test & no & no & no & no & test & AMI\\
 RG4c & RSA4c & test & test & test & no & test & test & AMI\\
+\addlinespace
 RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
 \bottomrule
 \end{tabular}
@@ -351,13 +352,13 @@ estimating RegARIMA only the regarima object is created.
 
 \begingroup\fontsize{7}{9}\selectfont
 
-\begin{longtable}[t]{lllll}
-\caption{\label{tab:unnamed-chunk-5}\label{tab:obj_tab}SA object structure}\\
+\begin{longtable}{lllll}
+\caption{\label{tab:unnamed-chunk-3}\label{tab:obj_tab}SA object structure}\\
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
-\cmidrule(l{2pt}r{2pt}){4-5}
-\multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em x13/x13\_def} & \multicolumn{1}{c}{\em  tramoseats/tramoseats\_def} \\
-\cmidrule(l{2pt}r{2pt}){4-4} \cmidrule(l{2pt}r{2pt}){5-5}
+\cmidrule(l{3pt}r{3pt}){4-5}
+\multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{x13/x13\_def}} & \multicolumn{1}{c}{\em{ tramoseats/tramoseats\_def}} \\
+\cmidrule(l{3pt}r{3pt}){4-4} \cmidrule(l{3pt}r{3pt}){5-5}
 Object & Level & Type & Class & Class\\
 \midrule
 sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
@@ -398,7 +399,7 @@ sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
 \addlinespace
 \hspace{3em}tests & 3 & data.frame & regarima\_rtests, data.frame & \\
 \hspace{2em}forecast & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11}\\
+\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11} & \textbf{}\\
 \hspace{2em}specification & 2 & data.frame & X11\_spec, data.frame & \\
 \hspace{2em}mode & 2 & character &  \vphantom{1} & \\
 \addlinespace
@@ -421,19 +422,21 @@ sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
 \hspace{2em}linearized & 2 & mts, ts, matrix &  & \\
 \addlinespace
 \hspace{2em}components & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final}\\
+\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final} & \textbf{}\\
 \hspace{2em}series & 2 & mts, ts, matrix &  & \\
 \hspace{2em}forecasts & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics}\\
+\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics} & \textbf{}\\
 \addlinespace
 \hspace{2em}variance\_decomposition & 2 & data.frame &  & \\
 \hspace{2em}combined\_test & 2 & list & combined\_test & \\
 \hspace{3em}tests\_for\_stable\_seasonality & 3 & data.frame &  & \\
 \hspace{3em}combined\_seasonality\_test & 3 & character &  & \\
 \hspace{2em}residuals\_test & 2 & data.frame &  & \\
-\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined}\\
+\addlinespace
+\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined} & \textbf{}\\
 \bottomrule
-\end{longtable}\endgroup{}
+\end{longtable}
+\endgroup{}
 
 \hypertarget{regarima}{%
 \subsection{Regarima}\label{regarima}}
@@ -520,7 +523,168 @@ Parler des corrections automatiques ?
 \section{Manipulate JDemetra+
 workspaces}\label{manipulate-jdemetra-workspaces}}
 
-Mise en garde sur ce que l'on ne peut pas faire (problèmes d'imports)
+\pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be
+openned by the software. A workspace includes :
+
+\begin{itemize}
+\tightlist
+\item
+  The XML file that enables the user to import the workspace to
+  JDemetra+ and to display it content;\\
+\item
+  A folder containing several sub-folfders that correspond to the
+  different types of items created by the user.
+\end{itemize}
+
+Each workspace can contain several multi-processings and each
+multi-processing stores the results of the seasonal adjustment procedure
+performed with the TRAMO/SEATS or X-13ARIMA-SEATS methods.
+
+Export models to workspace allows to store easily the seasonal
+adjustment models, to change the specifications with the JDemetra+
+graphical interface and to give models to non R users (à reformuler).
+
+\hypertarget{export-a-workspace}{%
+\subsection{Export a workspace}\label{export-a-workspace}}
+
+Four functions have to be used to export models:
+
+\begin{itemize}
+\tightlist
+\item
+  \code{new_workspace()} to create a workspace;\\
+\item
+  \code{new_multiprocessing()} to create a multi-processing in a
+  workspace;\\
+\item
+  \code{add_sa_item()} to add a seasonal adjustment model to a
+  multi-processing;\\
+\item
+  \code{save_workspace()} to export the workspace.
+\end{itemize}
+
+The following command export the seasonal adjustment models compute by
+TRAMO/SEATS+ and X-13ARIMA-SEATS:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> myseries <- ipi_c_eu[, "EA19"]
+R> sa_x13 <- x13_def(myseries)
+R> sa_ts <- tramoseats_def(myseries)
+\end{CodeInput}
+\end{CodeChunk}
+
+To create a workspace and a multi-processing names ``MP-1'':
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> wk <- new_workspace()
+R> new_multiprocessing(wk, name = "MP-1")
+\end{CodeInput}
+\end{CodeChunk}
+
+The two models will be added in the multiprocessing ``MP1'': the name of
+the seasonal adjustment model computed with X-13ARIMA-SEATS will be ``SA
+with X13'' and the one with TRAMO/SEATS+ will be SA with TramoSeats".
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> add_sa_item(wk, multiprocessing = "MP-1",
+R+             sa_obj = sa_x13, name =  "SA with X13")
+R> add_sa_item(wk, multiprocessing =  "MP-1",
+R+             sa_obj = sa_ts, name = "SA with TramoSeats")
+\end{CodeInput}
+\end{CodeChunk}
+
+The workspace exported is named ``workspace.xml'':
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> save_workspace(wk, file =  "workspace.xml")
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{import-a-workspace}{%
+\subsection{Import a workspace}\label{import-a-workspace}}
+
+Height functions can be used to import a workspace:
+
+\begin{itemize}
+\tightlist
+\item
+  \code{load_workspace()} to load a workspace;\\
+\item
+  \code{compute()} to compute the multi-processings: by default a
+  workspace only contains definitions, computation is needed to get the
+  seasonal adjustment model;\\
+\item
+  \code{get_model()} to get the seasonal adjusted models;\\
+\item
+  \code{get_ts()} to get the input raw times series, \code{get_object()}
+  and \code{get_all_objects} to navigate inside the workspace (extract a
+  multi-processing or a seasonal adjustment model), \code{get_name()} to
+  get the names of the multiprocessings or the seasonal adjustment
+  models and \code{count()} to count the number of multiprocessing or
+  seasonal adjustment models.
+\end{itemize}
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> wk <- load_workspace(file =  "workspace.xml")
+R> mp1 <- get_object(wk, 1) # to get the first multiprocessing
+R> count(mp1) # there are two seasonal adjustment models in the multiprocessing
+\end{CodeInput}
+
+\begin{CodeOutput}
+[1] 2
+\end{CodeOutput}
+
+\begin{CodeInput}
+R> sa_item1 <- get_object(mp1, 1) # to get the first seasonal adjustment model
+R> get_name(sa_item1) # the name of the seasonal adjustment model in JDemetra+
+\end{CodeInput}
+
+\begin{CodeOutput}
+[1] "SA with X13"
+\end{CodeOutput}
+
+\begin{CodeInput}
+R> raw_ts <- get_ts(sa_item1) # to get the input raw time series
+R> 
+R> compute(wk)
+R> sa_model1 <- get_model(sa_item1, workspace = wk)
+\end{CodeInput}
+\end{CodeChunk}
+
+\code{get_ts()} and \code{get_model()} can also be used directly to the
+workspace or a multiprocessing to import all the raw times series or all
+the seasonal adjustment model:
+
+\begin{itemize}
+\tightlist
+\item
+  for a multiprocessing the result is a list which each element contains
+  the information of a seasonal adjustment model;\\
+\item
+  for a workspace the result is a list of length the number of
+  multi-processing and which each element contains a list with the
+  information of each seasonal adjustment model.
+\end{itemize}
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> # To get all the raw time series of the workspace:
+R> all_raw_ts <- get_ts(wk)
+R> # To get all the seasonal adjustment models of the multi-processing "mp1"
+R> sa_models_of_mp1 <- get_model(mp1, workspace = wk)
+\end{CodeInput}
+\end{CodeChunk}
 
 
 

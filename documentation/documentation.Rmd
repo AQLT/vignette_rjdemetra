@@ -11,7 +11,7 @@ title:
   # If you use tex in the formatted title, also supply version without
   plain:     "A Capitalized Title: Something about a Package foo"
   # For running headers, if needed
-  short:     "\\pkg{RJDemetra}: A Capitalized Title"
+  short:     "\\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software"
 abstract: >
   The abstract of the article.
 keywords:
@@ -36,6 +36,9 @@ preamble: >
 output: rticles::jss_article
 ---
 ```{r, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "img/img-"
+)
 library(knitr)
 library(kableExtra)
 library(RJDemetra)
@@ -130,7 +133,7 @@ The \pkg{RJDemetra} package alows to:
 
 In this package the sts_inpr_m database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from january 1990 to december 2017 which are considered to be affected by seasonal and working day effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro aera (EA19):
 
-```{r}
+```{r basic_raw_data_plot}
 library(RJDemetra)
 plot(ipi_c_eu[, "EA19"])
 ```
@@ -140,7 +143,7 @@ plot(ipi_c_eu[, "EA19"])
 As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal adjustment using pre-defined model specifications. The specifications are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation methods. It is also possible to perform only the  first step of seasonal adjustment; the RegARIMA estimation. The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2).
 The pre-defined specifications correspond to most commonly used specifications and users are recommended to start their analysis with one of them. In section 5 it is presented how to modify model specifications, including the possibility to incorprate user-defined regressors.   
 
-```{r, echo=FALSE, results='asis'}
+```{r pre_def_ts, echo=FALSE, results='asis'}
 pre_def_spec_ts <- structure(list(TRAMO = c("TR0", "TR1", "TR2", "TR3", "TR4", "TR5", 
 "TRfull (default)"), `TRAMO-SEATS` = c("RSA0", "RSA1", "RSA2", "RSA3", 
 "RSA4", "RSA5", "RSAfull (default)"), `Trans-formation` = c("no", "test", 
@@ -165,14 +168,16 @@ pre_def_spec_x13 <- structure(list(RegARIMA = c("RG0", "RG1", "RG2c", "RG3", "RG
 "(0,1,1)(0,1,1)", "AMI", "AMI", "AMI")), class = "data.frame", row.names = c(NA, 
 -6L))
 
-kable(pre_def_spec_ts, "latex", booktabs = T, caption = "\\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS",align = "c") %>%
+kable(pre_def_spec_ts, "latex", booktabs = T, caption = "Pre-defined specification for TRAMO and TRAMO-SEATS",align = "c") %>%
   column_spec(c(2,3,5), width = "1.cm") %>%
   column_spec(c(5,6,8), width = "0.9cm") %>% 
   column_spec(c(4,7), width = "1.5cm") %>% 
   kable_styling(font_size = 7) %>% 
   add_header_above(c("Specification"=2, ""))
+```
 
-kable(pre_def_spec_x13, "latex", booktabs = T, caption = "\\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS", align = "c") %>%
+```{r pre_def_x13, echo=FALSE, results='asis'}
+kable(pre_def_spec_x13, "latex", booktabs = T, caption = "Pre-defined specification for RegARIMA and X-13ARIMA-SEATS", align = "c") %>%
   column_spec(c(3,5), width = "1.cm") %>%
   column_spec(c(5,6,7,8), width = "0.9cm")%>% 
   column_spec(c(2), width = "1.7cm") %>% 
@@ -273,7 +278,87 @@ sax13$regarima
 Parler des corrections automatiques ?
   
 # Manipulate JDemetra+ workspaces
-  Mise en garde sur ce que l'on ne peut pas faire (problèmes d'imports)
+
+\pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be openned by the software. A workspace includes :
+
+- The XML file that enables the user to import the workspace to JDemetra+ and to display it content;  
+- A folder containing several sub-folfders that correspond to the different types of items created by the user.
+
+Each workspace can contain several multi-processings and each multi-processing stores the results of the seasonal adjustment procedure performed with the TRAMO/SEATS or X-13ARIMA-SEATS methods.
+
+Export models to workspace allows to store easily the seasonal adjustment models, to change the specifications with the JDemetra+ graphical interface and to give models to non R users (à reformuler).
+
+## Export a workspace
+
+Four functions have to be used to export models:
+
+- \code{new_workspace()} to create a workspace;  
+- \code{new_multiprocessing()} to create a multi-processing in a workspace;  
+- \code{add_sa_item()} to add a seasonal adjustment model to a multi-processing;  
+- \code{save_workspace()} to export the workspace.  
+
+The following command export the seasonal adjustment models compute by TRAMO/SEATS+ and X-13ARIMA-SEATS:
+
+```{r}
+myseries <- ipi_c_eu[, "EA19"]
+sa_x13 <- x13_def(myseries)
+sa_ts <- tramoseats_def(myseries)
+```
+
+To create a workspace and a multi-processing names "MP-1":
+```{r}
+wk <- new_workspace()
+new_multiprocessing(wk, name = "MP-1")
+```
+
+The two models will be added in the multiprocessing "MP1": the name of the seasonal adjustment model computed with X-13ARIMA-SEATS will be "SA with X13" and the one with TRAMO/SEATS+ will be SA with TramoSeats".
+
+```{r}
+add_sa_item(wk, multiprocessing = "MP-1",
+            sa_obj = sa_x13, name =  "SA with X13")
+add_sa_item(wk, multiprocessing =  "MP-1",
+            sa_obj = sa_ts, name = "SA with TramoSeats")
+```
+
+The workspace exported is named "workspace.xml":
+```{r}
+save_workspace(wk, file =  "workspace.xml")
+```
+
+
+## Import a workspace
+
+Height functions can be used to import a workspace: 
+
+- \code{load_workspace()} to load a workspace;  
+- \code{compute()} to compute the multi-processings: by default a workspace only contains definitions, computation is needed to get the seasonal adjustment model;  
+- \code{get_model()} to get the seasonal adjusted models;  
+- \code{get_ts()} to get the input raw times series,  \code{get_object()} and \code{get_all_objects} to navigate inside the workspace (extract a multi-processing or a seasonal adjustment model), \code{get_name()} to get the names of the multiprocessings or the seasonal adjustment models and \code{count()} to count the number of multiprocessing or seasonal adjustment models.
+
+
+```{r}
+wk <- load_workspace(file =  "workspace.xml")
+mp1 <- get_object(wk, 1) # to get the first multiprocessing
+count(mp1) # there are two seasonal adjustment models in the multiprocessing
+sa_item1 <- get_object(mp1, 1) # to get the first seasonal adjustment model
+get_name(sa_item1) # the name of the seasonal adjustment model in JDemetra+
+raw_ts <- get_ts(sa_item1) # to get the input raw time series
+
+compute(wk)
+sa_model1 <- get_model(sa_item1, workspace = wk)
+```
+
+\code{get_ts()} and \code{get_model()} can also be used directly to the workspace or a multiprocessing to import all the raw times series or all the seasonal adjustment model:
+
+- for a multiprocessing the result is a list which each element contains the information of a seasonal adjustment model;  
+- for a workspace the result is a list of length the number of multi-processing and which each element contains a list with the information of each seasonal adjustment model.
+
+```{r, eval=FALSE}
+# To get all the raw time series of the workspace:
+all_raw_ts <- get_ts(wk)
+# To get all the seasonal adjustment models of the multi-processing "mp1"
+sa_models_of_mp1 <- get_model(mp1, workspace = wk)
+```
 
 # Advanced usage and examples
 
