@@ -288,7 +288,7 @@ Each workspace can contain several multi-processings and each multi-processing s
 
 Export models to workspace allows to store easily the seasonal adjustment models, to change the specifications with the JDemetra+ graphical interface and to give models to non R users (à reformuler).
 
-## Export a workspace
+## Export a workspace {#export-wk}
 
 Four functions have to be used to export models:
 
@@ -333,32 +333,51 @@ Height functions can be used to import a workspace:
 - \code{load_workspace()} to load a workspace;  
 - \code{compute()} to compute the multi-processings: by default a workspace only contains definitions, computation is needed to get the seasonal adjustment model;  
 - \code{get_model()} to get the seasonal adjusted models;  
-- \code{get_ts()} to get the input raw times series,  \code{get_object()} and \code{get_all_objects} to navigate inside the workspace (extract a multi-processing or a seasonal adjustment model), \code{get_name()} to get the names of the multiprocessings or the seasonal adjustment models and \code{count()} to count the number of multiprocessing or seasonal adjustment models.
+- \code{get_ts()} to get the input raw time series,  \code{get_object()} and \code{get_all_objects} to navigate inside the workspace (extract a multi-processing or a seasonal adjustment model), \code{get_name()} to get the names of the multiprocessings or the seasonal adjustment models and \code{count()} to count the number of multiprocessing or seasonal adjustment models.
 
+For instance, to import the workspace created in section \ref{export-wk} and to get the first multiprocessing and the first seasonal adjustment model:
 
 ```{r}
 wk <- load_workspace(file =  "workspace.xml")
-mp1 <- get_object(wk, 1) # to get the first multiprocessing
-count(mp1) # there are two seasonal adjustment models in the multiprocessing
-sa_item1 <- get_object(mp1, 1) # to get the first seasonal adjustment model
-get_name(sa_item1) # the name of the seasonal adjustment model in JDemetra+
-raw_ts <- get_ts(sa_item1) # to get the input raw time series
+mp1 <- get_object(wk, 1) # first multiprocessing
+sa_item1 <- get_object(mp1, 1) #  first seasonal adjustment model
+```
 
+To get the number of seasonal adjustment models in the multiprocessing:
+```{r}
+count(mp1)
+```
+
+And the name of the first seasonal adjustment model in JDemetra+:
+```{r}
+get_name(sa_item1) 
+```
+
+Raw time series and seasonal adjustment model can now be imported:
+```{r}
+raw_ts <- get_ts(sa_item1)
 compute(wk)
 sa_model1 <- get_model(sa_item1, workspace = wk)
 ```
 
-\code{get_ts()} and \code{get_model()} can also be used directly to the workspace or a multiprocessing to import all the raw times series or all the seasonal adjustment model:
+\code{get_ts()} and \code{get_model()} can also be used directly to the workspace or a multiprocessing to import all the raw time series or all the seasonal adjustment model:
 
 - for a multiprocessing the result is a list which each element contains the information of a seasonal adjustment model;  
 - for a workspace the result is a list of length the number of multi-processing and which each element contains a list with the information of each seasonal adjustment model.
 
+For example to get all raw time series of the workspace and all seasonal adjustmen models of the first multi-processing:
+
 ```{r, eval=FALSE}
-# To get all the raw time series of the workspace:
 all_raw_ts <- get_ts(wk)
-# To get all the seasonal adjustment models of the multi-processing "mp1"
 sa_models_of_mp1 <- get_model(mp1, workspace = wk)
 ```
+
+The imports of seasonal adjustment models from a workspace works well when it has been created throw \pkg{RJDemetra}. They may be some troubles when importing a workspace created with JDemetra+, in particular:
+
+- \pkg{RJDemetra} doesn't support yet user-defined calendars. A seasonal adjustment model defined with a specific calendar or user-defined calendar regressors will be partially imported. The result will be correct but changing the specification (throw \code{x13_spec()} or \code{tramoseats_spec()}) will erase user-defined calendars.  
+- Seasonal adjustment models with ramp effect or intervention variables will be partially imported: the result of the imported model will be correct but changing the specification (throw \code{x13_spec()} or \code{tramoseats_spec()}) will erase them.  
+- Seasonal adjustment models with no pre-processing (X11 specification) are not supported: \code{NULL} object will be returned.
+
 
 # Advanced usage and examples
 

@@ -544,8 +544,8 @@ Export models to workspace allows to store easily the seasonal
 adjustment models, to change the specifications with the JDemetra+
 graphical interface and to give models to non R users (à reformuler).
 
-\hypertarget{export-a-workspace}{%
-\subsection{Export a workspace}\label{export-a-workspace}}
+\hypertarget{export-wk}{%
+\subsection{Export a workspace}\label{export-wk}}
 
 Four functions have to be used to export models:
 
@@ -624,7 +624,7 @@ Height functions can be used to import a workspace:
 \item
   \code{get_model()} to get the seasonal adjusted models;\\
 \item
-  \code{get_ts()} to get the input raw times series, \code{get_object()}
+  \code{get_ts()} to get the input raw time series, \code{get_object()}
   and \code{get_all_objects} to navigate inside the workspace (extract a
   multi-processing or a seasonal adjustment model), \code{get_name()} to
   get the names of the multiprocessings or the seasonal adjustment
@@ -632,37 +632,58 @@ Height functions can be used to import a workspace:
   seasonal adjustment models.
 \end{itemize}
 
+For instance, to import the workspace created in section \ref{export-wk}
+and to get the first multiprocessing and the first seasonal adjustment
+model:
+
 \begin{CodeChunk}
 
 \begin{CodeInput}
 R> wk <- load_workspace(file =  "workspace.xml")
-R> mp1 <- get_object(wk, 1) # to get the first multiprocessing
-R> count(mp1) # there are two seasonal adjustment models in the multiprocessing
+R> mp1 <- get_object(wk, 1) # first multiprocessing
+R> sa_item1 <- get_object(mp1, 1) #  first seasonal adjustment model
+\end{CodeInput}
+\end{CodeChunk}
+
+To get the number of seasonal adjustment models in the multiprocessing:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> count(mp1)
 \end{CodeInput}
 
 \begin{CodeOutput}
 [1] 2
 \end{CodeOutput}
+\end{CodeChunk}
+
+And the name of the first seasonal adjustment model in JDemetra+:
+
+\begin{CodeChunk}
 
 \begin{CodeInput}
-R> sa_item1 <- get_object(mp1, 1) # to get the first seasonal adjustment model
-R> get_name(sa_item1) # the name of the seasonal adjustment model in JDemetra+
+R> get_name(sa_item1) 
 \end{CodeInput}
 
 \begin{CodeOutput}
 [1] "SA with X13"
 \end{CodeOutput}
+\end{CodeChunk}
+
+Raw time series and seasonal adjustment model can now be imported:
+
+\begin{CodeChunk}
 
 \begin{CodeInput}
-R> raw_ts <- get_ts(sa_item1) # to get the input raw time series
-R> 
+R> raw_ts <- get_ts(sa_item1)
 R> compute(wk)
 R> sa_model1 <- get_model(sa_item1, workspace = wk)
 \end{CodeInput}
 \end{CodeChunk}
 
 \code{get_ts()} and \code{get_model()} can also be used directly to the
-workspace or a multiprocessing to import all the raw times series or all
+workspace or a multiprocessing to import all the raw time series or all
 the seasonal adjustment model:
 
 \begin{itemize}
@@ -676,15 +697,39 @@ the seasonal adjustment model:
   information of each seasonal adjustment model.
 \end{itemize}
 
+For example to get all raw time series of the workspace and all seasonal
+adjustmen models of the first multi-processing:
+
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> # To get all the raw time series of the workspace:
 R> all_raw_ts <- get_ts(wk)
-R> # To get all the seasonal adjustment models of the multi-processing "mp1"
 R> sa_models_of_mp1 <- get_model(mp1, workspace = wk)
 \end{CodeInput}
 \end{CodeChunk}
+
+The imports of seasonal adjustment models from a workspace works well
+when it has been created throw \pkg{RJDemetra}. They may be some
+troubles when importing a workspace created with JDemetra+, in
+particular:
+
+\begin{itemize}
+\tightlist
+\item
+  \pkg{RJDemetra} doesn't support yet user-defined calendars. A seasonal
+  adjustment model defined with a specific calendar or user-defined
+  calendar regressors will be partially imported. The result will be
+  correct but changing the specification (throw \code{x13_spec()} or
+  \code{tramoseats_spec()}) will erase user-defined calendars.\\
+\item
+  Seasonal adjustment models with ramp effect or intervention variables
+  will be partially imported: the result of the imported model will be
+  correct but changing the specification (throw \code{x13_spec()} or
+  \code{tramoseats_spec()}) will erase them.\\
+\item
+  Seasonal adjustment models with no pre-processing (X11 specification)
+  are not supported: \code{NULL} object will be returned.
+\end{itemize}
 
 
 
