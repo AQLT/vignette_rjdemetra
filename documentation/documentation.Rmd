@@ -122,7 +122,7 @@ The method of decomposing the pre-adjusted series differs between TRAMO-SEATS+ a
 
 As a result of seasonal adjustment, the final seasonally adjusted series (\code{sa}) shall be free of seasonal and calendar-related movements.
 
-More details on the methodlogy used in JDemetra+ can be found in the JDemetra+ manuals and user guides \citep{grudkowska2015jdemetraug, grudkowska2015jdemetrarm}.
+More details on the methodlogy used in JDemetra+ can be found in the JDemetra+ manuals and user guides \citep{grudkowska2015jdemetrarm, grudkowska2015jdemetraug}.
 
 # RJDemetra basics
 
