@@ -42,10 +42,10 @@ The abstract of the article.
 
 The package \pkg{RJDemetra} provides a R interface to the seasonal
 adjustment software JDemetra+. Note that, JDemetra+ being implemented in
-Java, \pkg{RJDemetra} relies on the \pkg{rJava} package and Java SE 8 or
-later version is required. The two leading seasonal adjustment methods
-TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the
-specifications defined in JDemetra+.
+Java, \pkg{RJDemetra} relies on the \pkg{rJava} \citep{rJava} package
+and Java SE 8 or later version is required. The two leading seasonal
+adjustment methods TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be
+used with all the specifications defined in JDemetra+.
 
 This article is structured as following. In the first section the .. is
 presented.
@@ -164,18 +164,17 @@ The last two decompositions are available only under X13.
 The method of decomposing the pre-adjusted series differs between
 TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS (``Signal
 Extraction in ARIMA Time Series'') decomposes the observed series with a
-ARIMA-model based method. Whereas in X-12ARIMA/X-13ARIMA, the X11
-algorithm decomposes the time series by means of linear filters. More
-information on the TRAMO-SEATS+ method can be found on the Bank of Spain
-website (\href{www.bde.es}{link}) and on X-12ARIMA/X-13ARIMA, on the
-U.S. Census Bureau website.
+ARIMA-model based method
+\citep{gomez1998automatic,caporello2004program}. Whereas in
+X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by
+means of linear filters \citep{findleyx12,ladiray1999x11en}.
 
 As a result of seasonal adjustment, the final seasonally adjusted series
 (\code{sa}) shall be free of seasonal and calendar-related movements.
 
 More details on the methodlogy used in JDemetra+ can be found in the
-JDemetra+ manuals and user guides available at
-\href{https://ec.europa.eu/eurostat/cros/content/documentation_en}{link}.
+JDemetra+ manuals and user guides
+\citep{grudkowska2015jdemetraug, grudkowska2015jdemetrarm}.
 
 \hypertarget{rjdemetra-basics}{%
 \section{RJDemetra basics}\label{rjdemetra-basics}}
@@ -731,6 +730,19 @@ particular:
   are not supported: \code{NULL} object will be returned.
 \end{itemize}
 
+\hypertarget{advanced-usage-and-examples}{%
+\section{Advanced usage and
+examples}\label{advanced-usage-and-examples}}
+
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
+
+\hypertarget{acknowledgments}{%
+\section*{Acknowledgments}\label{acknowledgments}}
+\addcontentsline{toc}{section}{Acknowledgments}
+
+\renewcommand\refname{References}
+\bibliography{biblio.bib}
 
 
 \end{document}
