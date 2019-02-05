@@ -62,9 +62,9 @@ options(enable_print_style = FALSE)
 
 # Introduction
 
-The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. Note that, JDemetra+ being implemented in Java, \pkg{RJDemetra} relies on the \pkg{rJava} \citep{rJava} package and Java SE 8 or later version is required. The two leading seasonal adjustment methods TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the specifications defined in JDemetra+.
+The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. Note that, JDemetra+ being implemented in Java, \pkg{RJDemetra} relies on the \pkg{rJava} [@rJava] package and Java SE 8 or later version is required. The two leading seasonal adjustment methods TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the specifications defined in JDemetra+.
 
-This article is structured as following. In the first section the .. is presented. 
+This article is structured as following. In the first section the .. is presented
 
 ## Seasonal adjustment in brief 
 
@@ -118,11 +118,11 @@ In the **second part** of seasonal adjustment, called the **decomposition**, the
 
 The last two decompositions are available only under X13.
 
-The method of decomposing the pre-adjusted series differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS ("Signal Extraction in ARIMA Time Series") decomposes the observed series with a ARIMA-model based method \citep{gomez1998automatic,caporello2004program}. Whereas in X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by means of linear filters \citep{findleyx12,ladiray1999x11en}.
+The method of decomposing the pre-adjusted series differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS ("Signal Extraction in ARIMA Time Series") decomposes the observed series with a ARIMA-model based method [@gomez1998automatic; @caporello2004program]. Whereas in X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by means of linear filters [@findleyx12; @ladiray1999x11en].
 
 As a result of seasonal adjustment, the final seasonally adjusted series (\code{sa}) shall be free of seasonal and calendar-related movements.
 
-More details on the methodlogy used in JDemetra+ can be found in the JDemetra+ manuals and user guides \citep{grudkowska2015jdemetrarm, grudkowska2015jdemetraug}.
+More details on the methodlogy used in JDemetra+ can be found in the JDemetra+ manuals and user guides [@grudkowska2015jdemetrarm; @grudkowska2015jdemetraug].
 
 # RJDemetra basics
 
