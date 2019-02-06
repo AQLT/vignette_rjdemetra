@@ -5,7 +5,7 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \author{
-Anna Michalek\\European Central Bank \And Alain Quartier-La-Tente\\Insee
+Anna Michalek\\European Central Bank \And Alain Quartier-La-Tente\\Insee, Seasonal Adjustment Centre of Excellence (SACE)
 }
 \title{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 
@@ -17,8 +17,8 @@ Anna Michalek\\European Central Bank \And Alain Quartier-La-Tente\\Insee
 The abstract of the article.
 }
 
-\Keywords{\proglang{R}, seasonal adjustment, time series}
-\Plainkeywords{R, seasonal adjustment, time series}
+\Keywords{\proglang{R}, seasonal adjustment, calendar effects, time series}
+\Plainkeywords{R, seasonal adjustment, calendar effects, time series}
 
 %% publication information
 %% \Volume{50}
@@ -40,18 +40,241 @@ The abstract of the article.
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
+Since the 20th century, more and more infra-annual statistics are
+produced, especially by national institutes, to analyse the progression
+and the outlook of an economy. It is for example the case of the gross
+domestic product (GDP), unemployment rate, household consumption of
+goods and industrial production indices. However, most of those time
+series are affected by seasonal and trading day effects. A seasonal
+effects is an effect that occur in the same calendar month with similar
+magnitude and direction from year to year. For instance, automobile
+production is usually lower during summer, due to holidays, and
+chocolate sales are usually higher in December, due to Christmas.
+Trading day effect is the fact that a time series can be affected by
+each calendar month's weekday composition. For example retail sales are
+usually higher on Saturday, thus they are likely to be higher in months
+with a surplus of weekend days.
+
+Therefore, seasonal and trading days effects can make it difficult to
+analyse the infra-annual movements of a time series or to make spatial
+comparison. That's why time series are often seasonally and working day
+adjusted and seasonal adjustment is the process of removing the effects
+of seasonal and trading day fluctuations.
+
+The most popular seasonal adjustment methods are TRAMO-SEATS+\footnote{The
+  program TRAMO-SEATS+ was developed by Gianluca Caporello and Agustin
+  Maravall --- with programming support from Domingo Perez and Roberto
+  Lopez --- at the Bank of Spain. It is based on the program
+  TRAMO-SEATS, previously developed by Victor Gomez and Agustin
+  Maravall.} \citep{gomez1996programs, caporello2004program}, a
+parametric method based on ARIMA models, and X-13-ARIMA-SEATS\footnote{The
+  program X-13ARIMA-SEATS is a produced, distributed, and maintained by
+  the US-Census Bureau.} \citep{findleyx12, ladiray1999x11en}, a
+non-parametric method based on moving average. Both methods are
+recommended by Eurostat and the European Central Bank (ECB) to
+seasonnaly adjust economic indicators. These methods proceed in two
+steps summarized in figure \ref{fig:2_step_proc}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.8]{img/sa_2_steps.PNG} 
+\caption{X-13-ARIMA-SEATS and TRAMO-SEATS+ 2-step process: pre-adjustment and decomposition.}
+\label{fig:2_step_proc}
+\end{figure}
+
+The \textbf{first step} of seasonal adjustment consists of pre-adjusting
+the time series by removing from it the deterministic effects and
+estimating missing observations. Among deterministic effects, we
+distinguish outliers, calendar and regression effects. In this step,
+also forecasts and backcasts of the pre-adjusted series are estimated
+which allows applying linear filters at both ends of the series in the
+second step of the seasonal adjustment. The pre-adjustment,
+linearization, of the input series is achieved with a \textbf{RegARIMA}
+model (model with ARIMA errors) as specified below.
+
+\[z_t=y_t\beta+x_t\] where
+
+\begin{itemize}
+\tightlist
+\item
+  \(z_t\) - is the original series;
+\item
+  \(\beta = (\beta_1,...,\beta_n)\) - a vector of regression
+  coefficients;
+\item
+  \(y_t = (y_{1t},...,y_{nt})\) - \(n\) regression variables (outliers,
+  calendar effects, user-defined variables);
+\item
+  \(x_t\) - a disturbance that follows the general ARIMA process:
+\item
+  \(\phi(B)\delta(B)x_t=\theta(B)a_t\); \(\phi(B), \delta(B)\) and
+  \(\theta(B)\) are the finite polynomials in \(B\); \(a_t\) is a
+  white-noise variable with zero mean and a constant variance.
+\end{itemize}
+
+The polynomial \(\phi(B)\) is a stationary autoregressive (AR)
+polynomial in \(B\), which is a product of the stationary regular AR
+polynomial in \(B\) and the stationary seasonal polynomial in \(B^s\):
+
+\[\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi_{bp}B^{bps}\]
+
+where:
+
+\begin{itemize}
+\tightlist
+\item
+  \(p\) - number of regular AR terms (in the package and in JDemetra+
+  \(p \le 3\));
+\item
+  \(bp\) - number of seasonal AR terms (in the package and in JDemetra+
+  \(bp \le 1\));
+\item
+  \(s\) - number of observations per year (frequency of the time
+  series).
+\end{itemize}
+
+The polynomial \(\theta(B)\) is an invertible moving average (MA)
+polynomial in \(B\), which is a product of the invertible regular MA
+polynomial in \(B\) and the invertible seasonal MA polynomial in
+\(B^s\):
+
+\[\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+...+\theta_qB^q)(1+\Theta_1B^s+...+\Theta_{bq}B^{bqs})\]
+
+where:
+
+\begin{itemize}
+\tightlist
+\item
+  \(q\) - number of regular MA terms (in the package and in JDemetra+
+  \(q \le 3\));
+\item
+  \(bq\) - number of seasonal MA terms (in the package and in JDemetra+
+  \(bq \le 1\));
+\end{itemize}
+
+The polynomial \(\delta(B)\) is the non-stationary AR polynomial in
+\(B\) (unit roots):
+
+\[\delta(B)=(1-B)^d(1-B^s)^{d_s}\]
+
+where:
+
+\begin{itemize}
+\tightlist
+\item
+  \(d\) - regular differencing order (in the package and in JDemetra+
+  \(d \le 1\));
+\item
+  \(d_s\) - seasonal differencing order (in the package and in JDemetra+
+  \(d_s \le 1\));
+\end{itemize}
+
+An automatic modelling is also implemented in both methods to: determine
+the decomposition of the series, detect outliers and calendar effects
+and to adjust residuals to an ARIMA models. A detailed description can
+be found in \cite{gomez1998automatic}.
+
+In the \textbf{second part} of seasonal adjustment, called the
+\textbf{decomposition}, the pre-adjusted series (\(y\)) is decomposed
+into the following components: trend-cycle (\(t\)), seasonal component
+(\(s\)) and irregular component (\(i\)). The decomposition can be:
+
+\begin{itemize}
+\tightlist
+\item
+  additive (\(y = t + s + i\))\\
+\item
+  multiplicative (\(y = t * s * i\))\\
+\item
+  log-additive (\(\log(y) = \log(t) + \log(s) + \log(i)\)) or\\
+\item
+  pseudo-additive (\(y = t * (s + i - 1)\))
+\end{itemize}
+
+The last two decompositions are available only under X13 (? à discuter).
+
+The method of decomposing the pre-adjusted series differs between
+TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS (``Signal
+Extraction in ARIMA Time Series'') decomposes the observed series with a
+ARIMA-model based method
+\citep{gomez1996programs, caporello2004program}. Whereas in
+X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by
+means of linear filters \citep{findleyx12, ladiray1999x11en}.
+
+As a result of seasonal adjustment, the final seasonally adjusted series
+shall be free of seasonal and calendar-related movements.
+
+\hypertarget{jdemetra-and-rjdemetra}{%
+\section{JDemetra+ and RJDemetra}\label{jdemetra-and-rjdemetra}}
+
+JDemetra+ is a new tool for seasonal adjustment (SA) developed by the
+National Bank of Belgium (NBB) in cooperation with the Deutsche
+Bundesbank and Eurostat in accordance with the Guidelines of the
+European Statistical System (ESS) \citep{eurostat2015guidelines}.
+
+JDemetra+ implements the concepts and algorithms used in the two leading
+SA methods: TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA-SEATS. Those methods
+have been re-engineered using an object-oriented approach that enables
+easier handling, extensions and modifications.
+
+Besides seasonal adjustment, JDemetra+ bundles other time series models
+that are useful in the production or analysis of economic statistics,
+including for instance outlier detection, nowcasting, temporal
+disaggregation or benchmarking.
+
+From a technical point of view, JDemetra+ is a collection of reusable
+and extensible Java components, which can be easily accessed through a
+rich graphical interface. The software is a free and open-source
+software (FOSS) developed under the
+\href{http://ec.europa.eu/idabc/eupl.html}{EUPL licence}.
+
+JDemetra+ has been
+\href{https://ec.europa.eu/eurostat/cros/system/files/Jdemetra_\%20release.pdf}{officially
+recommended}, since 2 February 2015, to the members of the ESS and the
+European System of Central Banks as software for seasonal and calendar
+adjustment of official statistics.
+
+\hypertarget{introduction-old}{%
+\section{Introduction (old)}\label{introduction-old}}
+
 The package \pkg{RJDemetra} provides a R interface to the seasonal
 adjustment software JDemetra+. Note that, JDemetra+ being implemented in
 Java, \pkg{RJDemetra} relies on the \pkg{rJava} \citep{rJava} package
 and Java SE 8 or later version is required. The two leading seasonal
-adjustment methods TRAMO/SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be
+adjustment methods TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be
 used with all the specifications defined in JDemetra+.
 
 This article is structured as following. In the first section the .. is
 presented
 
+\hypertarget{rjdemetra-basics}{%
+\subsection{RJDemetra basics}\label{rjdemetra-basics}}
+
+The \pkg{RJDemetra} package alows to:
+
+\begin{itemize}
+\tightlist
+\item
+  create and modify model specifications
+\item
+  create and modify models
+\item
+  import/export JDemetra+ workspaces
+\end{itemize}
+
+\hypertarget{dataset}{%
+\subsection{Dataset}\label{dataset}}
+
+In this package the sts\_inpr\_m database of Eurostat is included, which
+contains monthly industrial production indices in manufacturing in the
+European Union. It contains 37 time series from january 1990 to december
+2017 which are considered to be affected by seasonal and working day
+effects. The data is a \code{ts} object and can be accessed using the
+\code{ipi_c_eu} object. The following snippet of code plots the
+industrial production index of the euro aera (EA19):
+
 \hypertarget{seasonal-adjustment-in-brief}{%
-\subsection{Seasonal adjustment in
+\section{Seasonal adjustment in
 brief}\label{seasonal-adjustment-in-brief}}
 
 The \textbf{first step} of seasonal adjustment, both in
@@ -142,21 +365,21 @@ where:
   \(d_s \le 1\));
 \end{itemize}
 
-In the \textbf{second part} of seasonal adjustment, called the
-\textbf{decomposition}, the pre-adjusted series is decomposed into the
-following components: trend-cycle (\code{t}), seasonal component
-(\code{s}) and irregular component (\code{i}). The decomposition can be:
+in the \textbf{second part} of seasonal adjustment, called the
+\textbf{decomposition}, the pre-adjusted series (\(y\)) is decomposed
+into the following components: trend-cycle (\(t\)), seasonal component
+(\(s\)) and irregular component (\(i\)). the decomposition can be:
 
 \begin{itemize}
 \tightlist
 \item
-  additive (\code{y = t + s + i})
+  additive (\(y = t + s + i\))\\
 \item
-  multiplicative (\code{y = t * s * i})
+  multiplicative (\(y = t * s * i\))\\
 \item
-  log-additive (\code{log(y) = log(t)+log(s)+log(i)}) or
+  log-additive (\(\log(y) = \log(t) + \log(s) + \log(i)\)) or\\
 \item
-  pseudo-additive (\code{y = t*(s+i-1)})
+  pseudo-additive (\(y = t * (s + i - 1)\))
 \end{itemize}
 
 The last two decompositions are available only under X13.
@@ -175,32 +398,6 @@ As a result of seasonal adjustment, the final seasonally adjusted series
 More details on the methodlogy used in JDemetra+ can be found in the
 JDemetra+ manuals and user guides
 \citep{grudkowska2015jdemetrarm, grudkowska2015jdemetraug}.
-
-\hypertarget{rjdemetra-basics}{%
-\section{RJDemetra basics}\label{rjdemetra-basics}}
-
-The \pkg{RJDemetra} package alows to:
-
-\begin{itemize}
-\tightlist
-\item
-  create and modify model specifications
-\item
-  create and modify models
-\item
-  import/export JDemetra+ workspaces
-\end{itemize}
-
-\hypertarget{dataset}{%
-\subsection{Dataset}\label{dataset}}
-
-In this package the sts\_inpr\_m database of Eurostat is included, which
-contains monthly industrial production indices in manufacturing in the
-European Union. It contains 37 time series from january 1990 to december
-2017 which are considered to be affected by seasonal and working day
-effects. The data is a \code{ts} object and can be accessed using the
-\code{ipi_c_eu} object. The following snippet of code plots the
-industrial production index of the euro aera (EA19):
 
 \begin{CodeChunk}
 
@@ -265,7 +462,7 @@ TRfull (default) & RSAfull (default) & test & yes & no & test & test (Include Ea
 \cmidrule(l{3pt}r{3pt}){1-2}
 RegARIMA & X-13ARIMA-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
-RG0 & X11 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
+RG0 &  & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
 RG1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
 RG2c & RSA2c & test & test & test & no & test & test & (0,1,1)(0,1,1)\\
 RG3 & RSA3 & test & no & no & no & no & test & AMI\\
@@ -537,7 +734,7 @@ openned by the software. A workspace includes :
 
 Each workspace can contain several multi-processings and each
 multi-processing stores the results of the seasonal adjustment procedure
-performed with the TRAMO/SEATS or X-13ARIMA-SEATS methods.
+performed with the TRAMO-SEATS or X-13ARIMA-SEATS methods.
 
 Export models to workspace allows to store easily the seasonal
 adjustment models, to change the specifications with the JDemetra+
@@ -563,7 +760,7 @@ Four functions have to be used to export models:
 \end{itemize}
 
 The following command export the seasonal adjustment models compute by
-TRAMO/SEATS+ and X-13ARIMA-SEATS:
+TRAMO-SEATS+ and X-13ARIMA-SEATS:
 
 \begin{CodeChunk}
 
@@ -586,7 +783,7 @@ R> new_multiprocessing(wk, name = "MP-1")
 
 The two models will be added in the multiprocessing ``MP1'': the name of
 the seasonal adjustment model computed with X-13ARIMA-SEATS will be ``SA
-with X13'' and the one with TRAMO/SEATS+ will be SA with TramoSeats".
+with X13'' and the one with TRAMO-SEATS+ will be ``SA with TramoSeats''.
 
 \begin{CodeChunk}
 
@@ -726,7 +923,7 @@ particular:
   correct but changing the specification (throw \code{x13_spec()} or
   \code{tramoseats_spec()}) will erase them.\\
 \item
-  Seasonal adjustment models with no pre-processing (X11 specification)
+  Seasonal adjustment models with no pre-processing (X-11 specification)
   are not supported: \code{NULL} object will be returned.
 \end{itemize}
 
