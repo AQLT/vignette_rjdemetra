@@ -139,94 +139,31 @@ As a result of seasonal adjustment, the final seasonally adjusted series shall b
 
 JDemetra+ is a new tool for seasonal adjustment (SA) developed by the National Bank of Belgium (NBB) in cooperation with the Deutsche Bundesbank and Eurostat in accordance with the Guidelines of the European Statistical System (ESS) [@eurostat2015guidelines]. It implements the concepts and algorithms used in the two leading SA methods: TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA-SEATS. Those methods have been re-engineered using an object-oriented approach that enables easier handling, extensions and modifications.
 
-Besides seasonal adjustment, JDemetra+ bundles other time series models that are useful in the production or analysis of economic statistics, including for instance outlier detection, nowcasting, temporal disaggregation or benchmarking.
-
 JDemetra+ has been [officially recommended](https://ec.europa.eu/eurostat/cros/system/files/Jdemetra_%20release.pdf), since 2 February 2015, to the members of the ESS and the European System of Central Banks as software for seasonal and calendar adjustment of official statistics.
 
-# Introduction (old)
+Besides seasonal adjustment, JDemetra+ bundles other time series models that are useful in the production or analysis of economic statistics, including for instance outlier detection, nowcasting, temporal disaggregation or benchmarking. More details on the methodology used in JDemetra+ can be found in the JDemetra+ manuals and user guides [@grudkowska2015jdemetrarm; @grudkowska2015jdemetraug].
 
-The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. Note that, JDemetra+ being implemented in Java, \pkg{RJDemetra} relies on the \pkg{rJava} [@rJava] package and Java SE 8 or later version is required. The two leading seasonal adjustment methods TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA-SEATS can be used with all the specifications defined in JDemetra+.
+The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. \pkg{RJDemetra} uses Java libraries of JDemetra+, thus it relies on the \pkg{rJava} [@rJava] package and Java SE 8 or later version is required. It allows to:
 
-This article is structured as following. In the first section the .. is presented
+* perform seasonal adjustment with TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA-SEATS with pre-defined (section \ref{pre-def-est}) and user-defined specification (section XXX);  
+* acces to all the output available in JDemetra+ (section XXX);  
+* import and export JDemetra+ workspaces (section \ref{manipulate-workspace}).
 
-## RJDemetra basics (old)
 
-The \pkg{RJDemetra} package alows to:
- 
-* create and modify model specifications
-* create and modify models
-* import/export JDemetra+ workspaces
-
-## Dataset (old)
+## Dataset
 
 In this package the sts_inpr_m database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from january 1990 to december 2017 which are considered to be affected by seasonal and working day effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro aera (EA19):
-
-
-# Seasonal adjustment in brief (old)
-
-The **first step** of seasonal adjustment, both in X-12ARIMA/X-13ARIMA-SEATS and TRAMO-SEATS+, consists of pre-adjusting the time series by removing from it the deterministic effects and estimating missing observations. Among deterministic effects, we distinguish outliers, calendar and regression effects. In this step, also forecasts and backcasts of the pre-adjusted series are estimated which allows applying linear filters at both ends of the series in the second step of the seasonal adjustment. The pre-adjustment, linearization, of the input series is achieved with a **RegARIMA** model (model with ARIMA errors) as specified below. 
-
-$$z_t=y_t\beta+x_t$$
-where
-
-* $z_t$ - is the original series;
-* $\beta = (\beta_1,...,\beta_n)$ - a vector of regression coefficients;
-* $y_t = (y_{1t},...,y_{nt})$ - $n$ regression variables (outliers, calendar effects, user-defined variables);
-* $x_t$ - a disturbance that follows the general ARIMA process:
-* $\phi(B)\delta(B)x_t=\theta(B)a_t$; $\phi(B), \delta(B)$ and $\theta(B)$ are the finite polynomials in $B$; $a_t$ is a white-noise variable with zero mean and a constant variance.
-
- The polynomial $\phi(B)$ is a stationary autoregressive (AR) polynomial in $B$, which is a product of the stationary regular AR polynomial in $B$ and the stationary seasonal polynomial in $B^s$:
-
-$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi_{bp}B^{bps}$$
-
- where:
-
-* $p$ - number of regular AR terms (in the package and in JDemetra+ $p \le 3$);
-* $bp$ - number of seasonal AR terms (in the package and in JDemetra+ $bp \le 1$);
-* $s$ - number of observations per year (frequency of the time series).
- 
- The polynomial $\theta(B)$ is an invertible moving average (MA) polynomial in $B$, which is a product of the invertible regular MA polynomial in $B$ and the invertible seasonal MA polynomial in $B^s$:
-
- $$\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+...+\theta_qB^q)(1+\Theta_1B^s+...+\Theta_{bq}B^{bqs})$$
-
- where:
-
-* $q$ - number of regular MA terms (in the package and in JDemetra+ $q \le 3$);
-* $bq$ - number of seasonal MA terms (in the package and in JDemetra+ $bq \le 1$);
-
-
-The polynomial $\delta(B)$ is the non-stationary AR polynomial in $B$ (unit roots):
-
-$$\delta(B)=(1-B)^d(1-B^s)^{d_s}$$
-
- where:
-
-* $d$ - regular differencing order (in the package and in JDemetra+ $d \le 1$);
-* $d_s$ - seasonal differencing order (in the package and in JDemetra+ $d_s \le 1$);
-
-
-in the **second part** of seasonal adjustment, called the **decomposition**, the pre-adjusted series ($y$) is decomposed into the following components: trend-cycle ($t$), seasonal component ($s$) and irregular component ($i$). the decomposition can be: 
-
-* additive ($y = t + s + i$)  
-* multiplicative ($y = t * s * i$)  
-* log-additive ($\log(y) = \log(t) + \log(s) + \log(i)$) or  
-* pseudo-additive ($y = t * (s + i - 1)$) 
-
-The last two decompositions are available only under X13.
-
-The method of decomposing the pre-adjusted series differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS ("Signal Extraction in ARIMA Time Series") decomposes the observed series with a ARIMA-model based method [@gomez1998automatic; @caporello2004program]. Whereas in X-12ARIMA/X-13ARIMA, the X11 algorithm decomposes the time series by means of linear filters [@findleyx12; @ladiray1999x11en].
-
-As a result of seasonal adjustment, the final seasonally adjusted series (\code{sa}) shall be free of seasonal and calendar-related movements.
-
-More details on the methodlogy used in JDemetra+ can be found in the JDemetra+ manuals and user guides [@grudkowska2015jdemetrarm; @grudkowska2015jdemetraug].
-
 
 ```{r basic_raw_data_plot}
 library(RJDemetra)
 plot(ipi_c_eu[, "EA19"])
 ```
 
-# Estimate a pre-defined RegARIMA and SA model
+## Color syntax
+
+XXX
+
+# Estimate a pre-defined RegARIMA and SA model {#pre-def-est}
 
 As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal adjustment using pre-defined model specifications. The specifications are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation methods. It is also possible to perform only the  first step of seasonal adjustment; the RegARIMA estimation. The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2).
 The pre-defined specifications correspond to most commonly used specifications and users are recommended to start their analysis with one of them. In section 5 it is presented how to modify model specifications, including the possibility to incorprate user-defined regressors.   
@@ -365,7 +302,7 @@ sax13$regarima
 ## Wrong specifications corrections
 Parler des corrections automatiques ?
   
-# Manipulate JDemetra+ workspaces
+# Manipulate JDemetra+ workspaces {#manipulate-workspace}
 
 \pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be openned by the software. A workspace includes :
 
@@ -427,8 +364,8 @@ For instance, to import the workspace created in section \ref{export-wk} and to 
 
 ```{r}
 wk <- load_workspace(file =  "workspace.xml")
-mp1 <- get_object(wk, 1) # first multiprocessing
-sa_item1 <- get_object(mp1, 1) #  first seasonal adjustment model
+mp1 <- get_object(wk, 1)
+sa_item1 <- get_object(mp1, 1)
 ```
 
 To get the number of seasonal adjustment models in the multiprocessing:
