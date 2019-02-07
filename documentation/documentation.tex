@@ -5,11 +5,11 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \author{
-Anna Michalek\\European Central Bank \And Alain Quartier-La-Tente\\Insee, Seasonal Adjustment Centre of Excellence (SACE)
+Anna Michalek\\European Central Bank \And Alain Quartier-la-Tente\\Insee
 }
 \title{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 
-\Plainauthor{Anna Michalek, Alain Quartier-La-Tente}
+\Plainauthor{Anna Michalek, Alain Quartier-la-Tente}
 \Plaintitle{A Capitalized Title: Something about a Package foo}
 \Shorttitle{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 
@@ -247,6 +247,25 @@ Java SE 8 or later version is required. It allows to:
   \ref{manipulate-workspace}).
 \end{itemize}
 
+It can be installed from CRAN:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> install.packages("RJDemetra")
+\end{CodeInput}
+\end{CodeChunk}
+
+The development version can be installed from GitHub with \pkg{devtools}
+\citep{devtools}:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> devtools::install_github("nbbrd/rjdemetra", args = "--no-multiarch")
+\end{CodeInput}
+\end{CodeChunk}
+
 \hypertarget{dataset}{%
 \subsection{Dataset}\label{dataset}}
 
@@ -270,27 +289,80 @@ R> plot(ipi_c_eu[, "EA19"])
 
 \end{CodeChunk}
 
-\hypertarget{color-syntax}{%
-\subsection{Color syntax}\label{color-syntax}}
+\hypertarget{print-styling}{%
+\subsection{Print styling}\label{print-styling}}
 
-XXX
+By default, a color styling is used for the print methods of the objects
+created by \pkg{RJDemetra}. It can causes troubles with some outputs
+(for example with \pkg{rmarkdown} \citep{rmarkdown}) and can be disabled
+in each print function with the argument
+\code{enable_print_style = FALSE} or setting the global option
+\code{enable_print_style}:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> options(enable_print_style = FALSE)
+\end{CodeInput}
+\end{CodeChunk}
 
 \hypertarget{pre-def-est}{%
 \section{Estimate a pre-defined RegARIMA and SA
 model}\label{pre-def-est}}
 
 As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal
-adjustment using pre-defined model specifications. The specifications
-are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation
+adjustment using pre-defined model specifications. The pre-defined
+specifications correspond to most commonly used specifications and users
+are recommended to start their analysis with one of them. They are
+separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation
 methods. It is also possible to perform only the first step of seasonal
-adjustment; the RegARIMA estimation. The pre-defined model
+adjustment (the RegARIMA estimation). The pre-defined model
 specifications are described in tables \ref{tab:pre_def_ts} and
 \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1)
-and for seasonal adjustment (column 2). The pre-defined specifications
-correspond to most commonly used specifications and users are
-recommended to start their analysis with one of them. In section 5 it is
-presented how to modify model specifications, including the possibility
-to incorprate user-defined regressors.
+and for seasonal adjustment (column 2). With more details, setting
+described in tables tables \ref{tab:pre_def_ts} and
+\ref{tab:pre_def_x13} are:
+
+\begin{itemize}
+\tightlist
+\item
+  Transformation test: a test to choose between an additive
+  decomposition (no transformation) and a multiplicative decomposition
+  (logarithmic transformation).\\
+\item
+  Pre-adjustment for leap-year: in the case of a multiplicaive
+  decomposition; a correction of the February values is applied to the
+  original series (before transformation). The original values in
+  February are multiplied by \(\frac{28.25}{29}\) for leap years, by
+  \(\frac{28.25}{28}\) for non-leap years and values for other months
+  are not modified. In the case of multiplicative models, this is
+  equivalent to adding a leap year regressor
+  \citep{bell1992lengthmonthadj}.
+\item
+  Working days: a pre-test is made for a presence of a working day
+  effect.\\
+\item
+  Trading days: a pre-test is made for a presence of a trading day
+  effect.\\
+\item
+  Easter: a pre-test for a presence of the Easter effect. The default
+  length of the Easter effect is 6 days (for TRAMO-SEATS specifications)
+  and 8 days (for X-13ARIMA-SEATS specifications).\\
+\item
+  Outliers: an automatic identification of three types of outliers: AO
+  (additive outliers), LS (level shifts) and TC (transitory changes),
+  using a default critical value.\\
+\item
+  ARIMA model: the choice between fixing the ARIMA model structure to
+  (0,1,1)(0,1,1) (Airlin model) or searching for the ARIMA model using
+  an automatic model identification procedure. The Airline model is used
+  as a default model in several TRAMO-SEATS+ and X-13ARIMA-SEATS
+  specifications because it has been shown in many studies that this
+  model is appropriate for many real seasonal monthly or a quarterly
+  time series. Moreover, the Airline model approximates well many other
+  models and provides an excellent ``benchmark'' model
+  \citep{maravall2009identification}.
+\end{itemize}
 
 \begin{table}[t]
 
@@ -337,8 +409,8 @@ RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
 \end{tabular}
 \end{table}
 
-The below code presents how to perform an estimation, with pre-defined
-specifications, of:
+Four functions can be used in \pkg{RJDemetra} to perform an estimation
+with the pre-defined specification:
 
 \begin{itemize}
 \tightlist
@@ -348,11 +420,9 @@ specifications, of:
   \begin{itemize}
   \tightlist
   \item
-    X-13ARIMA method:
-    \code{regarima_def_x13(series, spec = c("RG5c", "RG0", "RG1", "RG2c", "RG3","RG4c"))}
+    X-13ARIMA method: \code{regarima_def_x13()}
   \item
-    TRAMO-SEATS method:
-    \code{regarima_def_tramoseats(series, spec = c("TRfull", "TR0","TR1", "TR2","TR3", "TR4","TR5"))}
+    TRAMO-SEATS method: \code{regarima_def_tramoseats()}
   \end{itemize}
 \item
   Seasonal adjustment
@@ -360,26 +430,28 @@ specifications, of:
   \begin{itemize}
   \tightlist
   \item
-    X-13ARIMA method:
-    \code{x13_def(series, spec = c("RSA5c", "RSA0", "RSA1", "RSA2c", "RSA3","RSA4c"), userdefined = NULL)}
+    X-13ARIMA method: \code{x13_def()}
   \item
-    TRAMO-SEATS method:
-    \code{tramoseats_def(series, spec = c("RSAfull", "RSA0", "RSA1", "RSA2", "RSA", "RSA4", "RSA5"), userdefined = NULL)}
+    TRAMO-SEATS method: \code{tramoseats_def()}
   \end{itemize}
 \end{itemize}
+
+For examples:
 
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> library(RJDemetra)
 R> myseries <- ipi_c_eu[, "EA19"]
 R> 
 R> regx13 <- regarima_def_x13(myseries, spec = "RG5c")
 R> regts <- regarima_def_tramoseats(myseries, spec = "TRfull")
-R> sax13 <- x13_def(myseries, spec = "RSA5c", userdefined = NULL)
+R> sax13 <- x13_def(myseries, spec = "RSA3", userdefined = NULL)
 R> sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
 \end{CodeInput}
 \end{CodeChunk}
+
+In section XXXXX it is presented how to modify model specifications,
+including the possibility to incorprate user-defined regressors.
 
 \hypertarget{sa-object-structure}{%
 \section{SA object structure}\label{sa-object-structure}}
@@ -413,7 +485,7 @@ estimating RegARIMA only the regarima object is created.
 \begingroup\fontsize{7}{9}\selectfont
 
 \begin{longtable}{lllll}
-\caption{\label{tab:unnamed-chunk-3}\label{tab:obj_tab}SA object structure}\\
+\caption{\label{tab:unnamed-chunk-6}\label{tab:obj_tab}SA object structure}\\
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
 \cmidrule(l{3pt}r{3pt}){4-5}
