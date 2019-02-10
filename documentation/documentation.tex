@@ -479,9 +479,9 @@ Independently which of the two estimation methods is used the regarima,
 final and diagnostics objects contain the same components, though with
 different classes (see column 4 and 5). Whereas, the object
 decomposition differs for the two methods. The object user\_defined is
-empty unless additional output was requested by the user (see next
-sub-sections). Finally, when estimating RegARIMA only the regarima
-object is created.
+empty unless additional output was requested by the user (see
+sub-section \ref{user-def}). Finally, when estimating RegARIMA only the
+regarima object is created.
 
 \begingroup\fontsize{7}{9}\selectfont
 
@@ -801,8 +801,45 @@ R> # sats$diagnostics
 \end{CodeInput}
 \end{CodeChunk}
 
-\hypertarget{user-defined}{%
-\subsection{user defined}\label{user-defined}}
+\hypertarget{user-def}{%
+\subsection{user defined}\label{user-def}}
+
+As presented in the table \ref{tab:obj_tab} and in the previous sections
+the \code{sa_object} has a defined structure with a defined content.
+Nevertheless the user can extract additional output from the seasonal
+adjustment estimation that will be stored under user\_defined object in
+a form of a list. In order extract the additional output the extra
+variables need to be defined as characters under the argument
+\code{userdefined} of the functions \code{x13_def()},
+\code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter
+two functions are presented in the next section \ref{user-def-spec}).
+
+For example, to extract the additional tables \(d16\) and \(c10\) the
+following need to be specified in the function argument:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sa_usrdef <- x13_def(myseries, spec = "RSA3", 
+R+ userdefined = c("decomposition.d16","decomposition.c10"))
+R> sa_usrdef$user_defined
+\end{CodeInput}
+
+\begin{CodeOutput}
+Names of additional variables (2):
+decomposition.d16, decomposition.c10
+\end{CodeOutput}
+\end{CodeChunk}
+
+The list of all available variables can be extracted with the following
+functions:
+
+\begin{itemize}
+\item
+  \code{user_defined_variables("X13-ARIMA")}
+\item
+  \code{user_defined_variables("TRAMO-SEATS")}
+\end{itemize}
 
 \hypertarget{user-def-spec}{%
 \section{Model specification: creation and

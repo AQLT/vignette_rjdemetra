@@ -261,7 +261,7 @@ In section \ref{user-def-spec} it is presented how to modify model specification
 
 In the previous section it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
 
-As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. The first column gives the name of \code{sa_object} sub-components, the second the level of the sub-components, the third their type, and the fourth and fifth the name of the new created S3 classe (if any). Where the forth column corresponds to the case when the estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated with TRAMO-SEATS+. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see column 4 and 5). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see next sub-sections). Finally, when estimating RegARIMA only the regarima object is created.
+As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. The first column gives the name of \code{sa_object} sub-components, the second the level of the sub-components, the third their type, and the fourth and fifth the name of the new created S3 classe (if any). Where the forth column corresponds to the case when the estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated with TRAMO-SEATS+. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see column 4 and 5). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the regarima object is created.
 
 ```{r echo=FALSE, results='asis'}
 object=c("sa_object","regarima","specification","estimate","transform","regression","userdef","specification","outliers","variables","series","description","trading.days","easter","outliers","arima","specification","coefficients","forecast","span","arma","arima.coefficients","regression.coefficients","loglik","model","spec_rslt","effects","residuals","residuals.stat","st.error","tests","forecast","decomposition","specification","mode","mstats","si_ratio","s_filter","t_filter","decomposition","specification","mode","model","model","sa","trend","seasonal","transitory","irregular","linearized","components","final","series","forecasts","diagnostics","variance_decomposition","combined_test","tests_for_stable_seasonality","combined_seasonality_test","residuals_test","user_defined")
@@ -333,7 +333,23 @@ All the checks (except \code{combined_seasonality_test}), together with a detail
 # sats$diagnostics
 ```
 
-## user defined
+## user defined {#user-def}
+
+As presented in the table \ref{tab:obj_tab} and in the previous sections the \code{sa_object} has a defined structure with a defined content. Nevertheless the user can extract additional output     from the seasonal adjustment estimation that will be stored under user_defined object in a form of a list.  In order extract the additional output the extra variables need to be defined as characters under the argument \code{userdefined} of the functions \code{x13_def()}, \code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter two functions are presented in the next section \ref{user-def-spec}).
+
+For example, to extract the additional tables $d16$ and $c10$ the following need to be specified in the function argument:
+
+```{r}
+sa_usrdef <- x13_def(myseries, spec = "RSA3", 
+userdefined = c("decomposition.d16","decomposition.c10"))
+sa_usrdef$user_defined
+```
+
+The list of all available variables can be extracted with the following functions:
+
+*  \code{user_defined_variables("X13-ARIMA")}
+*  \code{user_defined_variables("TRAMO-SEATS")}
+
 
 # Model specification: creation and modification {#user-def-spec}
 
