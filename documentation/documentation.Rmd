@@ -353,11 +353,23 @@ The list of all available variables can be extracted with the following function
 
 # Model specification: creation and modification {#user-def-spec}
 
-## X13
+See table \ref{tab:t_spec_tab}.
 
-## TRAMOSEATS
+```{r, echo=FALSE, results='asis'}
+t_spec_func <- structure(list(Estimation=c("(1)","SA: X-13-ARIMA","","","","SA: TRAMO-SEATS","","","","RegARIMA: X13-ARIMA","","","","RegARIMA: TRAMO-SEATS","","",""),
+                            `Functions`=c("(2)","x13_def","x13","","","tramoseats_def","tramoseats","","","regarima_def_x13","regarima","","","regarima_def_tramoseats","regarima","",""),
+                            `Specification (spec), class`=c("(3)","predefined - see table 2","c(SA_spec, X13)","","","predefined - see table 1","c(SA_spec, TRAMO_SEATS)","","","predefined - see table 2","c(regarima_spec, X13)","","","predefined - see table 1","c(regarima_spec, TRAMO_SEATS)","",""),
+                            `Functions to generate/modify the spec`=c("(4)","N/A","x13_spec_def","x13_spec","","N/A","tramoseats_spec_def","tramoseats","","N/A","regarima_spec_def_x13","regarima_spec_x13","","N/A","regarima_spec_def_tramoseats","regarima_spec_x13",""),
+                            `Input for function in (4)`=c("(5)","N/A","predefined spec - see table 2","sa_object of class c(SA,  X13)","spec of class c(SA_spec, X13)","N/A","predefined spec - see table 1","sa_object of class c(SA,  TRAMO_SEATS)","spec of class c(SA_spec, TRAMO_SEATS)","N/A","predefined - see table 2","regarima object of class c(regarima, X13)","spec of class c(regarima_spec, X13)","N/A","predefined - see table 1","regarima object of class c(regarima, TRAMO_SEATS)","spec of class c(regarima_spec, TRAMO_SEATS))")),
+                            class = "data.frame",row.names=c(NA,-17L))
 
-## Regarima 
+kable(t_spec_func, "latex", booktabs = T, caption = "\\label{tab:t_spec_tab}Model specification generation and modification",align = "c") %>%
+  column_spec(c(1), width = "2.cm") %>%
+  column_spec(c(3,4,5), width = "3.cm") %>%
+  column_spec(c(5), width = "3.5cm") %>%
+  kable_styling(font_size = 7)
+```
+
 
 ## Wrong specifications corrections
 Parler des corrections automatiques ?

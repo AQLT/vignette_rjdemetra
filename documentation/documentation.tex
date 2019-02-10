@@ -845,14 +845,40 @@ functions:
 \section{Model specification: creation and
 modification}\label{user-def-spec}}
 
-\hypertarget{x13}{%
-\subsection{X13}\label{x13}}
+See table \ref{tab:t_spec_tab}.
 
-\hypertarget{tramoseats}{%
-\subsection{TRAMOSEATS}\label{tramoseats}}
+\begin{table}
 
-\hypertarget{regarima-1}{%
-\subsection{Regarima}\label{regarima-1}}
+\caption{\label{tab:unnamed-chunk-13}\label{tab:t_spec_tab}Model specification generation and modification}
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{2.cm}c>{\centering\arraybackslash}p{3.cm}>{\centering\arraybackslash}p{3.cm}>{\centering\arraybackslash}p{3.5cm}}
+\toprule
+Estimation & Functions & Specification (spec), class & Functions to generate/modify the spec & Input for function in (4)\\
+\midrule
+(1) & (2) & (3) & (4) & (5)\\
+SA: X-13-ARIMA & x13\_def & predefined - see table 2 & N/A & N/A\\
+ & x13 & c(SA\_spec, X13) & x13\_spec\_def & predefined spec - see table 2\\
+ &  &  & x13\_spec & sa\_object of class c(SA,  X13)\\
+ &  &  &  & spec of class c(SA\_spec, X13)\\
+\addlinespace
+SA: TRAMO-SEATS & tramoseats\_def & predefined - see table 1 & N/A & N/A\\
+ & tramoseats & c(SA\_spec, TRAMO\_SEATS) & tramoseats\_spec\_def & predefined spec - see table 1\\
+ &  &  & tramoseats & sa\_object of class c(SA,  TRAMO\_SEATS)\\
+ &  &  &  & spec of class c(SA\_spec, TRAMO\_SEATS)\\
+RegARIMA: X13-ARIMA & regarima\_def\_x13 & predefined - see table 2 & N/A & N/A\\
+\addlinespace
+ & regarima & c(regarima\_spec, X13) & regarima\_spec\_def\_x13 & predefined - see table 2\\
+ &  &  & regarima\_spec\_x13 & regarima object of class c(regarima, X13)\\
+ &  &  &  & spec of class c(regarima\_spec, X13)\\
+RegARIMA: TRAMO-SEATS & regarima\_def\_tramoseats & predefined - see table 1 & N/A & N/A\\
+ & regarima & c(regarima\_spec, TRAMO\_SEATS) & regarima\_spec\_def\_tramoseats & predefined - see table 1\\
+\addlinespace
+ &  &  & regarima\_spec\_x13 & regarima object of class c(regarima, TRAMO\_SEATS)\\
+ &  &  &  & spec of class c(regarima\_spec, TRAMO\_SEATS))\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \hypertarget{wrong-specifications-corrections}{%
 \subsection{Wrong specifications
