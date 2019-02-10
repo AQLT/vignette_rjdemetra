@@ -296,7 +296,7 @@ kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "\
 
 ## Regarima
 
-The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}), model quality measures (\code{loglik}), regarima specification after it’s estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table x summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
+The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}). It comprises also model quality measures (\code{loglik}), regarima specification after it’s estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table x summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
 
 ```{r}
 sax13$regarima
@@ -306,15 +306,32 @@ plot(sax13$regarima, which = 2)
 ## Decomposition
 
 As afore-mentioned the decomposition method differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA, where SEATS is based on ARIMA-model and X11-algorithm on linear filters. Therefore also the composition of this object differs when estimating with the two methods (hence the two decomposition objects in the table \ref{tab:obj_tab}). The only common part is the first two sub-objects with the model specification (\code{specification}) and information on the decomposition mode (\code{mode}; e.g.: additive).
-Then, the \code{decomposition_X11} object comprises quality measures on the decomposition (\code{mstats}), namely the $M$ and $Q$ statistics. It contains also the final unmodified si-ratios $d8$ and final seasonal factors $d10$ (\code{si_ratio}), as well as the information on the final seasonal filter (\code{s_filter}) and trend filter(\code{t_filter}). The graph below ilustrates the si-ratios.
+
+Then, the \code{decomposition_X11} object comprises quality measures on the decomposition (\code{mstats}), namely the $M$ and $Q$ statistics. It contains also the final unmodified si-ratios $d8$ and final seasonal factors $d10$ (\code{si_ratio}), as well as the information on the final seasonal filter (\code{s_filter}) and trend filter(\code{t_filter}). The code below presents the output for X11 decomposition:
 ```{r}
-plot(sax13$decomposition)
+sax13$decomposition
 ```
-
-
+As a reminder, in SEATS it is assumed that each component of the linearized series (received from TRAMO) is an outcome of a linear stochastic process and SEATS estimates an ARIMA model for each component (i.e. trend, seasonal, transitory and irregular). Subsequently, the \code{decomposition_SEATS} object contains the information on the estimated ARIMA models (\code{model}), the linearized components, as obtained from TRAMO (\code{linearized}), and the theoretical components calculated from the ARIMA models (\code{components}). The code below presents the output for the SEATS decomposition, with the information on the ARIMA models:
+```{r}
+sats$decomposition
+```
 ## Final
-
+The final object has a simple structure as it includes the input series, final seasonally adjusted series and the final components (i.e. $t$ - trend-cycle, $s$ - seasonal component and $i$ - irregular component) (\code{series}), as well as their forecasts (\code{forecasts}). 
+```{r}
+sats$final
+```
 ## Diagnostics
+This part of the \code{sa_object} includes several diagnostics on the presence of seasonality in the input series and on the quality of the seasonal adjustment.
+
+The test for the seasonality presence (\code{combined_test}) are performed both on the entire series and in the last 3 years.
+
+Whereas, the quality checking is grouped into two sets. The first looks at the contribution of each estimated component to the variance of the original series (\code{variance_decomposition}). The second verifies, with different tests, that there is no seasonal pattern left in the seasonally adjusted series and in the irregular component (\code{residuals_test}).
+
+All the checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
+
+```{r}
+# sats$diagnostics
+```
 
 ## user defined
 

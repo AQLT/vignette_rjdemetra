@@ -576,8 +576,8 @@ The regarima object contains the provided model specification
 (\code{specification}; level 2 of the \code{sa_object}), the estimated
 coefficients for the arima processes (\code{arima.coefficients}) and
 regressors (\code{regression.coefficients}), including arma orders
-(\code{arma}), model quality measures (\code{loglik}), regarima
-specification after it's estimation with the estimated effects
+(\code{arma}). It comprises also model quality measures (\code{loglik}),
+regarima specification after it's estimation with the estimated effects
 (e.g.~linearized input series or outliers)(\code{model}), the residuals
 of the regarima model (\code{residuals}), several tests' results for the
 residuals (\code{residuals.stat}) and finally the forecast of the
@@ -636,30 +636,170 @@ object differs when estimating with the two methods (hence the two
 decomposition objects in the table \ref{tab:obj_tab}). The only common
 part is the first two sub-objects with the model specification
 (\code{specification}) and information on the decomposition mode
-(\code{mode}; e.g.: additive). Then, the \code{decomposition_X11} object
-comprises quality measures on the decomposition (\code{mstats}), namely
-the \(M\) and \(Q\) statistics. It contains also the final unmodified
-si-ratios \(d8\) and final seasonal factors \(d10\) (\code{si_ratio}),
-as well as the information on the final seasonal filter
-(\code{s_filter}) and trend filter(\code{t_filter}). The graph below
-ilustrates the si-ratios.
+(\code{mode}; e.g.: additive).
+
+Then, the \code{decomposition_X11} object comprises quality measures on
+the decomposition (\code{mstats}), namely the \(M\) and \(Q\)
+statistics. It contains also the final unmodified si-ratios \(d8\) and
+final seasonal factors \(d10\) (\code{si_ratio}), as well as the
+information on the final seasonal filter (\code{s_filter}) and trend
+filter(\code{t_filter}). The code below presents the output for X11
+decomposition:
 
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> plot(sax13$decomposition)
+R> sax13$decomposition
 \end{CodeInput}
 
+\begin{CodeOutput}
+Monitoring and Quality Assessment Statistics: 
+      M stats
+M(1)    0.028
+M(2)    0.033
+M(3)    0.338
+M(4)    0.376
+M(5)    0.366
+M(6)    0.067
+M(7)    0.066
+M(8)    0.157
+M(9)    0.073
+M(10)   0.145
+M(11)   0.120
+Q       0.156
+Q-M2    0.171
 
-\begin{center}\includegraphics{img/img-unnamed-chunk-8-1} \end{center}
+Final filters: 
+Seasonal filter:  3x5
+Trend filter:  13 terms Henderson moving average
+\end{CodeOutput}
+\end{CodeChunk}
 
+As a reminder, in SEATS it is assumed that each component of the
+linearized series (received from TRAMO) is an outcome of a linear
+stochastic process and SEATS estimates an ARIMA model for each component
+(i.e.~trend, seasonal, transitory and irregular). Subsequently, the
+\code{decomposition_SEATS} object contains the information on the
+estimated ARIMA models (\code{model}), the linearized components, as
+obtained from TRAMO (\code{linearized}), and the theoretical components
+calculated from the ARIMA models (\code{components}). The code below
+presents the output for the SEATS decomposition, with the information on
+the ARIMA models:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sats$decomposition
+\end{CodeInput}
+
+\begin{CodeOutput}
+Model
+AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
+D :  1 - B - B^12 + B^13 
+MA :  1 - 0.510600 B^12 
+
+
+SA
+AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
+D :  1 - 2.000000 B + B^2 
+MA :  1 - 0.937923 B - 0.015753 B^2 - 0.007005 B^3 + 0.015440 B^4 - 0.001104 B^5 
+Innovation variance:  0.5777661 
+
+Trend
+AR :  1 - 0.711394 B 
+D :  1 - 2.000000 B + B^2 
+MA :  1 - 0.312018 B - 0.965498 B^2 + 0.346519 B^3 
+Innovation variance:  0.07090723 
+
+Seasonal
+D :  1 + B + B^2 + B^3 + B^4 + B^5 + B^6 + B^7 + B^8 + B^9 + B^10 + B^11 
+MA :  1 + 1.314878 B + 1.722951 B^2 + 2.227262 B^3 + 2.229462 B^4 + 2.119339 B^5 + 1.926456 B^6 + 1.615753 B^7 + 1.268615 B^8 + 0.770474 B^9 + 0.278823 B^10 - 0.025652 B^11 
+Innovation variance:  0.08441922 
+
+Transitory
+AR :  1 + 0.805449 B + 0.414116 B^2 
+MA :  1 - 0.452913 B - 0.547087 B^2 
+Innovation variance:  0.02525112 
+
+Irregular
+Innovation variance:  0.07006354 
+\end{CodeOutput}
 \end{CodeChunk}
 
 \hypertarget{final}{%
 \subsection{Final}\label{final}}
 
+The final object has a simple structure as it includes the input series,
+final seasonally adjusted series and the final components (i.e.~\(t\) -
+trend-cycle, \(s\) - seasonal component and \(i\) - irregular component)
+(\code{series}), as well as their forecasts (\code{forecasts}).
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sats$final
+\end{CodeInput}
+
+\begin{CodeOutput}
+Last observed values
+             y       sa        t             s           i
+Jan 2017  96.5 102.9317 102.6366  -6.431739755  0.29515069
+Feb 2017  99.3 102.3815 102.7523  -3.081452963 -0.37082579
+Mar 2017 110.5 103.2230 103.0587   7.276971010  0.16431902
+Apr 2017 103.4 103.3950 103.4579   0.004977088 -0.06292068
+May 2017 104.6 104.1023 103.8400   0.497657700  0.26230153
+Jun 2017 107.7 103.8403 104.2863   3.859652578 -0.44596785
+Jul 2017 107.6 105.1862 104.9032   2.413785110  0.28301107
+Aug 2017  88.7 105.5484 105.5999 -16.848375561 -0.05151353
+Sep 2017 112.1 106.2889 106.3305   5.811052841 -0.04159101
+Oct 2017 113.4 106.9003 107.1101   6.499696169 -0.20982123
+Nov 2017 114.3 108.3110 107.7487   5.988950554  0.56232415
+Dec 2017 101.7 107.7534 108.1104  -6.053350690 -0.35709913
+
+Forecasts:
+               y_f     sa_f      t_f         s_f           i_f
+Jan 2018 102.49061 108.4010 108.4016  -5.9103802 -0.0005820963
+Feb 2018 105.85284 108.8666 108.7446  -3.0137577  0.1219532717
+Mar 2018 116.21918 108.9840 109.0820   7.2351710 -0.0979861094
+Apr 2018 108.90762 109.4437 109.4153  -0.5360850  0.0284199810
+May 2018 110.11320 109.7634 109.7457   0.3498301  0.0176868066
+Jun 2018 114.47710 110.0480 110.0740   4.4290998 -0.0260150048
+Jul 2018 112.47723 110.4145 110.4009   2.0627149  0.0136293681
+Aug 2018  93.98244 110.7265 110.7267 -16.7440681 -0.0002045225
+Sep 2018 116.57469 111.0463 111.0518   5.5283721 -0.0054794124
+Oct 2018 118.30580 111.3809 111.3764   6.9249450  0.0044980848
+Nov 2018 117.56621 111.6992 111.7005   5.8670241 -0.0013538638
+Dec 2018 105.59658 112.0237 112.0245  -6.4271099 -0.0007722619
+\end{CodeOutput}
+\end{CodeChunk}
+
 \hypertarget{diagnostics}{%
 \subsection{Diagnostics}\label{diagnostics}}
+
+This part of the \code{sa_object} includes several diagnostics on the
+presence of seasonality in the input series and on the quality of the
+seasonal adjustment.
+
+The test for the seasonality presence (\code{combined_test}) are
+performed both on the entire series and in the last 3 years.
+
+Whereas, the quality checking is grouped into two sets. The first looks
+at the contribution of each estimated component to the variance of the
+original series (\code{variance_decomposition}). The second verifies,
+with different tests, that there is no seasonal pattern left in the
+seasonally adjusted series and in the irregular component
+(\code{residuals_test}).
+
+All the checks (except \code{combined_seasonality_test}), together with
+a detailed description, are displayed when printing the diagnostics
+object.
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> # sats$diagnostics
+\end{CodeInput}
+\end{CodeChunk}
 
 \hypertarget{user-defined}{%
 \subsection{user defined}\label{user-defined}}
