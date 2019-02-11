@@ -364,15 +364,15 @@ described in tables tables \ref{tab:pre_def_ts} and
   \citep{maravall2009identification}.
 \end{itemize}
 
-\begin{table}[t]
+\begin{table}
 
 \caption{\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{3pt}r{3pt}){1-2}
+\cmidrule(l{2pt}r{2pt}){1-2}
 TRAMO & TRAMO-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 TR0 & RSA0 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -387,15 +387,15 @@ TRfull (default) & RSAfull (default) & test & yes & no & test & test (Include Ea
 \end{tabular}
 \end{table}
 
-\begin{table}[t]
+\begin{table}
 
 \caption{\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{3pt}r{3pt}){1-2}
+\cmidrule(l{2pt}r{2pt}){1-2}
 RegARIMA & X-13ARIMA-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 RG0 &  & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -403,7 +403,6 @@ RG1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
 RG2c & RSA2c & test & test & test & no & test & test & (0,1,1)(0,1,1)\\
 RG3 & RSA3 & test & no & no & no & no & test & AMI\\
 RG4c & RSA4c & test & test & test & no & test & test & AMI\\
-\addlinespace
 RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
 \bottomrule
 \end{tabular}
@@ -476,22 +475,23 @@ estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated
 with TRAMO-SEATS+. In general, the \code{sa_object} contains the
 following five objects: \textbf{regarima}, \textbf{decomposition},
 \textbf{final}, \textbf{diagnostics} and \textbf{user\_defined}.
-Independently which of the two methods is used the regarima, final and
-diagnostics objects contain the same components, though with different
-classes (see column 4 and 5). Whereas, the object decomposition differs
-for the two methods. The object user\_defined is empty unless additional
-output was requested by the user (see next sub-sections). Finally, when
-estimating RegARIMA only the regarima object is created.
+Independently which of the two estimation methods is used the regarima,
+final and diagnostics objects contain the same components, though with
+different classes (see column 4 and 5). Whereas, the object
+decomposition differs for the two methods. The object user\_defined is
+empty unless additional output was requested by the user (see
+sub-section \ref{user-def}). Finally, when estimating RegARIMA only the
+regarima object is created.
 
 \begingroup\fontsize{7}{9}\selectfont
 
-\begin{longtable}{lllll}
+\begin{longtable}[t]{lllll}
 \caption{\label{tab:unnamed-chunk-6}\label{tab:obj_tab}SA object structure}\\
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
-\cmidrule(l{3pt}r{3pt}){4-5}
-\multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{x13/x13\_def}} & \multicolumn{1}{c}{\em{ tramoseats/tramoseats\_def}} \\
-\cmidrule(l{3pt}r{3pt}){4-4} \cmidrule(l{3pt}r{3pt}){5-5}
+\cmidrule(l{2pt}r{2pt}){4-5}
+\multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em x13/x13\_def} & \multicolumn{1}{c}{\em  tramoseats/tramoseats\_def} \\
+\cmidrule(l{2pt}r{2pt}){4-4} \cmidrule(l{2pt}r{2pt}){5-5}
 Object & Level & Type & Class & Class\\
 \midrule
 sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
@@ -532,7 +532,7 @@ sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
 \addlinespace
 \hspace{3em}tests & 3 & data.frame & regarima\_rtests, data.frame & \\
 \hspace{2em}forecast & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11} & \textbf{}\\
+\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11}\\
 \hspace{2em}specification & 2 & data.frame & X11\_spec, data.frame & \\
 \hspace{2em}mode & 2 & character &  \vphantom{1} & \\
 \addlinespace
@@ -555,35 +555,44 @@ sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
 \hspace{2em}linearized & 2 & mts, ts, matrix &  & \\
 \addlinespace
 \hspace{2em}components & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final} & \textbf{}\\
+\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final}\\
 \hspace{2em}series & 2 & mts, ts, matrix &  & \\
 \hspace{2em}forecasts & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics} & \textbf{}\\
+\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics}\\
 \addlinespace
 \hspace{2em}variance\_decomposition & 2 & data.frame &  & \\
 \hspace{2em}combined\_test & 2 & list & combined\_test & \\
 \hspace{3em}tests\_for\_stable\_seasonality & 3 & data.frame &  & \\
 \hspace{3em}combined\_seasonality\_test & 3 & character &  & \\
 \hspace{2em}residuals\_test & 2 & data.frame &  & \\
-\addlinespace
-\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined} & \textbf{}\\
+\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined}\\
 \bottomrule
-\end{longtable}
-\endgroup{}
+\end{longtable}\endgroup{}
 
 \hypertarget{regarima}{%
 \subsection{Regarima}\label{regarima}}
 
-Here we can also present the output: print and graphs.
+The regarima object contains the provided model specification
+(\code{specification}; level 2 of the \code{sa_object}), the estimated
+coefficients for the arima processes (\code{arima.coefficients}) and
+regressors (\code{regression.coefficients}), including arma orders
+(\code{arma}). It comprises also model quality measures (\code{loglik}),
+regarima specification after it's estimation with the estimated effects
+(e.g.~linearized input series or outliers)(\code{model}), the residuals
+of the regarima model (\code{residuals}), several tests' results for the
+residuals (\code{residuals.stat}) and finally the forecast of the
+pre-adjusted series (\code{forecasts}). All this information can be
+extracted individually by the user or a predefined output can be used by
+calling \code{print()} or \code{summary()} (for more detailed output)
+functions. Also a set of graphs is defined within the function
+\code{plot()}. For regarima by default the first six graphs are
+displayed, but specific ones can be chosen within the argument
+\code{which}. Table x summarizes all the graphs available for the
+\code{sa_object}, as well as its \code{plot()} options.
 
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> library(RJDemetra)
-R> myseries <- ipi_c_eu[, "EA19"]
-R> sax13 <- x13_def(myseries, spec = "RSA5c", userdefined = NULL)
-R> sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
-R> ## PRINT THE RESULTS:
 R> sax13$regarima
 \end{CodeInput}
 
@@ -592,59 +601,284 @@ y = regression model + arima (1, 1, 2, 0, 1, 1)
 Log-transformation: no
 Coefficients:
           Estimate Std. Error
-Phi(1)     -0.7695      0.117
-Theta(1)   -1.0644      0.119
-Theta(2)    0.3331      0.056
-BTheta(1)  -0.5263      0.051
+Phi(1)     -0.7603      0.096
+Theta(1)   -1.1757      0.095
+Theta(2)    0.4551      0.053
+BTheta(1)  -0.5433      0.049
 
              Estimate Std. Error
-Monday       -0.27760      0.103
-Tuesday       0.01418      0.102
-Wednesday     0.29139      0.103
-Thursday     -0.36725      0.102
-Friday        0.12606      0.102
-Saturday      0.36548      0.103
-Leap year     0.24961      0.316
-AO (1-2016)   3.58591      0.837
-TC (9-2008)  26.20114      3.037
-LS (9-2008) -19.99432      2.470
-AO (9-2008)  -6.10726      1.458
+AO (1-2016)     4.291      0.883
+LS (1-2009)    -6.210      0.947
+LS (11-2008)   -5.806      0.948
+TC (3-2009)    -3.967      0.908
 
 
-Residual standard error: 1.125 on 311 degrees of freedom
-Log likelihood = -479.9, aic = 991.8 aicc = 993.7, bic(corrected for length) = 0.5122
+Residual standard error: 1.187 on 311 degrees of freedom
+Log likelihood = -496.8, aic =  1012 aicc =  1012, bic(corrected for length) = 0.4898
 \end{CodeOutput}
 
 \begin{CodeInput}
-R> ## PLOT THE RESULTS:
-R> #plot(sax13$regarima)
+R> plot(sax13$regarima, which = 2)
 \end{CodeInput}
+
+
+\begin{center}\includegraphics{img/img-unnamed-chunk-7-1} \end{center}
+
 \end{CodeChunk}
 
 \hypertarget{decomposition}{%
 \subsection{Decomposition}\label{decomposition}}
 
+As afore-mentioned the decomposition method differs between TRAMO-SEATS+
+and X-12ARIMA/X-13ARIMA, where SEATS is based on ARIMA-model and
+X11-algorithm on linear filters. Therefore also the composition of this
+object differs when estimating with the two methods (hence the two
+decomposition objects in the table \ref{tab:obj_tab}). The only common
+part is the first two sub-objects with the model specification
+(\code{specification}) and information on the decomposition mode
+(\code{mode}; e.g.: additive).
+
+Then, the \code{decomposition_X11} object comprises quality measures on
+the decomposition (\code{mstats}), namely the \(M\) and \(Q\)
+statistics. It contains also the final unmodified si-ratios \(d8\) and
+final seasonal factors \(d10\) (\code{si_ratio}), as well as the
+information on the final seasonal filter (\code{s_filter}) and trend
+filter(\code{t_filter}). The code below presents the output for X11
+decomposition:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sax13$decomposition
+\end{CodeInput}
+
+\begin{CodeOutput}
+Monitoring and Quality Assessment Statistics: 
+      M stats
+M(1)    0.028
+M(2)    0.033
+M(3)    0.338
+M(4)    0.376
+M(5)    0.366
+M(6)    0.067
+M(7)    0.066
+M(8)    0.157
+M(9)    0.073
+M(10)   0.145
+M(11)   0.120
+Q       0.156
+Q-M2    0.171
+
+Final filters: 
+Seasonal filter:  3x5
+Trend filter:  13 terms Henderson moving average
+\end{CodeOutput}
+\end{CodeChunk}
+
+As a reminder, in SEATS it is assumed that each component of the
+linearized series (received from TRAMO) is an outcome of a linear
+stochastic process and SEATS estimates an ARIMA model for each component
+(i.e.~trend, seasonal, transitory and irregular). Subsequently, the
+\code{decomposition_SEATS} object contains the information on the
+estimated ARIMA models (\code{model}), the linearized components, as
+obtained from TRAMO (\code{linearized}), and the theoretical components
+calculated from the ARIMA models (\code{components}). The code below
+presents the output for the SEATS decomposition, with the information on
+the ARIMA models:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sats$decomposition
+\end{CodeInput}
+
+\begin{CodeOutput}
+Model
+AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
+D :  1 - B - B^12 + B^13 
+MA :  1 - 0.510600 B^12 
+
+
+SA
+AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
+D :  1 - 2.000000 B + B^2 
+MA :  1 - 0.937923 B - 0.015753 B^2 - 0.007005 B^3 + 0.015440 B^4 - 0.001104 B^5 
+Innovation variance:  0.5777661 
+
+Trend
+AR :  1 - 0.711394 B 
+D :  1 - 2.000000 B + B^2 
+MA :  1 - 0.312018 B - 0.965498 B^2 + 0.346519 B^3 
+Innovation variance:  0.07090723 
+
+Seasonal
+D :  1 + B + B^2 + B^3 + B^4 + B^5 + B^6 + B^7 + B^8 + B^9 + B^10 + B^11 
+MA :  1 + 1.314878 B + 1.722951 B^2 + 2.227262 B^3 + 2.229462 B^4 + 2.119339 B^5 + 1.926456 B^6 + 1.615753 B^7 + 1.268615 B^8 + 0.770474 B^9 + 0.278823 B^10 - 0.025652 B^11 
+Innovation variance:  0.08441922 
+
+Transitory
+AR :  1 + 0.805449 B + 0.414116 B^2 
+MA :  1 - 0.452913 B - 0.547087 B^2 
+Innovation variance:  0.02525112 
+
+Irregular
+Innovation variance:  0.07006354 
+\end{CodeOutput}
+\end{CodeChunk}
+
 \hypertarget{final}{%
 \subsection{Final}\label{final}}
+
+The final object has a simple structure as it includes the input series,
+final seasonally adjusted series and the final components (i.e.~\(t\) -
+trend-cycle, \(s\) - seasonal component and \(i\) - irregular component)
+(\code{series}), as well as their forecasts (\code{forecasts}).
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sats$final
+\end{CodeInput}
+
+\begin{CodeOutput}
+Last observed values
+             y       sa        t             s           i
+Jan 2017  96.5 102.9317 102.6366  -6.431739755  0.29515069
+Feb 2017  99.3 102.3815 102.7523  -3.081452963 -0.37082579
+Mar 2017 110.5 103.2230 103.0587   7.276971010  0.16431902
+Apr 2017 103.4 103.3950 103.4579   0.004977088 -0.06292068
+May 2017 104.6 104.1023 103.8400   0.497657700  0.26230153
+Jun 2017 107.7 103.8403 104.2863   3.859652578 -0.44596785
+Jul 2017 107.6 105.1862 104.9032   2.413785110  0.28301107
+Aug 2017  88.7 105.5484 105.5999 -16.848375561 -0.05151353
+Sep 2017 112.1 106.2889 106.3305   5.811052841 -0.04159101
+Oct 2017 113.4 106.9003 107.1101   6.499696169 -0.20982123
+Nov 2017 114.3 108.3110 107.7487   5.988950554  0.56232415
+Dec 2017 101.7 107.7534 108.1104  -6.053350690 -0.35709913
+
+Forecasts:
+               y_f     sa_f      t_f         s_f           i_f
+Jan 2018 102.49061 108.4010 108.4016  -5.9103802 -0.0005820963
+Feb 2018 105.85284 108.8666 108.7446  -3.0137577  0.1219532717
+Mar 2018 116.21918 108.9840 109.0820   7.2351710 -0.0979861094
+Apr 2018 108.90762 109.4437 109.4153  -0.5360850  0.0284199810
+May 2018 110.11320 109.7634 109.7457   0.3498301  0.0176868066
+Jun 2018 114.47710 110.0480 110.0740   4.4290998 -0.0260150048
+Jul 2018 112.47723 110.4145 110.4009   2.0627149  0.0136293681
+Aug 2018  93.98244 110.7265 110.7267 -16.7440681 -0.0002045225
+Sep 2018 116.57469 111.0463 111.0518   5.5283721 -0.0054794124
+Oct 2018 118.30580 111.3809 111.3764   6.9249450  0.0044980848
+Nov 2018 117.56621 111.6992 111.7005   5.8670241 -0.0013538638
+Dec 2018 105.59658 112.0237 112.0245  -6.4271099 -0.0007722619
+\end{CodeOutput}
+\end{CodeChunk}
 
 \hypertarget{diagnostics}{%
 \subsection{Diagnostics}\label{diagnostics}}
 
-\hypertarget{user-defined}{%
-\subsection{user defined}\label{user-defined}}
+This part of the \code{sa_object} includes several diagnostics on the
+presence of seasonality in the input series and on the quality of the
+seasonal adjustment.
+
+The test for the seasonality presence (\code{combined_test}) are
+performed both on the entire series and in the last 3 years.
+
+Whereas, the quality checking is grouped into two sets. The first looks
+at the contribution of each estimated component to the variance of the
+original series (\code{variance_decomposition}). The second verifies,
+with different tests, that there is no seasonal pattern left in the
+seasonally adjusted series and in the irregular component
+(\code{residuals_test}).
+
+All the checks (except \code{combined_seasonality_test}), together with
+a detailed description, are displayed when printing the diagnostics
+object.
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> # sats$diagnostics
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{user-def}{%
+\subsection{user defined}\label{user-def}}
+
+As presented in the table \ref{tab:obj_tab} and in the previous sections
+the \code{sa_object} has a defined structure with a defined content.
+Nevertheless the user can extract additional output from the seasonal
+adjustment estimation that will be stored under user\_defined object in
+a form of a list. In order extract the additional output the extra
+variables need to be defined as characters under the argument
+\code{userdefined} of the functions \code{x13_def()},
+\code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter
+two functions are presented in the next section \ref{user-def-spec}).
+
+For example, to extract the additional tables \(d16\) and \(c10\) the
+following need to be specified in the function argument:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sa_usrdef <- x13_def(myseries, spec = "RSA3", 
+R+ userdefined = c("decomposition.d16","decomposition.c10"))
+R> sa_usrdef$user_defined
+\end{CodeInput}
+
+\begin{CodeOutput}
+Names of additional variables (2):
+decomposition.d16, decomposition.c10
+\end{CodeOutput}
+\end{CodeChunk}
+
+The list of all available variables can be extracted with the following
+functions:
+
+\begin{itemize}
+\item
+  \code{user_defined_variables("X13-ARIMA")}
+\item
+  \code{user_defined_variables("TRAMO-SEATS")}
+\end{itemize}
 
 \hypertarget{user-def-spec}{%
 \section{Model specification: creation and
 modification}\label{user-def-spec}}
 
-\hypertarget{x13}{%
-\subsection{X13}\label{x13}}
+See table \ref{tab:t_spec_tab}.
 
-\hypertarget{tramoseats}{%
-\subsection{TRAMOSEATS}\label{tramoseats}}
+\begin{table}
 
-\hypertarget{regarima-1}{%
-\subsection{Regarima}\label{regarima-1}}
+\caption{\label{tab:unnamed-chunk-13}\label{tab:t_spec_tab}Model specification generation and modification}
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{2.cm}c>{\centering\arraybackslash}p{3.cm}>{\centering\arraybackslash}p{3.cm}>{\centering\arraybackslash}p{3.5cm}}
+\toprule
+Estimation & Functions & Specification (spec), class & Functions to generate/modify the spec & Input for function in (4)\\
+\midrule
+(1) & (2) & (3) & (4) & (5)\\
+SA: X-13-ARIMA & x13\_def & predefined - see table 2 & N/A & N/A\\
+ & x13 & c(SA\_spec, X13) & x13\_spec\_def & predefined spec - see table 2\\
+ &  &  & x13\_spec & sa\_object of class c(SA,  X13)\\
+ &  &  &  & spec of class c(SA\_spec, X13)\\
+\addlinespace
+SA: TRAMO-SEATS & tramoseats\_def & predefined - see table 1 & N/A & N/A\\
+ & tramoseats & c(SA\_spec, TRAMO\_SEATS) & tramoseats\_spec\_def & predefined spec - see table 1\\
+ &  &  & tramoseats & sa\_object of class c(SA,  TRAMO\_SEATS)\\
+ &  &  &  & spec of class c(SA\_spec, TRAMO\_SEATS)\\
+RegARIMA: X13-ARIMA & regarima\_def\_x13 & predefined - see table 2 & N/A & N/A\\
+\addlinespace
+ & regarima & c(regarima\_spec, X13) & regarima\_spec\_def\_x13 & predefined - see table 2\\
+ &  &  & regarima\_spec\_x13 & regarima object of class c(regarima, X13)\\
+ &  &  &  & spec of class c(regarima\_spec, X13)\\
+RegARIMA: TRAMO-SEATS & regarima\_def\_tramoseats & predefined - see table 1 & N/A & N/A\\
+ & regarima & c(regarima\_spec, TRAMO\_SEATS) & regarima\_spec\_def\_tramoseats & predefined - see table 1\\
+\addlinespace
+ &  &  & regarima\_spec\_x13 & regarima object of class c(regarima, TRAMO\_SEATS)\\
+ &  &  &  & spec of class c(regarima\_spec, TRAMO\_SEATS))\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \hypertarget{wrong-specifications-corrections}{%
 \subsection{Wrong specifications

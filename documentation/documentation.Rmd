@@ -261,7 +261,7 @@ In section \ref{user-def-spec} it is presented how to modify model specification
 
 In the previous section it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
 
-As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. The first column gives the name of \code{sa_object} sub-components, the second the level of the sub-components, the third their type, and the fourth and fifth the name of the new created S3 classe (if any). Where the forth column corresponds to the case when the estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated with TRAMO-SEATS+. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see column 4 and 5). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see next sub-sections). Finally, when estimating RegARIMA only the regarima object is created.
+As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. The first column gives the name of \code{sa_object} sub-components, the second the level of the sub-components, the third their type, and the fourth and fifth the name of the new created S3 classe (if any). Where the forth column corresponds to the case when the estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated with TRAMO-SEATS+. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see column 4 and 5). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the regarima object is created.
 
 ```{r echo=FALSE, results='asis'}
 object=c("sa_object","regarima","specification","estimate","transform","regression","userdef","specification","outliers","variables","series","description","trading.days","easter","outliers","arima","specification","coefficients","forecast","span","arma","arima.coefficients","regression.coefficients","loglik","model","spec_rslt","effects","residuals","residuals.stat","st.error","tests","forecast","decomposition","specification","mode","mstats","si_ratio","s_filter","t_filter","decomposition","specification","mode","model","model","sa","trend","seasonal","transitory","irregular","linearized","components","final","series","forecasts","diagnostics","variance_decomposition","combined_test","tests_for_stable_seasonality","combined_seasonality_test","residuals_test","user_defined")
@@ -296,33 +296,80 @@ kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "\
 
 ## Regarima
 
-Here we can also present the output: print and graphs.
+The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}). It comprises also model quality measures (\code{loglik}), regarima specification after it’s estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table x summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
+
 ```{r}
-library(RJDemetra)
-myseries <- ipi_c_eu[, "EA19"]
-sax13 <- x13_def(myseries, spec = "RSA5c", userdefined = NULL)
-sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
-## PRINT THE RESULTS:
 sax13$regarima
-## PLOT THE RESULTS:
-#plot(sax13$regarima)
+plot(sax13$regarima, which = 2)
 ```
 
 ## Decomposition
 
+As afore-mentioned the decomposition method differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA, where SEATS is based on ARIMA-model and X11-algorithm on linear filters. Therefore also the composition of this object differs when estimating with the two methods (hence the two decomposition objects in the table \ref{tab:obj_tab}). The only common part is the first two sub-objects with the model specification (\code{specification}) and information on the decomposition mode (\code{mode}; e.g.: additive).
+
+Then, the \code{decomposition_X11} object comprises quality measures on the decomposition (\code{mstats}), namely the $M$ and $Q$ statistics. It contains also the final unmodified si-ratios $d8$ and final seasonal factors $d10$ (\code{si_ratio}), as well as the information on the final seasonal filter (\code{s_filter}) and trend filter(\code{t_filter}). The code below presents the output for X11 decomposition:
+```{r}
+sax13$decomposition
+```
+As a reminder, in SEATS it is assumed that each component of the linearized series (received from TRAMO) is an outcome of a linear stochastic process and SEATS estimates an ARIMA model for each component (i.e. trend, seasonal, transitory and irregular). Subsequently, the \code{decomposition_SEATS} object contains the information on the estimated ARIMA models (\code{model}), the linearized components, as obtained from TRAMO (\code{linearized}), and the theoretical components calculated from the ARIMA models (\code{components}). The code below presents the output for the SEATS decomposition, with the information on the ARIMA models:
+```{r}
+sats$decomposition
+```
 ## Final
-
+The final object has a simple structure as it includes the input series, final seasonally adjusted series and the final components (i.e. $t$ - trend-cycle, $s$ - seasonal component and $i$ - irregular component) (\code{series}), as well as their forecasts (\code{forecasts}). 
+```{r}
+sats$final
+```
 ## Diagnostics
+This part of the \code{sa_object} includes several diagnostics on the presence of seasonality in the input series and on the quality of the seasonal adjustment.
 
-## user defined
+The test for the seasonality presence (\code{combined_test}) are performed both on the entire series and in the last 3 years.
+
+Whereas, the quality checking is grouped into two sets. The first looks at the contribution of each estimated component to the variance of the original series (\code{variance_decomposition}). The second verifies, with different tests, that there is no seasonal pattern left in the seasonally adjusted series and in the irregular component (\code{residuals_test}).
+
+All the checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
+
+```{r}
+# sats$diagnostics
+```
+
+## user defined {#user-def}
+
+As presented in the table \ref{tab:obj_tab} and in the previous sections the \code{sa_object} has a defined structure with a defined content. Nevertheless the user can extract additional output     from the seasonal adjustment estimation that will be stored under user_defined object in a form of a list.  In order extract the additional output the extra variables need to be defined as characters under the argument \code{userdefined} of the functions \code{x13_def()}, \code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter two functions are presented in the next section \ref{user-def-spec}).
+
+For example, to extract the additional tables $d16$ and $c10$ the following need to be specified in the function argument:
+
+```{r}
+sa_usrdef <- x13_def(myseries, spec = "RSA3", 
+userdefined = c("decomposition.d16","decomposition.c10"))
+sa_usrdef$user_defined
+```
+
+The list of all available variables can be extracted with the following functions:
+
+*  \code{user_defined_variables("X13-ARIMA")}
+*  \code{user_defined_variables("TRAMO-SEATS")}
+
 
 # Model specification: creation and modification {#user-def-spec}
 
-## X13
+See table \ref{tab:t_spec_tab}.
 
-## TRAMOSEATS
+```{r, echo=FALSE, results='asis'}
+t_spec_func <- structure(list(Estimation=c("(1)","SA: X-13-ARIMA","","","","SA: TRAMO-SEATS","","","","RegARIMA: X13-ARIMA","","","","RegARIMA: TRAMO-SEATS","","",""),
+                            `Functions`=c("(2)","x13_def","x13","","","tramoseats_def","tramoseats","","","regarima_def_x13","regarima","","","regarima_def_tramoseats","regarima","",""),
+                            `Specification (spec), class`=c("(3)","predefined - see table 2","c(SA_spec, X13)","","","predefined - see table 1","c(SA_spec, TRAMO_SEATS)","","","predefined - see table 2","c(regarima_spec, X13)","","","predefined - see table 1","c(regarima_spec, TRAMO_SEATS)","",""),
+                            `Functions to generate/modify the spec`=c("(4)","N/A","x13_spec_def","x13_spec","","N/A","tramoseats_spec_def","tramoseats","","N/A","regarima_spec_def_x13","regarima_spec_x13","","N/A","regarima_spec_def_tramoseats","regarima_spec_x13",""),
+                            `Input for function in (4)`=c("(5)","N/A","predefined spec - see table 2","sa_object of class c(SA,  X13)","spec of class c(SA_spec, X13)","N/A","predefined spec - see table 1","sa_object of class c(SA,  TRAMO_SEATS)","spec of class c(SA_spec, TRAMO_SEATS)","N/A","predefined - see table 2","regarima object of class c(regarima, X13)","spec of class c(regarima_spec, X13)","N/A","predefined - see table 1","regarima object of class c(regarima, TRAMO_SEATS)","spec of class c(regarima_spec, TRAMO_SEATS))")),
+                            class = "data.frame",row.names=c(NA,-17L))
 
-## Regarima 
+kable(t_spec_func, "latex", booktabs = T, caption = "\\label{tab:t_spec_tab}Model specification generation and modification",align = "c") %>%
+  column_spec(c(1), width = "2.cm") %>%
+  column_spec(c(3,4,5), width = "3.cm") %>%
+  column_spec(c(5), width = "3.5cm") %>%
+  kable_styling(font_size = 7)
+```
+
 
 ## Wrong specifications corrections
 Parler des corrections automatiques ?
