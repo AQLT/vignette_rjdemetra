@@ -10,15 +10,15 @@ Anna Michalek\\European Central Bank \And Alain Quartier-la-Tente\\Insee
 \title{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 
 \Plainauthor{Anna Michalek, Alain Quartier-la-Tente}
-\Plaintitle{A Capitalized Title: Something about a Package foo}
+\Plaintitle{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 \Shorttitle{\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software}
 
 \Abstract{
 The abstract of the article.
 }
 
-\Keywords{\proglang{R}, seasonal adjustment, calendar effects, time series}
-\Plainkeywords{R, seasonal adjustment, calendar effects, time series}
+\Keywords{\proglang{R}, seasonal adjustment, calendar effects, ARIMA, time series}
+\Plainkeywords{R, seasonal adjustment, calendar effects, ARIMA, time series}
 
 %% publication information
 %% \Volume{50}
@@ -241,7 +241,8 @@ Java SE 8 or later version is required. It allows to:
   X-12ARIMA/X-13ARIMA-SEATS with pre-defined (section \ref{pre-def-est})
   and user-defined specification (section \ref{user-def-spec});\\
 \item
-  acces to all the output available in JDemetra+ (section XXX);\\
+  acces to all the output available in JDemetra+ (section
+  \ref{sa-obj-struc});\\
 \item
   import and export JDemetra+ workspaces (section
   \ref{manipulate-workspace}).
@@ -364,15 +365,15 @@ described in tables tables \ref{tab:pre_def_ts} and
   \citep{maravall2009identification}.
 \end{itemize}
 
-\begin{table}
+\begin{table}[t]
 
 \caption{\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{2pt}r{2pt}){1-2}
+\cmidrule(l{3pt}r{3pt}){1-2}
 TRAMO & TRAMO-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 TR0 & RSA0 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -387,15 +388,15 @@ TRfull (default) & RSAfull (default) & test & yes & no & test & test (Include Ea
 \end{tabular}
 \end{table}
 
-\begin{table}
+\begin{table}[t]
 
 \caption{\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{2pt}r{2pt}){1-2}
+\cmidrule(l{3pt}r{3pt}){1-2}
 RegARIMA & X-13ARIMA-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 RG0 &  & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -403,6 +404,7 @@ RG1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
 RG2c & RSA2c & test & test & test & no & test & test & (0,1,1)(0,1,1)\\
 RG3 & RSA3 & test & no & no & no & no & test & AMI\\
 RG4c & RSA4c & test & test & test & no & test & test & AMI\\
+\addlinespace
 RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
 \bottomrule
 \end{tabular}
@@ -453,10 +455,10 @@ In section \ref{user-def-spec} it is presented how to modify model
 specifications, including the possibility to incorprate user-defined
 regressors.
 
-\hypertarget{sa-object-structure}{%
-\section{SA object structure}\label{sa-object-structure}}
+\hypertarget{sa-obj-struc}{%
+\section{Class object structure}\label{sa-obj-struc}}
 
-In the previous section it was presented how to run a RegARIMA and
+In section \ref{pre-def-est} it was presented how to run a RegARIMA and
 complete seasonal adjustment estimation with pre-defined model
 specifications. In this section the outcome will be described in detail.
 
@@ -467,31 +469,27 @@ As a result of seasonal adjustment estimation (e.g.~function
 The \code{sa_object} consits of lists of S3 class sub-objects. For each
 of the class \code{print, plot} methods are defined. The complete
 structure of the \code{sa_object} is presented in table
-\ref{tab:obj_tab}. The first column gives the name of \code{sa_object}
-sub-components, the second the level of the sub-components, the third
-their type, and the fourth and fifth the name of the new created S3
-classe (if any). Where the forth column corresponds to the case when the
-estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated
-with TRAMO-SEATS+. In general, the \code{sa_object} contains the
+\ref{tab:obj_tab}. In general, the \code{sa_object} contains the
 following five objects: \textbf{regarima}, \textbf{decomposition},
 \textbf{final}, \textbf{diagnostics} and \textbf{user\_defined}.
 Independently which of the two estimation methods is used the regarima,
 final and diagnostics objects contain the same components, though with
-different classes (see column 4 and 5). Whereas, the object
+different classes (see table \ref{tab:obj_tab}). Whereas, the object
 decomposition differs for the two methods. The object user\_defined is
 empty unless additional output was requested by the user (see
 sub-section \ref{user-def}). Finally, when estimating RegARIMA only the
-regarima object is created.
+regarima object is created. All the plots methods are detailed in table
+\ref{tab:plots_methods}.
 
 \begingroup\fontsize{7}{9}\selectfont
 
-\begin{longtable}[t]{lllll}
-\caption{\label{tab:unnamed-chunk-6}\label{tab:obj_tab}SA object structure}\\
+\begin{longtable}{lllll}
+\caption{\label{tab:obj_tab}SA object structure}\\
 \toprule
 \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{1}{c}{ } & \multicolumn{2}{c}{When adjusted with:} \\
-\cmidrule(l{2pt}r{2pt}){4-5}
-\multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em  } & \multicolumn{1}{c}{\em x13/x13\_def} & \multicolumn{1}{c}{\em  tramoseats/tramoseats\_def} \\
-\cmidrule(l{2pt}r{2pt}){4-4} \cmidrule(l{2pt}r{2pt}){5-5}
+\cmidrule(l{3pt}r{3pt}){4-5}
+\multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{ }} & \multicolumn{1}{c}{\em{x13/x13\_def}} & \multicolumn{1}{c}{\em{ tramoseats/tramoseats\_def}} \\
+\cmidrule(l{3pt}r{3pt}){4-4} \cmidrule(l{3pt}r{3pt}){5-5}
 Object & Level & Type & Class & Class\\
 \midrule
 sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
@@ -532,7 +530,7 @@ sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
 \addlinespace
 \hspace{3em}tests & 3 & data.frame & regarima\_rtests, data.frame & \\
 \hspace{2em}forecast & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11}\\
+\textbf{\hspace{1em}decomposition} & \textbf{1} & \textbf{list} & \textbf{decomposition\_X11} & \textbf{}\\
 \hspace{2em}specification & 2 & data.frame & X11\_spec, data.frame & \\
 \hspace{2em}mode & 2 & character &  \vphantom{1} & \\
 \addlinespace
@@ -555,19 +553,40 @@ sa\_object & 0 & list & SA, X13 & SA, TRAMO\_SEATS\\
 \hspace{2em}linearized & 2 & mts, ts, matrix &  & \\
 \addlinespace
 \hspace{2em}components & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final}\\
+\textbf{\hspace{1em}final} & \textbf{1} & \textbf{list} & \textbf{final} & \textbf{}\\
 \hspace{2em}series & 2 & mts, ts, matrix &  & \\
 \hspace{2em}forecasts & 2 & mts, ts, matrix &  & \\
-\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics}\\
+\textbf{\hspace{1em}diagnostics} & \textbf{1} & \textbf{list} & \textbf{diagnostics} & \textbf{}\\
 \addlinespace
 \hspace{2em}variance\_decomposition & 2 & data.frame &  & \\
 \hspace{2em}combined\_test & 2 & list & combined\_test & \\
 \hspace{3em}tests\_for\_stable\_seasonality & 3 & data.frame &  & \\
 \hspace{3em}combined\_seasonality\_test & 3 & character &  & \\
 \hspace{2em}residuals\_test & 2 & data.frame &  & \\
-\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined}\\
+\addlinespace
+\textbf{\hspace{1em}user\_defined} & \textbf{1} & \textbf{list} & \textbf{user\_defined} & \textbf{}\\
 \bottomrule
-\end{longtable}\endgroup{}
+\end{longtable}
+\endgroup{}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{6cm}}
+\caption{\label{tab:plots_methods}Plots available with the \pkg{RJDemetra} package.}\\
+\toprule
+Object class (\code{x} object) & Method & Description\\
+\midrule
+\code{regarima} & \code{plot(x, which = 1)} & Plot of residuals\\
+\code{regarima} & \code{plot(x, which = 2)} & Histogram of standardized residuals and density\\
+\code{regarima} & \code{plot(x, which = 3)} & Normal quantile-quantile (Q-Q) plot of standardized residuals\\
+\code{regarima} & \code{plot(x, which = 4)} & Autocorrelation function (ACF) of residuals\\
+\code{regarima} & \code{plot(x, which = 5)} & Partial autocorrelation function (PACF) of residuals\\
+\addlinespace
+\code{regarima} & \code{plot(x, which = 6)} & Raw and linearized series\\
+\code{regarima} & \code{plot(x, which = 7)} & Plots 3 graphics: linearised series, calendar effects and outliers effects\\
+\code{decomposition_X11}, \code{decomposition_SEATS} & \code{plot(x)} & S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters).\\
+\code{final} & \code{plot(x, type_chart = sa-trend)} & Plots the raw series, the seasonal adjusted series and the trend\\
+\code{final} or \code{SA} & \code{plot(x, type_chart = cal-seas-irr)} & Plots the calendar effects, the seasonal component and the irregular\\
+\bottomrule
+\end{longtable}
 
 \hypertarget{regarima}{%
 \subsection{Regarima}\label{regarima}}
@@ -587,8 +606,9 @@ calling \code{print()} or \code{summary()} (for more detailed output)
 functions. Also a set of graphs is defined within the function
 \code{plot()}. For regarima by default the first six graphs are
 displayed, but specific ones can be chosen within the argument
-\code{which}. Table x summarizes all the graphs available for the
-\code{sa_object}, as well as its \code{plot()} options.
+\code{which}. Table \ref{tab:plots_methods} summarizes all the graphs
+available for the \code{sa_object}, as well as its \code{plot()}
+options.
 
 \begin{CodeChunk}
 
@@ -618,11 +638,47 @@ Log likelihood = -496.8, aic =  1012 aicc =  1012, bic(corrected for length) = 0
 \end{CodeOutput}
 
 \begin{CodeInput}
+R> summary(sax13$regarima)
+\end{CodeInput}
+
+\begin{CodeOutput}
+y = regression model + arima (1, 1, 2, 0, 1, 1)
+
+Model: RegARIMA - X13
+Estimation span: from 1-1991 to 12-2017
+Log-transformation: no
+Regression model: no mean, no trading days effect, no leap year effect, no Easter effect, outliers(4)
+
+Coefficients:
+ARIMA: 
+          Estimate Std. Error  T-stat Pr(>|t|)    
+Phi(1)    -0.76028    0.09609  -7.912 4.49e-14 ***
+Theta(1)  -1.17573    0.09515 -12.356  < 2e-16 ***
+Theta(2)   0.45508    0.05285   8.612 4.44e-16 ***
+BTheta(1) -0.54327    0.04932 -11.015  < 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Regression model: 
+             Estimate Std. Error T-stat Pr(>|t|)    
+AO (1-2016)    4.2913     0.8832  4.859 1.88e-06 ***
+LS (1-2009)   -6.2105     0.9469 -6.559 2.26e-10 ***
+LS (11-2008)  -5.8056     0.9479 -6.125 2.74e-09 ***
+TC (3-2009)   -3.9673     0.9078 -4.370 1.69e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 1.187 on 9 degrees of freedom
+Log likelihood = -496.8, aic =  1012, aicc =  1012, bic(corrected for length) = 0.4898
+\end{CodeOutput}
+
+\begin{CodeInput}
 R> plot(sax13$regarima, which = 2)
 \end{CodeInput}
 
 
-\begin{center}\includegraphics{img/img-unnamed-chunk-7-1} \end{center}
+\begin{center}\includegraphics{img/img-unnamed-chunk-6-1} \end{center}
 
 \end{CodeChunk}
 
@@ -653,7 +709,7 @@ R> sax13$decomposition
 \end{CodeInput}
 
 \begin{CodeOutput}
-Monitoring and Quality Assessment Statistics: 
+ Monitoring and Quality Assessment Statistics:  
       M stats
 M(1)    0.028
 M(2)    0.033
@@ -797,8 +853,42 @@ object.
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> # sats$diagnostics
+R> sats$diagnostics
 \end{CodeInput}
+
+\begin{CodeOutput}
+ Relative contribution of the components to the stationary
+ portion of the variance in the original series,
+ after the removal of the long term trend 
+ Trend computed by Hodrick-Prescott filter (cycle length = 8.0 years)
+           Component
+ Cycle        15.148
+ Seasonal     83.993
+ Irregular     0.174
+ TD & Hol.     0.076
+ Others        0.049
+ Total        99.441
+
+ Combined test in the entire series 
+ Non parametric tests for stable seasonality
+                                                          P.value
+   Kruskall-Wallis test                                      0.000
+   Test for the presence of seasonality assuming stability   0.000
+   Evolutive seasonality test                                0.027
+ 
+ Identifiable seasonality present
+
+ Residual seasonality tests 
+                                      P.value
+ qs test on sa                          1.000
+ qs test on i                           1.000
+ f-test on sa (seasonal dummies)        1.000
+ f-test on i (seasonal dummies)         1.000
+ Residual seasonality (entire series)   1.000
+ Residual seasonality (last 3 years)    0.999
+ f-test on sa (td)                      0.994
+ f-test on i (td)                       0.922
+\end{CodeOutput}
 \end{CodeChunk}
 
 \hypertarget{user-def}{%
@@ -814,20 +904,20 @@ variables need to be defined as characters under the argument
 \code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter
 two functions are presented in the next section \ref{user-def-spec}).
 
-For example, to extract the additional tables \(d16\) and \(c10\) the
+For example, to extract the additional tables \(c10\) and \(d16\) the
 following need to be specified in the function argument:
 
 \begin{CodeChunk}
 
 \begin{CodeInput}
 R> sa_usrdef <- x13_def(myseries, spec = "RSA3", 
-R+ userdefined = c("decomposition.d16","decomposition.c10"))
+R+                      userdefined = c("decomposition.c10", "decomposition.d16"))
 R> sa_usrdef$user_defined
 \end{CodeInput}
 
 \begin{CodeOutput}
 Names of additional variables (2):
-decomposition.d16, decomposition.c10
+decomposition.c10, decomposition.d16
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -845,46 +935,135 @@ functions:
 \section{Model specification: creation and
 modification}\label{user-def-spec}}
 
-See table \ref{tab:t_spec_tab}.
+The user can also create it's own specification, modifying a pre-defined
+specification (described in tables \ref{tab:pre_def_ts} and
+\ref{tab:pre_def_x13}) or a previously defined specification. For that,
+they are two functions for each method (RegARIMA model or seasonal
+adjustment with X-13ARIMA or TRAMO-SEATS):
 
-\begin{table}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  One to create a specification from a pre-defined JDemetra+ model
+  specification. The corresponding functions are:
+  \code{regarima_spec_def_x13()} and \code{regarima_def_tramoseats()}
+  for the RegARIMA model and \code{x13_spec_def()} and
+  \code{tramoseats_spec_def()} for the entire seasonal adjustment model
+  (including the pre\_adjustment with a RegARIMA model).
+\item
+  One to create a specification from a previous specification or a
+  model. The corresponding functions are: \code{regarima_spec_x13()} and
+  \code{regarima_tramoseats()} for the RegARIMA model and
+  \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal
+  adjustment model (including the pre\_adjustment with a RegARIMA
+  model).
+\end{enumerate}
 
-\caption{\label{tab:unnamed-chunk-13}\label{tab:t_spec_tab}Model specification generation and modification}
-\centering
-\fontsize{7}{9}\selectfont
-\begin{tabular}[t]{>{\centering\arraybackslash}p{2.cm}c>{\centering\arraybackslash}p{3.cm}>{\centering\arraybackslash}p{3.cm}>{\centering\arraybackslash}p{3.5cm}}
-\toprule
-Estimation & Functions & Specification (spec), class & Functions to generate/modify the spec & Input for function in (4)\\
-\midrule
-(1) & (2) & (3) & (4) & (5)\\
-SA: X-13-ARIMA & x13\_def & predefined - see table 2 & N/A & N/A\\
- & x13 & c(SA\_spec, X13) & x13\_spec\_def & predefined spec - see table 2\\
- &  &  & x13\_spec & sa\_object of class c(SA,  X13)\\
- &  &  &  & spec of class c(SA\_spec, X13)\\
-\addlinespace
-SA: TRAMO-SEATS & tramoseats\_def & predefined - see table 1 & N/A & N/A\\
- & tramoseats & c(SA\_spec, TRAMO\_SEATS) & tramoseats\_spec\_def & predefined spec - see table 1\\
- &  &  & tramoseats & sa\_object of class c(SA,  TRAMO\_SEATS)\\
- &  &  &  & spec of class c(SA\_spec, TRAMO\_SEATS)\\
-RegARIMA: X13-ARIMA & regarima\_def\_x13 & predefined - see table 2 & N/A & N/A\\
-\addlinespace
- & regarima & c(regarima\_spec, X13) & regarima\_spec\_def\_x13 & predefined - see table 2\\
- &  &  & regarima\_spec\_x13 & regarima object of class c(regarima, X13)\\
- &  &  &  & spec of class c(regarima\_spec, X13)\\
-RegARIMA: TRAMO-SEATS & regarima\_def\_tramoseats & predefined - see table 1 & N/A & N/A\\
- & regarima & c(regarima\_spec, TRAMO\_SEATS) & regarima\_spec\_def\_tramoseats & predefined - see table 1\\
-\addlinespace
- &  &  & regarima\_spec\_x13 & regarima object of class c(regarima, TRAMO\_SEATS)\\
- &  &  &  & spec of class c(regarima\_spec, TRAMO\_SEATS))\\
-\bottomrule
-\end{tabular}
-\end{table}
+Once the specification it's created, the regARIMA model can be performed
+by \code{regarima()}, the seasonal adjustment with X-13ARIMA by
+\code{x13()} and with TRAMO-SEATS by \code{tramoseats()}
 
-\hypertarget{wrong-specifications-corrections}{%
-\subsection{Wrong specifications
-corrections}\label{wrong-specifications-corrections}}
+For example, to create it's own RegARIMA model for the TRAMO-SEATS
+method adding an additive outlier in October 2009:
 
-Parler des corrections automatiques ?
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> regarima_ts_spec <- regarima_spec_def_tramoseats(spec = "TRfull",
+R+              usrdef.outliersEnabled = TRUE,
+R+              usrdef.outliersType = "AO",
+R+              usrdef.outliersDate = "2009-10-01")
+R> regarima_ts_model <- regarima(series = ipi_c_eu[, "EA19"],
+R+                               spec = regarima_ts_spec)
+R> regarima_ts_model
+\end{CodeInput}
+
+\begin{CodeOutput}
+y = regression model + arima (3, 1, 0, 0, 1, 1)
+Log-transformation: no
+Coefficients:
+          Estimate Std. Error
+Phi(1)     0.09633      0.055
+Phi(2)    -0.16551      0.055
+Phi(3)    -0.29422      0.056
+BTheta(1) -0.50637      0.051
+
+             Estimate Std. Error
+Monday       -0.23323      0.094
+Tuesday      -0.01617      0.094
+Wednesday     0.29430      0.095
+Thursday     -0.35287      0.095
+Friday        0.13248      0.094
+Saturday      0.30763      0.095
+AO (10-2009) -0.80480      0.787
+AO (1-2016)   3.25565      0.807
+
+
+Residual standard error: 1.226 on 311 degrees of freedom
+Log likelihood = -506.6, aic =  1039 aicc =  1040, bic(corrected for length) = 0.6292
+\end{CodeOutput}
+\end{CodeChunk}
+
+And to modify the specification of the x-13ARIMA model of the object
+\code{sa_usrdef}, defined in section \ref{user-def}, changing the
+seasonal filter and performing a working day adjustment:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> sa_x13_spec <- x13_spec(object = sa_usrdef,
+R+                          tradingdays.option = "WorkingDays",
+R+                          x11.seasonalma = "S3X3")
+R> sa_x13_model <- x13(series = ipi_c_eu[, "EA19"],
+R+                     spec = sa_x13_spec)
+\end{CodeInput}
+\end{CodeChunk}
+
+Almost all the specification available in JDemetra+ can be used in
+\pkg{RJDemetra}\footnote{In the current release of the package, it is
+  not possible to use user-defined calendars regressors: they have to be
+  added as user-defined variable (the difference is that there is no
+  automatic test to remove or not the regressors). Moreover, contrary to
+  what is possible under JDemetra+, ramp effects and intervention
+  variables are not intended to be added in the specification since the
+  corresponding regressors can be easily created through \proglang{R}.}.
+For more details see the help of the correponding function or the
+documentation of JDemetra+.
+
+To prevent from wrong user-defined specification, they are also
+automatic checks in \pkg{RJDemetra}, like in JDemetra+. For example, to
+pre-specify an outlier or a user-defined variable you have to enable
+them (setting the parameter \code{usrdef.outliersEnabled} or
+\code{usrdef.varEnabled} to \code{TRUE}); or to fix the coefficient of
+an outlier or a user-defined regresso you have specify the
+transformation function (\code{transform.function}, it cannot be
+automatic). Those checks are done each time a new specification it's
+create. Therefore, some specifications cannot be setted in two staged.
+For example, fixing the coefficient of an outlier has to be done the
+save time the outliers are defined. The following code doesn't fix the
+coefficient of the outlier previously in January 2001:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> regarima_wrong_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
+R+              transform.function = "Log",
+R+              usrdef.outliersCoef =  -0.8)
+\end{CodeInput}
+\end{CodeChunk}
+
+To fix it you have to re-defined the outlier:
+
+\begin{CodeChunk}
+
+\begin{CodeInput}
+R> regarima_good_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
+R+              transform.function = "Log",
+R+              usrdef.outliersType = "AO",
+R+              usrdef.outliersDate = "2009-10-01",
+R+              usrdef.outliersCoef =  -0.8)
+\end{CodeInput}
+\end{CodeChunk}
 
 \hypertarget{manipulate-workspace}{%
 \section{Manipulate JDemetra+ workspaces}\label{manipulate-workspace}}
@@ -908,7 +1087,8 @@ performed with the TRAMO-SEATS or X-13ARIMA-SEATS methods.
 
 Export models to workspace allows to store easily the seasonal
 adjustment models, to change the specifications with the JDemetra+
-graphical interface and to give models to non R users (à reformuler).
+graphical interface and to give models users unfamiliar with
+\proglang{R}.
 
 \hypertarget{export-wk}{%
 \subsection{Export a workspace}\label{export-wk}}
@@ -1096,10 +1276,6 @@ particular:
   Seasonal adjustment models with no pre-processing (X-11 specification)
   are not supported: \code{NULL} object will be returned.
 \end{itemize}
-
-\hypertarget{advanced-usage-and-examples}{%
-\section{Advanced usage and
-examples}\label{advanced-usage-and-examples}}
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
