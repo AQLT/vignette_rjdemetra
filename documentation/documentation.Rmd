@@ -9,15 +9,15 @@ author:
 title:
   formatted: "\\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software"
   # If you use tex in the formatted title, also supply version without
-  plain:     "A Capitalized Title: Something about a Package foo"
+  plain:     "\\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software"
   # For running headers, if needed
   short:     "\\pkg{RJDemetra}: A R Interface To JDemetra+ Seasonal Adjustment Software"
 abstract: >
   The abstract of the article.
 keywords:
   # at least one keyword must be supplied
-  formatted: ["\\proglang{R}", seasonal adjustment, calendar effects, time series]
-  plain:     [R, seasonal adjustment, calendar effects, time series]
+  formatted: ["\\proglang{R}", seasonal adjustment, calendar effects, ARIMA, time series]
+  plain:     [R, seasonal adjustment, calendar effects, ARIMA, time series]
 preamble: >
   \usepackage{amsmath}
   \usepackage{booktabs}
@@ -146,7 +146,7 @@ Besides seasonal adjustment, JDemetra+ bundles other time series models that are
 The package \pkg{RJDemetra} provides a R interface to the seasonal adjustment software JDemetra+. \pkg{RJDemetra} uses Java libraries of JDemetra+, thus it relies on the \pkg{rJava} [@rJava] package and Java SE 8 or later version is required. It allows to:
 
 * perform seasonal adjustment with TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA-SEATS with pre-defined (section \ref{pre-def-est}) and user-defined specification (section \ref{user-def-spec});  
-* acces to all the output available in JDemetra+ (section XXX);  
+* acces to all the output available in JDemetra+ (section \ref{sa-obj-struc});  
 * import and export JDemetra+ workspaces (section \ref{manipulate-workspace}).
 
 It can be installed from CRAN:
@@ -257,13 +257,13 @@ sats <- tramoseats_def(myseries, spec = "RSAfull", userdefined = NULL)
 
 In section \ref{user-def-spec} it is presented how to modify model specifications, including the possibility to incorprate user-defined regressors.
 
-# SA object structure
+# Class object structure {#sa-obj-struc}
 
-In the previous section it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
+In section \ref{pre-def-est} it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
 
-As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. The first column gives the name of \code{sa_object} sub-components, the second the level of the sub-components, the third their type, and the fourth and fifth the name of the new created S3 classe (if any). Where the forth column corresponds to the case when the estimation is done with X-12ARIMA/X-13ARIMA and fifth when estimated with TRAMO-SEATS+. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see column 4 and 5). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the regarima object is created.
+As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see table \ref{tab:obj_tab}). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the regarima object is created. All the plots methods are detailed in table \ref{tab:plots_methods}.
 
-```{r echo=FALSE, results='asis'}
+```{r obj_tab, echo=FALSE, results='asis'}
 object=c("sa_object","regarima","specification","estimate","transform","regression","userdef","specification","outliers","variables","series","description","trading.days","easter","outliers","arima","specification","coefficients","forecast","span","arma","arima.coefficients","regression.coefficients","loglik","model","spec_rslt","effects","residuals","residuals.stat","st.error","tests","forecast","decomposition","specification","mode","mstats","si_ratio","s_filter","t_filter","decomposition","specification","mode","model","model","sa","trend","seasonal","transitory","irregular","linearized","components","final","series","forecasts","diagnostics","variance_decomposition","combined_test","tests_for_stable_seasonality","combined_seasonality_test","residuals_test","user_defined")
 type=c("list","list","list","data.frame","data.frame","list","list","data.frame","data.frame or NA(empty)","list","mts, ts, matrix or NA(empty)","data.frame or NA(empty)","data.frame","data.frame","data.frame","list","data.frame","data.frame or NA(empty)","data.frame","data.frame","vector - numeric","matrix","matrix","matrix","list","data.frame","mts, ts, matrix","ts","list","numeric","data.frame","mts, ts, matrix","list","data.frame","character","matrix","mts, ts, matrix","vector - character","character","list","data.frame","character","list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","matrix or empty list","mts, ts, matrix","mts, ts, matrix","list","mts, ts, matrix","mts, ts, matrix","list","data.frame","list","data.frame","character","data.frame","list")
 class1=c("SA, X13","regarima, X13","","","","","","","","","","","","","","","","","","","","","","","","","","","","","regarima_rtests, data.frame","","decomposition_X11","X11_spec, data.frame","","","","","","","seats_spec, data.frame","","","","","","","","","","","final","","","diagnostics","","combined_test","","","","user_defined")
@@ -282,7 +282,7 @@ obj_tab[obj_tab[,"level"]==6,1] <- paste0("\\hspace{6em}",obj_tab[obj_tab[,"leve
 obj_tab <- apply(obj_tab, 2, function(x)gsub("_","\\_",x,fixed = TRUE))
 colnames(obj_tab)=c("Object","Level","Type","Class","Class")
 
-kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "\\label{tab:obj_tab}SA object structure")%>%
+kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "SA object structure")%>%
   
   add_header_above(c(" "," "," ","x13/x13_def"," tramoseats/tramoseats_def"), italic = T)%>%
   
@@ -294,12 +294,40 @@ kable(obj_tab, "latex", longtable = T,escape = FALSE, booktabs = T, caption = "\
   
 ```
 
+```{r plots_methods, echo=FALSE, results='asis'}
+plot_methods <- structure(list(`Object class (\\code{x} object)` = c("\\code{regarima}", 
+                                                            "\\code{regarima}", "\\code{regarima}", " \\code{regarima}", 
+                                                            "\\code{regarima}", "\\code{regarima}", " \\code{regarima}", 
+                                                            "\\code{decomposition_X11}, \\code{decomposition_SEATS}", " \\code{final}", 
+                                                            "\\code{final} or \\code{SA}"), Method = c("\\code{plot(x, which = 1)}", "\\code{plot(x, which = 2)}", 
+                                                                                          "\\code{plot(x, which = 3)}", "\\code{plot(x, which = 4)}", "\\code{plot(x, which = 5)}", 
+                                                                                          "\\code{plot(x, which = 6)}", "\\code{plot(x, which = 7)}", "\\code{plot(x)}", 
+                                                                                          "\\code{plot(x, type_chart = sa-trend)}", "\\code{plot(x, type_chart = cal-seas-irr)}"
+                                                            ), Description = c("Plot of residuals", "Histogram of standardized residuals and density", 
+                                                                               "Normal quantile-quantile (Q-Q) plot of standardized residuals", 
+                                                                               "Autocorrelation function (ACF) of residuals", "Partial autocorrelation function (PACF) of residuals", 
+                                                                               "Raw and linearized series", "Plots 3 graphics: linearised series, calendar effects and outliers effects", 
+                                                                               "S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters).", 
+                                                                               "Plots the raw series, the seasonal adjusted series and the trend", 
+                                                                               "Plots the calendar effects, the seasonal component and the irregular"
+                                                            )), class = "data.frame", row.names = c(NA, -10L))
+
+
+kable(plot_methods, "latex", longtable = T,
+      escape = FALSE, booktabs = T,
+      caption = "Plots available with the \\pkg{RJDemetra} package.") %>%
+  column_spec(1, width = "4cm") %>%
+  column_spec(2, width = "4.5cm") %>%
+  column_spec(3, width = "6cm")
+```
+
 ## Regarima
 
-The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}). It comprises also model quality measures (\code{loglik}), regarima specification after it’s estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table x summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
+The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}). It comprises also model quality measures (\code{loglik}), regarima specification after it’s estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table \ref{tab:plots_methods} summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
 
 ```{r}
 sax13$regarima
+summary(sax13$regarima)
 plot(sax13$regarima, which = 2)
 ```
 
@@ -311,15 +339,19 @@ Then, the \code{decomposition_X11} object comprises quality measures on the deco
 ```{r}
 sax13$decomposition
 ```
+
 As a reminder, in SEATS it is assumed that each component of the linearized series (received from TRAMO) is an outcome of a linear stochastic process and SEATS estimates an ARIMA model for each component (i.e. trend, seasonal, transitory and irregular). Subsequently, the \code{decomposition_SEATS} object contains the information on the estimated ARIMA models (\code{model}), the linearized components, as obtained from TRAMO (\code{linearized}), and the theoretical components calculated from the ARIMA models (\code{components}). The code below presents the output for the SEATS decomposition, with the information on the ARIMA models:
+
 ```{r}
 sats$decomposition
 ```
+
 ## Final
 The final object has a simple structure as it includes the input series, final seasonally adjusted series and the final components (i.e. $t$ - trend-cycle, $s$ - seasonal component and $i$ - irregular component) (\code{series}), as well as their forecasts (\code{forecasts}). 
 ```{r}
 sats$final
 ```
+
 ## Diagnostics
 This part of the \code{sa_object} includes several diagnostics on the presence of seasonality in the input series and on the quality of the seasonal adjustment.
 
@@ -330,18 +362,18 @@ Whereas, the quality checking is grouped into two sets. The first looks at the c
 All the checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
 
 ```{r}
-# sats$diagnostics
+sats$diagnostics
 ```
 
 ## user defined {#user-def}
 
-As presented in the table \ref{tab:obj_tab} and in the previous sections the \code{sa_object} has a defined structure with a defined content. Nevertheless the user can extract additional output     from the seasonal adjustment estimation that will be stored under user_defined object in a form of a list.  In order extract the additional output the extra variables need to be defined as characters under the argument \code{userdefined} of the functions \code{x13_def()}, \code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter two functions are presented in the next section \ref{user-def-spec}).
+As presented in the table \ref{tab:obj_tab} and in the previous sections the \code{sa_object} has a defined structure with a defined content. Nevertheless the user can extract additional output from the seasonal adjustment estimation that will be stored under user_defined object in a form of a list.  In order extract the additional output the extra variables need to be defined as characters under the argument \code{userdefined} of the functions \code{x13_def()}, \code{tramoseats_def()}, \code{x13()} or \code{tramoseats()} (the latter two functions are presented in the next section \ref{user-def-spec}).
 
-For example, to extract the additional tables $d16$ and $c10$ the following need to be specified in the function argument:
+For example, to extract the additional tables $c10$ and $d16$  the following need to be specified in the function argument:
 
 ```{r}
 sa_usrdef <- x13_def(myseries, spec = "RSA3", 
-userdefined = c("decomposition.d16","decomposition.c10"))
+                     userdefined = c("decomposition.c10", "decomposition.d16"))
 sa_usrdef$user_defined
 ```
 
@@ -353,27 +385,57 @@ The list of all available variables can be extracted with the following function
 
 # Model specification: creation and modification {#user-def-spec}
 
-See table \ref{tab:t_spec_tab}.
+The user can also create it's own specification, modifying a pre-defined specification (described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}) or a previously defined specification. For that, they are two functions for each method (RegARIMA model or seasonal adjustment with X-13ARIMA or TRAMO-SEATS):
 
-```{r, echo=FALSE, results='asis'}
-t_spec_func <- structure(list(Estimation=c("(1)","SA: X-13-ARIMA","","","","SA: TRAMO-SEATS","","","","RegARIMA: X13-ARIMA","","","","RegARIMA: TRAMO-SEATS","","",""),
-                            `Functions`=c("(2)","x13_def","x13","","","tramoseats_def","tramoseats","","","regarima_def_x13","regarima","","","regarima_def_tramoseats","regarima","",""),
-                            `Specification (spec), class`=c("(3)","predefined - see table 2","c(SA_spec, X13)","","","predefined - see table 1","c(SA_spec, TRAMO_SEATS)","","","predefined - see table 2","c(regarima_spec, X13)","","","predefined - see table 1","c(regarima_spec, TRAMO_SEATS)","",""),
-                            `Functions to generate/modify the spec`=c("(4)","N/A","x13_spec_def","x13_spec","","N/A","tramoseats_spec_def","tramoseats","","N/A","regarima_spec_def_x13","regarima_spec_x13","","N/A","regarima_spec_def_tramoseats","regarima_spec_x13",""),
-                            `Input for function in (4)`=c("(5)","N/A","predefined spec - see table 2","sa_object of class c(SA,  X13)","spec of class c(SA_spec, X13)","N/A","predefined spec - see table 1","sa_object of class c(SA,  TRAMO_SEATS)","spec of class c(SA_spec, TRAMO_SEATS)","N/A","predefined - see table 2","regarima object of class c(regarima, X13)","spec of class c(regarima_spec, X13)","N/A","predefined - see table 1","regarima object of class c(regarima, TRAMO_SEATS)","spec of class c(regarima_spec, TRAMO_SEATS))")),
-                            class = "data.frame",row.names=c(NA,-17L))
+1. One to create a specification from a pre-defined JDemetra+ model specification. The corresponding functions are: \code{regarima_spec_def_x13()} and \code{regarima_def_tramoseats()} for the RegARIMA model and \code{x13_spec_def()} and \code{tramoseats_spec_def()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
 
-kable(t_spec_func, "latex", booktabs = T, caption = "\\label{tab:t_spec_tab}Model specification generation and modification",align = "c") %>%
-  column_spec(c(1), width = "2.cm") %>%
-  column_spec(c(3,4,5), width = "3.cm") %>%
-  column_spec(c(5), width = "3.5cm") %>%
-  kable_styling(font_size = 7)
+2. One to create a specification from a previous specification or a model. The corresponding functions are: \code{regarima_spec_x13()} and \code{regarima_tramoseats()} for the RegARIMA model and \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
+
+Once the specification it's created, the regARIMA model can be performed by \code{regarima()}, the seasonal adjustment with X-13ARIMA by \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}
+
+For example, to create it's own RegARIMA model for the TRAMO-SEATS method adding an additive outlier in October 2009:
+
+```{r}
+regarima_ts_spec <- regarima_spec_def_tramoseats(spec = "TRfull",
+             usrdef.outliersEnabled = TRUE,
+             usrdef.outliersType = "AO",
+             usrdef.outliersDate = "2009-10-01")
+regarima_ts_model <- regarima(series = ipi_c_eu[, "EA19"],
+                              spec = regarima_ts_spec)
+regarima_ts_model
 ```
 
+And to modify the specification of the x-13ARIMA model of the object \code{sa_usrdef}, defined in section \ref{user-def}, changing the seasonal filter and performing a working day adjustment:
+```{r}
+sa_x13_spec <- x13_spec(object = sa_usrdef,
+                         tradingdays.option = "WorkingDays",
+                         x11.seasonalma = "S3X3")
+sa_x13_model <- x13(series = ipi_c_eu[, "EA19"],
+                    spec = sa_x13_spec)
+```
 
-## Wrong specifications corrections
-Parler des corrections automatiques ?
+Almost all the specification available in JDemetra+ can be used in \pkg{RJDemetra}[^3]. For more details see the help of the correponding function or the documentation of JDemetra+.
+
+[^3]: In the current release of the package, it is not possible to use user-defined calendars regressors: they have to be added as user-defined variable (the difference is that there is no automatic test to remove or not the regressors). Moreover, contrary to what is possible under JDemetra+, ramp effects and intervention variables are not intended to be added in the specification since the corresponding regressors can be easily created through \proglang{R}.
+
+To prevent from wrong user-defined specification, they are also automatic checks in \pkg{RJDemetra}, like in JDemetra+. For example, to pre-specify an outlier or a user-defined variable you have to enable them (setting the parameter \code{usrdef.outliersEnabled} or \code{usrdef.varEnabled} to \code{TRUE}); or to fix the coefficient of an outlier or a user-defined regresso you have specify the transformation function (\code{transform.function}, it cannot be automatic). Those checks are done each time a new specification it's create. Therefore, some specifications cannot be setted in two staged. For example, fixing the coefficient of an outlier has to be done the save time the outliers are defined. The following code doesn't fix the coefficient of the outlier previously in January 2001:
+
+```{r}
+regarima_wrong_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
+             transform.function = "Log",
+             usrdef.outliersCoef =  -0.8)
+```
+
+To fix it you have to re-defined the outlier:
   
+```{r}
+regarima_good_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
+             transform.function = "Log",
+             usrdef.outliersType = "AO",
+             usrdef.outliersDate = "2009-10-01",
+             usrdef.outliersCoef =  -0.8)
+```
+
 # Manipulate JDemetra+ workspaces {#manipulate-workspace}
 
 \pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be openned by the software. A workspace includes :
@@ -383,7 +445,7 @@ Parler des corrections automatiques ?
 
 Each workspace can contain several multi-processings and each multi-processing stores the results of the seasonal adjustment procedure performed with the TRAMO-SEATS or X-13ARIMA-SEATS methods.
 
-Export models to workspace allows to store easily the seasonal adjustment models, to change the specifications with the JDemetra+ graphical interface and to give models to non R users (à reformuler).
+Export models to workspace allows to store easily the seasonal adjustment models, to change the specifications with the JDemetra+ graphical interface and to give models users unfamiliar with \proglang{R}.
 
 ## Export a workspace {#export-wk}
 
@@ -475,8 +537,6 @@ The imports of seasonal adjustment models from a workspace works well when it ha
 - Seasonal adjustment models with ramp effect or intervention variables will be partially imported: the result of the imported model will be correct but changing the specification (throw \code{x13_spec()} or \code{tramoseats_spec()}) will erase them.  
 - Seasonal adjustment models with no pre-processing (X-11 specification) are not supported: \code{NULL} object will be returned.
 
-
-# Advanced usage and examples
 
 # Conclusion
 
