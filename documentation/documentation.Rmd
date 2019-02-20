@@ -17,7 +17,7 @@ abstract: >
 keywords:
   # at least one keyword must be supplied
   formatted: ["\\proglang{R}", seasonal adjustment, calendar effects, ARIMA, time series]
-  plain:     [R, seasonal adjustment, calendar effects, ARIMA,time series]
+  plain:     [R, seasonal adjustment, calendar effects, ARIMA, time series]
 preamble: >
   \usepackage{amsmath}
   \usepackage{booktabs}
