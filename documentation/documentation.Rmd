@@ -62,9 +62,9 @@ options(enable_print_style = FALSE)
 
 # Introduction
 
-Since the 20th century, more and more infra-annual statistics are produced, especially by national institutes, to analyse the progression and the outlook of an economy. It is for example the case of the gross domestic product (GDP), unemployment rate, household consumption of goods and industrial production indices. However, most of those time series are affected by seasonal and trading day effects. A seasonal effects is an effect that occur in the same calendar month with similar magnitude and direction from year to year. For instance, automobile production is usually lower during summer, due to holidays, and chocolate sales are usually higher in December, due to Christmas. Trading day effect is the fact that a time series can be affected by each calendar month’s weekday composition. For example retail sales are usually higher on Saturday, thus they are likely to be higher in months with a surplus of weekend days.
+Since the 20th century, more and more infra-annual statistics are produced, especially by national institutes, to analyse the short-term evolution of an economy. It is for example the case of the gross domestic product (GDP), unemployment rate, household consumption of goods and industrial production indices. However, most of those time series are affected by seasonal and trading days effects. A seasonal effect is an effect that occur in the same calendar month with similar magnitude and direction from year to year. For instance, automobile production is usually lower during summer, due to holidays, and chocolate sales are usually higher in December, due to Christmas. Trading days effect is the fact that a time series can be affected by each calendar month’s weekday composition. For example retail sales are usually higher on Saturday, thus they are likely to be higher in months with a surplus of weekend days.
 
-Therefore, seasonal and trading days effects can make it difficult to analyse the infra-annual movements of a time series or to make spatial comparison. That’s why time series are often seasonally and working day adjusted and seasonal adjustment is the process of removing the effects of seasonal and trading day fluctuations.
+Therefore, seasonal and trading days effects can make it difficult to analyse the infra-annual movements of a time series or to make spatial comparison. That’s why time series are often seasonally and trading days adjusted and seasonal adjustment is the process of removing the effects of seasonal and trading day fluctuations.
 
 The most popular seasonal adjustment methods are TRAMO-SEATS+[^1] [@gomez1996programs; @caporello2004program], a parametric method based on ARIMA models, and X-13-ARIMA-SEATS[^2] [@findleyx12; @ladiray1999x11en], a non-parametric method based on moving average. Both methods are recommended by Eurostat and the European Central Bank (ECB) to seasonnaly adjust economic indicators. These methods proceed in two steps summarized in figure \ref{fig:2_step_proc}.
 
@@ -85,14 +85,14 @@ $$z_t=y_t\beta+x_t$$
 where
 
 * $z_t$ - is the original series;
-* $\beta = (\beta_1,...,\beta_n)$ - a vector of regression coefficients;
-* $y_t = (y_{1t},...,y_{nt})$ - $n$ regression variables (outliers, calendar effects, user-defined variables);
+* $\beta = (\beta_1,\dots,\beta_n)$ - a vector of regression coefficients;
+* $y_t = (y_{1t},\dots,y_{nt})$ - $n$ regression variables (outliers, calendar effects, user-defined variables);
 * $x_t$ - a disturbance that follows the general ARIMA process:
 * $\phi(B)\delta(B)x_t=\theta(B)a_t$; $\phi(B), \delta(B)$ and $\theta(B)$ are the finite polynomials in $B$; $a_t$ is a white-noise variable with zero mean and a constant variance.
 
  The polynomial $\phi(B)$ is a stationary autoregressive (AR) polynomial in $B$, which is a product of the stationary regular AR polynomial in $B$ and the stationary seasonal polynomial in $B^s$:
 
-$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi_{bp}B^{bps}$$
+$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+\dots+\phi_pB^p)(1+\Phi_1B^s+\dots+\Phi_{bp}B^{bps}$$
 
  where:
 
@@ -102,7 +102,7 @@ $$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi
  
  The polynomial $\theta(B)$ is an invertible moving average (MA) polynomial in $B$, which is a product of the invertible regular MA polynomial in $B$ and the invertible seasonal MA polynomial in $B^s$:
 
- $$\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+...+\theta_qB^q)(1+\Theta_1B^s+...+\Theta_{bq}B^{bqs})$$
+ $$\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+\dots+\theta_qB^q)(1+\Theta_1B^s+\dots+\Theta_{bq}B^{bqs})$$
 
  where:
 
@@ -157,12 +157,12 @@ install.packages("RJDemetra")
 
 The development version can be installed from GitHub with \pkg{devtools} [@devtools]:
 ```{r, eval= FALSE}
-devtools::install_github("nbbrd/rjdemetra", args = "--no-multiarch")
+devtools::install_github("jdemetra/rjdemetra")
 ```
 
 ## Dataset
 
-In this package the sts_inpr_m database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from january 1990 to december 2017 which are considered to be affected by seasonal and working day effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro aera (EA19):
+In this package the sts_inpr_m database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from january 1990 to december 2017 which are considered to be affected by seasonal and trading days effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro aera (EA19):
 
 ```{r basic_raw_data_plot}
 library(RJDemetra)
@@ -171,7 +171,7 @@ plot(ipi_c_eu[, "EA19"])
 
 ## Print styling
 
-By default, a color styling is used for the print methods of the objects created by \pkg{RJDemetra}. It can causes troubles with some outputs (for example with \pkg{rmarkdown} [@rmarkdown]) and can be disabled in each print function with the argument \code{enable_print_style = FALSE} or setting the global option \code{enable_print_style}:
+By default, a color styling is used for the \code{print} methods of the objects created by \pkg{RJDemetra}. It can causes troubles with some outputs (for example with \pkg{rmarkdown} [@rmarkdown]) and can be disabled in each \code{print} function with the argument \code{enable_print_style = FALSE} or setting the global option \code{enable_print_style} to \code{FALSE}:
 
 ```{r}
 options(enable_print_style = FALSE)
@@ -180,15 +180,15 @@ options(enable_print_style = FALSE)
 
 # Estimate a pre-defined RegARIMA and SA model {#pre-def-est}
 
-As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal adjustment using pre-defined model specifications. The pre-defined specifications correspond to most commonly used specifications and users are recommended to start their analysis with one of them. They are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation methods. It is also possible to perform only the  first step of seasonal adjustment (the RegARIMA estimation). The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2). With more details, setting described in tables tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13} are:
+As in JDemetra+, \pkg{RJDemetra} allows to perform seasonal adjustment using pre-defined model specifications. The pre-defined specifications correspond to most commonly used specifications and users are recommended to start their analysis with one of them. They are separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation methods. It is also possible to perform only the  first step of seasonal adjustment (the RegARIMA estimation). The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2). With more details, setting described in tables tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13} are:
 
 * Transformation test: a test to choose between an additive decomposition (no transformation) and a multiplicative decomposition (logarithmic transformation).  
 * Pre-adjustment for leap-year: in the case of a multiplicaive decomposition; a correction of the February values is applied to the original series (before transformation). The original values in February are multiplied by $\frac{28.25}{29}$ for leap years, by $\frac{28.25}{28}$  for non-leap years and values for other months are not modified. In the case of multiplicative models, this is equivalent to adding a leap year regressor [@bell1992lengthmonthadj].
 * Working days: a pre-test is made for a presence of a working day effect.  
 * Trading days: a pre-test is made for a presence of a trading day effect.   
 * Easter: a pre-test for a presence of  the Easter effect. The default length of the Easter effect is 6 days (for TRAMO-SEATS specifications) and 8 days (for X-13ARIMA-SEATS specifications).   
-* Outliers: an automatic identification of three types of outliers: AO (additive outliers), LS (level shifts) and TC (transitory changes), using a default critical value.  
-* ARIMA model: the choice between fixing the ARIMA model structure to (0,1,1)(0,1,1) (Airlin model) or searching for the ARIMA model using an automatic model identification procedure. The Airline model is used as a default model in several TRAMO-SEATS+ and X-13ARIMA-SEATS specifications because it has been shown in many studies that this model is appropriate for many real seasonal monthly or a quarterly time series. Moreover, the Airline model approximates well many other models and provides an excellent "benchmark" model [@maravall2009identification].
+* Outliers: an automatic identification of three types of outliers: AO (additive outlier), LS (level shift) and TC (transitory change), using a default critical value. The automatic identification of SO (seasonal outlier) is not enabled by default.
+* ARIMA model: the choice between fixing the ARIMA model structure to (0,1,1)(0,1,1) (Airline model) or searching for the ARIMA model using an automatic model identification procedure. The Airline model is used as a default model in several TRAMO-SEATS+ and X-13ARIMA-SEATS specifications because it has been shown in many studies that this model is appropriate for many real seasonal monthly or a quarterly time series. Moreover, the Airline model approximates well many other models and provides an excellent "benchmark" model [@maravall2009identification].
 
 
 ```{r pre_def_ts, echo=FALSE, results='asis'}
@@ -261,7 +261,7 @@ In section \ref{user-def-spec} it is presented how to modify model specification
 
 In section \ref{pre-def-est} it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
 
-As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consits of lists of S3 class sub-objects. For each of the class \code{print, plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see table \ref{tab:obj_tab}). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the regarima object is created. All the plots methods are detailed in table \ref{tab:plots_methods}.
+As a result of seasonal adjustment estimation (e.g. function \code {x13_def} or \code {tramoseats_def}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or \code{c("SA","TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consist of lists of S3 class sub-objects. For each of the class \code{print} and \code{plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab}. In general, the \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used the regarima, final and diagnostics objects contain the same components, though with different classes (see table \ref{tab:obj_tab}). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the regarima object is created. All the plots methods are detailed in table \ref{tab:plots_methods}.
 
 ```{r obj_tab, echo=FALSE, results='asis'}
 object=c("sa_object","regarima","specification","estimate","transform","regression","userdef","specification","outliers","variables","series","description","trading.days","easter","outliers","arima","specification","coefficients","forecast","span","arma","arima.coefficients","regression.coefficients","loglik","model","spec_rslt","effects","residuals","residuals.stat","st.error","tests","forecast","decomposition","specification","mode","mstats","si_ratio","s_filter","t_filter","decomposition","specification","mode","model","model","sa","trend","seasonal","transitory","irregular","linearized","components","final","series","forecasts","diagnostics","variance_decomposition","combined_test","tests_for_stable_seasonality","combined_seasonality_test","residuals_test","user_defined")
@@ -307,7 +307,7 @@ plot_methods <- structure(list(`Object class (\\code{x} object)` = c("\\code{reg
                                                                                "Normal quantile-quantile (Q-Q) plot of standardized residuals", 
                                                                                "Autocorrelation function (ACF) of residuals", "Partial autocorrelation function (PACF) of residuals", 
                                                                                "Raw and linearized series", "Plots 3 graphics: linearised series, calendar effects and outliers effects", 
-                                                                               "S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters).", 
+                                                                               "S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters)", 
                                                                                "Plots the raw series, the seasonal adjusted series and the trend", 
                                                                                "Plots the calendar effects, the seasonal component and the irregular"
                                                             )), class = "data.frame", row.names = c(NA, -10L))
@@ -323,7 +323,7 @@ kable(plot_methods, "latex", longtable = T,
 
 ## Regarima
 
-The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}). It comprises also model quality measures (\code{loglik}), regarima specification after it’s estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table \ref{tab:plots_methods} summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
+The regarima object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the arima processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including arma orders (\code{arma}). It includes also model quality measures (\code{loglik}), regarima specification after its estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the regarima model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For regarima by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table \ref{tab:plots_methods} summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
 
 ```{r}
 sax13$regarima
@@ -335,7 +335,7 @@ plot(sax13$regarima, which = 2)
 
 As afore-mentioned the decomposition method differs between TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA, where SEATS is based on ARIMA-model and X11-algorithm on linear filters. Therefore also the composition of this object differs when estimating with the two methods (hence the two decomposition objects in the table \ref{tab:obj_tab}). The only common part is the first two sub-objects with the model specification (\code{specification}) and information on the decomposition mode (\code{mode}; e.g.: additive).
 
-Then, the \code{decomposition_X11} object comprises quality measures on the decomposition (\code{mstats}), namely the $M$ and $Q$ statistics. It contains also the final unmodified si-ratios $d8$ and final seasonal factors $d10$ (\code{si_ratio}), as well as the information on the final seasonal filter (\code{s_filter}) and trend filter(\code{t_filter}). The code below presents the output for X11 decomposition:
+Then, the \code{decomposition_X11} object comprises quality measures on the decomposition (\code{mstats}), namely the $M$ and $Q$ statistics. It contains also the final unmodified S-I ratios $d8$ and final seasonal factors $d10$ (\code{si_ratio}), as well as the information on the final seasonal filter (\code{s_filter}) and trend filter(\code{t_filter}). The code below presents the output for X11 decomposition:
 ```{r}
 sax13$decomposition
 ```
@@ -438,7 +438,7 @@ regarima_good_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
 
 # Manipulate JDemetra+ workspaces {#manipulate-workspace}
 
-\pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be openned by the software. A workspace includes :
+\pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be openned by the software. A workspace includes:
 
 - The XML file that enables the user to import the workspace to JDemetra+ and to display it content;  
 - A folder containing several sub-folfders that correspond to the different types of items created by the user.
@@ -470,7 +470,7 @@ wk <- new_workspace()
 new_multiprocessing(wk, name = "MP-1")
 ```
 
-The two models will be added in the multiprocessing "MP1": the name of the seasonal adjustment model computed with X-13ARIMA-SEATS will be "SA with X13" and the one with TRAMO-SEATS+ will be "SA with TramoSeats".
+The two models will be added in the multiprocessing "MP1": the name of the seasonal adjustment model computed with X-13ARIMA-SEATS will be "SA with X13" and the one with TRAMO-SEATS+ will be "SA with TramoSeats":
 
 ```{r}
 add_sa_item(wk, multiprocessing = "MP-1",
