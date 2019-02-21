@@ -362,7 +362,7 @@ Whereas, the quality checking is grouped into two sets. The first looks at the c
 All the checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
 
 ```{r}
-sats$diagnostics
+#sats$diagnostics
 ```
 
 ## user defined {#user-def}
@@ -387,11 +387,11 @@ The list of all available variables can be extracted with the following function
 
 The user can also create it's own specification, modifying a pre-defined specification (described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}) or a previously defined specification. For that, they are two functions for each method (RegARIMA model or seasonal adjustment with X-13ARIMA or TRAMO-SEATS):
 
-1. One to create a specification from a pre-defined JDemetra+ model specification. The corresponding functions are: \code{regarima_spec_def_x13()} and \code{regarima_def_tramoseats()} for the RegARIMA model and \code{x13_spec_def()} and \code{tramoseats_spec_def()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
+1. One to create a specification from a pre-defined JDemetra+ model specification. The corresponding functions are: \code{regarima_spec_def_x13()} and \code{regarima_spec_def_tramoseats()} for the RegARIMA model and \code{x13_spec_def()} and \code{tramoseats_spec_def()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
 
 2. One to create a specification from a previous specification or a model. The corresponding functions are: \code{regarima_spec_x13()} and \code{regarima_tramoseats()} for the RegARIMA model and \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
 
-Once the specification it's created, the regARIMA model can be performed by \code{regarima()}, the seasonal adjustment with X-13ARIMA by \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}
+Once the specification is created, the regARIMA model can be performed by \code{regarima()}, the seasonal adjustment with X-13ARIMA by \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}
 
 For example, to create it's own RegARIMA model for the TRAMO-SEATS method adding an additive outlier in October 2009:
 
@@ -414,11 +414,11 @@ sa_x13_model <- x13(series = ipi_c_eu[, "EA19"],
                     spec = sa_x13_spec)
 ```
 
-Almost all the specification available in JDemetra+ can be used in \pkg{RJDemetra}[^3]. For more details see the help of the correponding function or the documentation of JDemetra+.
+Almost all the specification available in JDemetra+ can be used in \pkg{RJDemetra}[^3]. For more details see the help of the corresponding function or the documentation of JDemetra+.
 
 [^3]: In the current release of the package, it is not possible to use user-defined calendars regressors: they have to be added as user-defined variable (the difference is that there is no automatic test to remove or not the regressors). Moreover, contrary to what is possible under JDemetra+, ramp effects and intervention variables are not intended to be added in the specification since the corresponding regressors can be easily created through \proglang{R}.
 
-To prevent from wrong user-defined specification, they are also automatic checks in \pkg{RJDemetra}, like in JDemetra+. For example, to pre-specify an outlier or a user-defined variable you have to enable them (setting the parameter \code{usrdef.outliersEnabled} or \code{usrdef.varEnabled} to \code{TRUE}); or to fix the coefficient of an outlier or a user-defined regresso you have specify the transformation function (\code{transform.function}, it cannot be automatic). Those checks are done each time a new specification it's create. Therefore, some specifications cannot be setted in two staged. For example, fixing the coefficient of an outlier has to be done the save time the outliers are defined. The following code doesn't fix the coefficient of the outlier previously in January 2001:
+To prevent from wrong user-defined specification, they are also automatic checks in \pkg{RJDemetra}, like in JDemetra+. For example, to pre-specify an outlier or a user-defined variable you have to enable them (setting the parameter \code{usrdef.outliersEnabled} or \code{usrdef.varEnabled} to \code{TRUE}); or to fix the coefficient of an outlier or a user-defined regressor you have to specify the transformation function (\code{transform.function}, it cannot be automatic). Those checks are done each time a new specification is created. Therefore, some specifications cannot be set in two stages. For example, fixing the coefficient of an outlier has to be done at the same time the outliers are defined. The following code doesn't fix the coefficient of the outlier previously in January 2001:
 
 ```{r}
 regarima_wrong_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
@@ -434,6 +434,18 @@ regarima_good_spec <- regarima_spec_tramoseats(object = regarima_ts_model,
              usrdef.outliersType = "AO",
              usrdef.outliersDate = "2009-10-01",
              usrdef.outliersCoef =  -0.8)
+```
+The documentation for the functions modifying specifications provide information on the interdependencies between different arguments. The package provides also functions to display different part of the model specification. These are presented under the entry \code{specification} of the package documentation.  For instance, from the example above, we can check which user defined variables were enabled and with which parameters.
+In the first case (wrongly specified), an outlier was pre-defined but it's coefficent was not fixed: 
+```{r}
+s_usrdef(regarima_wrong_spec)
+s_preOut(regarima_wrong_spec)
+```
+
+In the second case, the coefficient was correctly fixed: 
+```{r}
+s_usrdef(regarima_good_spec)
+s_preOut(regarima_good_spec)
 ```
 
 # Manipulate JDemetra+ workspaces {#manipulate-workspace}
