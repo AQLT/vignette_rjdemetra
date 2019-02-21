@@ -41,23 +41,23 @@ The abstract of the article.
 \section{Introduction}\label{introduction}}
 
 Since the 20th century, more and more infra-annual statistics are
-produced, especially by national institutes, to analyse the progression
-and the outlook of an economy. It is for example the case of the gross
+produced, especially by national institutes, to analyse the short-term
+evolution of an economy. It is for example the case of the gross
 domestic product (GDP), unemployment rate, household consumption of
 goods and industrial production indices. However, most of those time
-series are affected by seasonal and trading day effects. A seasonal
-effects is an effect that occur in the same calendar month with similar
+series are affected by seasonal and trading days effects. A seasonal
+effect is an effect that occur in the same calendar month with similar
 magnitude and direction from year to year. For instance, automobile
 production is usually lower during summer, due to holidays, and
 chocolate sales are usually higher in December, due to Christmas.
-Trading day effect is the fact that a time series can be affected by
+Trading days effect is the fact that a time series can be affected by
 each calendar month's weekday composition. For example retail sales are
 usually higher on Saturday, thus they are likely to be higher in months
 with a surplus of weekend days.
 
 Therefore, seasonal and trading days effects can make it difficult to
 analyse the infra-annual movements of a time series or to make spatial
-comparison. That's why time series are often seasonally and working day
+comparison. That's why time series are often seasonally and trading days
 adjusted and seasonal adjustment is the process of removing the effects
 of seasonal and trading day fluctuations.
 
@@ -99,11 +99,11 @@ model (model with ARIMA errors) as specified below.
 \item
   \(z_t\) - is the original series;
 \item
-  \(\beta = (\beta_1,...,\beta_n)\) - a vector of regression
+  \(\beta = (\beta_1,\dots,\beta_n)\) - a vector of regression
   coefficients;
 \item
-  \(y_t = (y_{1t},...,y_{nt})\) - \(n\) regression variables (outliers,
-  calendar effects, user-defined variables);
+  \(y_t = (y_{1t},\dots,y_{nt})\) - \(n\) regression variables
+  (outliers, calendar effects, user-defined variables);
 \item
   \(x_t\) - a disturbance that follows the general ARIMA process:
 \item
@@ -116,7 +116,7 @@ The polynomial \(\phi(B)\) is a stationary autoregressive (AR)
 polynomial in \(B\), which is a product of the stationary regular AR
 polynomial in \(B\) and the stationary seasonal polynomial in \(B^s\):
 
-\[\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+...+\phi_pB^p)(1+\Phi_1B^s+...+\Phi_{bp}B^{bps}\]
+\[\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+\dots+\phi_pB^p)(1+\Phi_1B^s+\dots+\Phi_{bp}B^{bps}\]
 
 where:
 
@@ -138,7 +138,7 @@ polynomial in \(B\), which is a product of the invertible regular MA
 polynomial in \(B\) and the invertible seasonal MA polynomial in
 \(B^s\):
 
-\[\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+...+\theta_qB^q)(1+\Theta_1B^s+...+\Theta_{bq}B^{bqs})\]
+\[\theta(B)=\theta_q(B)\Theta_{bq}(B^s)=(1+\theta_1B+\dots+\theta_qB^q)(1+\Theta_1B^s+\dots+\Theta_{bq}B^{bqs})\]
 
 where:
 
@@ -190,8 +190,6 @@ into the following components: trend-cycle (\(t\)), seasonal component
 \item
   pseudo-additive (\(y = t * (s + i - 1)\))
 \end{itemize}
-
-The last two decompositions are available only under X13 (? à discuter).
 
 The method of decomposing the pre-adjusted series differs between
 TRAMO-SEATS+ and X-12ARIMA/X-13ARIMA. In TRAMO-SEATS+, SEATS (Signal
@@ -263,7 +261,7 @@ The development version can be installed from GitHub with \pkg{devtools}
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> devtools::install_github("nbbrd/rjdemetra", args = "--no-multiarch")
+R> devtools::install_github("jdemetra/rjdemetra")
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -273,7 +271,7 @@ R> devtools::install_github("nbbrd/rjdemetra", args = "--no-multiarch")
 In this package the sts\_inpr\_m database of Eurostat is included, which
 contains monthly industrial production indices in manufacturing in the
 European Union. It contains 37 time series from january 1990 to december
-2017 which are considered to be affected by seasonal and working day
+2017 which are considered to be affected by seasonal and trading days
 effects. The data is a \code{ts} object and can be accessed using the
 \code{ipi_c_eu} object. The following snippet of code plots the
 industrial production index of the euro aera (EA19):
@@ -293,12 +291,12 @@ R> plot(ipi_c_eu[, "EA19"])
 \hypertarget{print-styling}{%
 \subsection{Print styling}\label{print-styling}}
 
-By default, a color styling is used for the print methods of the objects
-created by \pkg{RJDemetra}. It can causes troubles with some outputs
-(for example with \pkg{rmarkdown} \citep{rmarkdown}) and can be disabled
-in each print function with the argument
+By default, a color styling is used for the \code{print} methods of the
+objects created by \pkg{RJDemetra}. It can causes troubles with some
+outputs (for example with \pkg{rmarkdown} \citep{rmarkdown}) and can be
+disabled in each \code{print} function with the argument
 \code{enable_print_style = FALSE} or setting the global option
-\code{enable_print_style}:
+\code{enable_print_style} to \code{FALSE}:
 
 \begin{CodeChunk}
 
@@ -311,10 +309,10 @@ R> options(enable_print_style = FALSE)
 \section{Estimate a pre-defined RegARIMA and SA
 model}\label{pre-def-est}}
 
-As in JDemetra+, the \pkg{RJDemetra} package allows to perform seasonal
-adjustment using pre-defined model specifications. The pre-defined
-specifications correspond to most commonly used specifications and users
-are recommended to start their analysis with one of them. They are
+As in JDemetra+, \pkg{RJDemetra} allows to perform seasonal adjustment
+using pre-defined model specifications. The pre-defined specifications
+correspond to most commonly used specifications and users are
+recommended to start their analysis with one of them. They are
 separately defined for TRAMO-SEATS and X-13ARIMA-SEATS estimation
 methods. It is also possible to perform only the first step of seasonal
 adjustment (the RegARIMA estimation). The pre-defined model
@@ -351,11 +349,12 @@ described in tables tables \ref{tab:pre_def_ts} and
   and 8 days (for X-13ARIMA-SEATS specifications).\\
 \item
   Outliers: an automatic identification of three types of outliers: AO
-  (additive outliers), LS (level shifts) and TC (transitory changes),
-  using a default critical value.\\
+  (additive outlier), LS (level shift) and TC (transitory change), using
+  a default critical value. The automatic identification of SO (seasonal
+  outlier) is not enabled by default.
 \item
   ARIMA model: the choice between fixing the ARIMA model structure to
-  (0,1,1)(0,1,1) (Airlin model) or searching for the ARIMA model using
+  (0,1,1)(0,1,1) (Airline model) or searching for the ARIMA model using
   an automatic model identification procedure. The Airline model is used
   as a default model in several TRAMO-SEATS+ and X-13ARIMA-SEATS
   specifications because it has been shown in many studies that this
@@ -465,9 +464,9 @@ As a result of seasonal adjustment estimation (e.g.~function
 \code {x13_def} or \code {tramoseats_def}) a S3 class object
 (\code{sa_object}) is created. It has a class \code{c("SA","X13")} or
 \code{c("SA","TRAMO_SEATS")} depending on the used estimation method.
-The \code{sa_object} consits of lists of S3 class sub-objects. For each
-of the class \code{print, plot} methods are defined. The complete
-structure of the \code{sa_object} is presented in table
+The \code{sa_object} consist of lists of S3 class sub-objects. For each
+of the class \code{print} and \code{plot} methods are defined. The
+complete structure of the \code{sa_object} is presented in table
 \ref{tab:obj_tab}. In general, the \code{sa_object} contains the
 following five objects: \textbf{regarima}, \textbf{decomposition},
 \textbf{final}, \textbf{diagnostics} and \textbf{user\_defined}.
@@ -579,7 +578,7 @@ Object class (\code{x} object) & Method & Description\\
 \addlinespace
 \code{regarima} & \code{plot(x, which = 6)} & Raw and linearized series\\
 \code{regarima} & \code{plot(x, which = 7)} & Plots 3 graphics: linearised series, calendar effects and outliers effects\\
-\code{decomposition_X11}, \code{decomposition_SEATS} & \code{plot(x)} & S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters).\\
+\code{decomposition_X11}, \code{decomposition_SEATS} & \code{plot(x)} & S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters)\\
 \code{final} & \code{plot(x, type_chart = sa-trend)} & Plots the raw series, the seasonal adjusted series and the trend\\
 \code{final} or \code{SA} & \code{plot(x, type_chart = cal-seas-irr)} & Plots the calendar effects, the seasonal component and the irregular\\
 \bottomrule
@@ -592,8 +591,8 @@ The regarima object contains the provided model specification
 (\code{specification}; level 2 of the \code{sa_object}), the estimated
 coefficients for the arima processes (\code{arima.coefficients}) and
 regressors (\code{regression.coefficients}), including arma orders
-(\code{arma}). It comprises also model quality measures (\code{loglik}),
-regarima specification after it's estimation with the estimated effects
+(\code{arma}). It includes also model quality measures (\code{loglik}),
+regarima specification after its estimation with the estimated effects
 (e.g.~linearized input series or outliers)(\code{model}), the residuals
 of the regarima model (\code{residuals}), several tests' results for the
 residuals (\code{residuals.stat}) and finally the forecast of the
@@ -693,7 +692,7 @@ part is the first two sub-objects with the model specification
 
 Then, the \code{decomposition_X11} object comprises quality measures on
 the decomposition (\code{mstats}), namely the \(M\) and \(Q\)
-statistics. It contains also the final unmodified si-ratios \(d8\) and
+statistics. It contains also the final unmodified S-I ratios \(d8\) and
 final seasonal factors \(d10\) (\code{si_ratio}), as well as the
 information on the final seasonal filter (\code{s_filter}) and trend
 filter(\code{t_filter}). The code below presents the output for X11
@@ -742,41 +741,8 @@ the ARIMA models:
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> sats$decomposition
+R> #sats$decomposition
 \end{CodeInput}
-
-\begin{CodeOutput}
-Model
-AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
-D :  1 - B - B^12 + B^13 
-MA :  1 - 0.510600 B^12 
-
-
-SA
-AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
-D :  1 - 2.000000 B + B^2 
-MA :  1 - 0.937923 B - 0.015753 B^2 - 0.007005 B^3 + 0.015440 B^4 - 0.001104 B^5 
-Innovation variance:  0.5777661 
-
-Trend
-AR :  1 - 0.711394 B 
-D :  1 - 2.000000 B + B^2 
-MA :  1 - 0.312018 B - 0.965498 B^2 + 0.346519 B^3 
-Innovation variance:  0.07090723 
-
-Seasonal
-D :  1 + B + B^2 + B^3 + B^4 + B^5 + B^6 + B^7 + B^8 + B^9 + B^10 + B^11 
-MA :  1 + 1.314878 B + 1.722951 B^2 + 2.227262 B^3 + 2.229462 B^4 + 2.119339 B^5 + 1.926456 B^6 + 1.615753 B^7 + 1.268615 B^8 + 0.770474 B^9 + 0.278823 B^10 - 0.025652 B^11 
-Innovation variance:  0.08441922 
-
-Transitory
-AR :  1 + 0.805449 B + 0.414116 B^2 
-MA :  1 - 0.452913 B - 0.547087 B^2 
-Innovation variance:  0.02525112 
-
-Irregular
-Innovation variance:  0.07006354 
-\end{CodeOutput}
 \end{CodeChunk}
 
 \hypertarget{final}{%
@@ -898,7 +864,7 @@ functions:
 \section{Model specification: creation and
 modification}\label{user-def-spec}}
 
-The user can also create it's own specification, modifying a pre-defined
+The user can also create its own specification, modifying a pre-defined
 specification (described in tables \ref{tab:pre_def_ts} and
 \ref{tab:pre_def_x13}) or a previously defined specification. For that,
 they are two functions for each method (RegARIMA model or seasonal
@@ -910,14 +876,14 @@ adjustment with X-13ARIMA or TRAMO-SEATS):
   One to create a specification from a pre-defined JDemetra+ model
   specification. The corresponding functions are:
   \code{regarima_spec_def_x13()} and
-  \code{regarima_spec_def_tramoseats()} for the RegARIMA model and
+  \code{regarima_spec_def_tramoseats()} for the RegARIMA model, and
   \code{x13_spec_def()} and \code{tramoseats_spec_def()} for the entire
   seasonal adjustment model (including the pre\_adjustment with a
   RegARIMA model).
 \item
   One to create a specification from a previous specification or a
   model. The corresponding functions are: \code{regarima_spec_x13()} and
-  \code{regarima_tramoseats()} for the RegARIMA model and
+  \code{regarima_tramoseats()} for the RegARIMA model, and
   \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal
   adjustment model (including the pre\_adjustment with a RegARIMA
   model).
@@ -925,10 +891,10 @@ adjustment with X-13ARIMA or TRAMO-SEATS):
 
 Once the specification is created, the regARIMA model can be performed
 by \code{regarima()}, the seasonal adjustment with X-13ARIMA by
-\code{x13()} and with TRAMO-SEATS by \code{tramoseats()}
+\code{x13()} and with TRAMO-SEATS by \code{tramoseats()}.
 
-For example, to create it's own RegARIMA model for the TRAMO-SEATS
-method adding an additive outlier in October 2009:
+For example, to create its own RegARIMA model for the TRAMO-SEATS method
+by adding an additive outlier in October 2009:
 
 \begin{CodeChunk}
 
@@ -983,12 +949,12 @@ R+                     spec = sa_x13_spec)
 \end{CodeInput}
 \end{CodeChunk}
 
-Almost all the specification available in JDemetra+ can be used in
-\pkg{RJDemetra}\footnote{In the current release of the package, it is
-  not possible to use user-defined calendars regressors: they have to be
-  added as user-defined variable (the difference is that there is no
-  automatic test to remove or not the regressors). Moreover, contrary to
-  what is possible under JDemetra+, ramp effects and intervention
+Almost all the specification variables available in JDemetra+ can be
+used in \pkg{RJDemetra}\footnote{In the current release of the package,
+  it is not possible to use user-defined calendars regressors: they have
+  to be added as user-defined variable (the difference is that there is
+  no automatic test to remove or not the regressors). Moreover, contrary
+  to what is possible under JDemetra+, ramp effects and intervention
   variables are not intended to be added in the specification since the
   corresponding regressors can be easily created through \proglang{R}.}.
 For more details see the help of the corresponding function or the
@@ -1002,9 +968,9 @@ them (setting the parameter \code{usrdef.outliersEnabled} or
 an outlier or a user-defined regressor you have to specify the
 transformation function (\code{transform.function}, it cannot be
 automatic). Those checks are done each time a new specification is
-created. Therefore, some specifications cannot be set in two stages. For
+create. Therefore, some specifications cannot be set in two stages. For
 example, fixing the coefficient of an outlier has to be done at the same
-time the outliers are defined. The following code doesn't fix the
+time when the outliers are defined. The following code doesn't fix the
 coefficient of the outlier previously in January 2001:
 
 \begin{CodeChunk}
@@ -1031,12 +997,14 @@ R+              usrdef.outliersCoef =  -0.8)
 
 The documentation for the functions modifying specifications provide
 information on the interdependencies between different arguments. The
-package provides also functions to display different part of the model
+package offers also functions to display different part of the model
 specification. These are presented under the entry \code{specification}
 of the package documentation. For instance, from the example above, we
 can check which user defined variables were enabled and with which
-parameters. In the first case (wrongly specified), an outlier was
-pre-defined but it's coefficent was not fixed:
+parameters.
+
+In the first case (wrongly specified), an outlier was pre-defined but
+its coefficient was not fixed:
 
 \begin{CodeChunk}
 
@@ -1086,7 +1054,7 @@ R> s_preOut(regarima_good_spec)
 \section{Manipulate JDemetra+ workspaces}\label{manipulate-workspace}}
 
 \pkg{RJDemetra} allows to interact with JDemetra+ workspace that can be
-openned by the software. A workspace includes :
+openned by the software. A workspace includes:
 
 \begin{itemize}
 \tightlist
@@ -1150,7 +1118,7 @@ R> new_multiprocessing(wk, name = "MP-1")
 
 The two models will be added in the multiprocessing ``MP1'': the name of
 the seasonal adjustment model computed with X-13ARIMA-SEATS will be ``SA
-with X13'' and the one with TRAMO-SEATS+ will be ``SA with TramoSeats''.
+with X13'' and the one with TRAMO-SEATS+ will be ``SA with TramoSeats'':
 
 \begin{CodeChunk}
 
@@ -1298,8 +1266,7 @@ particular:
 \section{Conclusion}\label{conclusion}}
 
 \hypertarget{acknowledgments}{%
-\section*{Acknowledgments}\label{acknowledgments}}
-\addcontentsline{toc}{section}{Acknowledgments}
+\section{Acknowledgments}\label{acknowledgments}}
 
 \renewcommand\refname{References}
 \bibliography{biblio.bib}
