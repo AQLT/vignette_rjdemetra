@@ -92,7 +92,7 @@ where
 
  The polynomial $\phi(B)$ is a stationary autoregressive (AR) polynomial in $B$, which is a product of the stationary regular AR polynomial in $B$ and the stationary seasonal polynomial in $B^s$:
 
-$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+\dots+\phi_pB^p)(1+\Phi_1B^s+\dots+\Phi_{bp}B^{bps}$$
+$$\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+\dots+\phi_pB^p)(1+\Phi_1B^s+\dots+\Phi_{bp}B^{bps})$$
 
  where:
 
@@ -342,7 +342,7 @@ sax13$decomposition
 As a reminder, in SEATS it is assumed that each component of the linearized series (received from TRAMO) is an outcome of a linear stochastic process and SEATS estimates an ARIMA model for each component (i.e. trend, seasonal, transitory and irregular). Subsequently, the \code{decomposition_SEATS} object contains the information on the estimated ARIMA models (\code{model}), the linearized components, as obtained from TRAMO (\code{linearized}), and the theoretical components calculated from the ARIMA models (\code{components}). The code below presents the output for the SEATS decomposition, with the information on the ARIMA models:
 
 ```{r}
-#sats$decomposition
+sats$decomposition
 ```
 
 ## Final
@@ -361,7 +361,7 @@ Whereas, the quality checking is grouped into two sets. The first looks at the c
 All the checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
 
 ```{r}
-#sats$diagnostics
+sats$diagnostics
 ```
 
 ## user defined {#user-def}

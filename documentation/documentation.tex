@@ -116,7 +116,7 @@ The polynomial \(\phi(B)\) is a stationary autoregressive (AR)
 polynomial in \(B\), which is a product of the stationary regular AR
 polynomial in \(B\) and the stationary seasonal polynomial in \(B^s\):
 
-\[\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+\dots+\phi_pB^p)(1+\Phi_1B^s+\dots+\Phi_{bp}B^{bps}\]
+\[\phi(B)=\phi_p(B)\Phi_{bp}(B^s)=(1+\phi_1B+\dots+\phi_pB^p)(1+\Phi_1B^s+\dots+\Phi_{bp}B^{bps})\]
 
 where:
 
@@ -744,8 +744,41 @@ the ARIMA models:
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> #sats$decomposition
+R> sats$decomposition
 \end{CodeInput}
+
+\begin{CodeOutput}
+Model
+AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
+D :  1 - B - B^12 + B^13 
+MA :  1 - 0.510600 B^12 
+
+
+SA
+AR :  1 + 0.094056 B - 0.158875 B^2 - 0.294600 B^3 
+D :  1 - 2.000000 B + B^2 
+MA :  1 - 0.937923 B - 0.015753 B^2 - 0.007005 B^3 + 0.015440 B^4 - 0.001104 B^5 
+Innovation variance:  0.5777661 
+
+Trend
+AR :  1 - 0.711394 B 
+D :  1 - 2.000000 B + B^2 
+MA :  1 - 0.312018 B - 0.965498 B^2 + 0.346519 B^3 
+Innovation variance:  0.07090723 
+
+Seasonal
+D :  1 + B + B^2 + B^3 + B^4 + B^5 + B^6 + B^7 + B^8 + B^9 + B^10 + B^11 
+MA :  1 + 1.314878 B + 1.722951 B^2 + 2.227262 B^3 + 2.229462 B^4 + 2.119339 B^5 + 1.926456 B^6 + 1.615753 B^7 + 1.268615 B^8 + 0.770474 B^9 + 0.278823 B^10 - 0.025652 B^11 
+Innovation variance:  0.08441922 
+
+Transitory
+AR :  1 + 0.805449 B + 0.414116 B^2 
+MA :  1 - 0.452913 B - 0.547087 B^2 
+Innovation variance:  0.02525112 
+
+Irregular
+Innovation variance:  0.07006354 
+\end{CodeOutput}
 \end{CodeChunk}
 
 \hypertarget{final}{%
@@ -819,8 +852,42 @@ object.
 \begin{CodeChunk}
 
 \begin{CodeInput}
-R> #sats$diagnostics
+R> sats$diagnostics
 \end{CodeInput}
+
+\begin{CodeOutput}
+ Relative contribution of the components to the stationary
+ portion of the variance in the original series,
+ after the removal of the long term trend 
+ Trend computed by Hodrick-Prescott filter (cycle length = 8.0 years)
+           Component
+ Cycle        15.148
+ Seasonal     83.993
+ Irregular     0.174
+ TD & Hol.     0.076
+ Others        0.049
+ Total        99.441
+
+ Combined test in the entire series 
+ Non parametric tests for stable seasonality
+                                                          P.value
+   Kruskall-Wallis test                                      0.000
+   Test for the presence of seasonality assuming stability   0.000
+   Evolutive seasonality test                                0.027
+ 
+ Identifiable seasonality present
+
+ Residual seasonality tests 
+                                      P.value
+ qs test on sa                          1.000
+ qs test on i                           1.000
+ f-test on sa (seasonal dummies)        1.000
+ f-test on i (seasonal dummies)         1.000
+ Residual seasonality (entire series)   1.000
+ Residual seasonality (last 3 years)    0.999
+ f-test on sa (td)                      0.994
+ f-test on i (td)                       0.922
+\end{CodeOutput}
 \end{CodeChunk}
 
 \hypertarget{user-def}{%
