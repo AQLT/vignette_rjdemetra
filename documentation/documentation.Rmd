@@ -386,9 +386,9 @@ The list of all available variables can be extracted with the following function
 
 The user can also create its own specification, modifying a pre-defined specification (described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}) or a previously defined specification. For that, they are two functions for each method (RegARIMA model or seasonal adjustment with X-13ARIMA or TRAMO-SEATS):
 
-1. One to create a specification from a pre-defined JDemetra+ model specification. The corresponding functions are: \code{regarima_spec_def_x13()} and \code{regarima_spec_def_tramoseats()} for the RegARIMA model, and \code{x13_spec_def()} and \code{tramoseats_spec_def()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
+1. One to create a specification from a pre-defined JDemetra+ model specification. The corresponding functions are: \code{regarima_spec_def_x13()} and \code{regarima_spec_def_tramoseats()} for the RegARIMA model, and \code{x13_spec_def()} and \code{tramoseats_spec_def()} for the entire seasonal adjustment model (including the pre-adjustment with a RegARIMA model).
 
-2. One to create a specification from a previous specification or a model. The corresponding functions are: \code{regarima_spec_x13()} and \code{regarima_tramoseats()} for the RegARIMA model, and \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal adjustment model (including the pre_adjustment with a RegARIMA model).
+2. One to create a specification from a previous specification or a model. The corresponding functions are: \code{regarima_spec_x13()} and \code{regarima_tramoseats()} for the RegARIMA model, and \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal adjustment model (including the pre-adjustment with a RegARIMA model).
 
 Once the specification is created, the regARIMA model can be performed by \code{regarima()}, the seasonal adjustment with X-13ARIMA by \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}.
 
