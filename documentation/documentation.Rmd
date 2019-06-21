@@ -130,13 +130,16 @@ An automatic modelling is also implemented in both methods to: determine the dec
 
 ## Decomposition with X-11 {#sa-x11}
 
-X-11 is an non-parametric method that decomposes the time series by means of linear filters [@findleyx12; @ladiray1999x11en]. The procedure consists of the following steps:
+X-11 is an iterative non-parametric method that decomposes the time series by means of linear filters [@findleyx12; @ladiray1999x11en].
+The basic procedure consists of a simple 3-step algorithm:
+ 
+1) Estimate the trend by a moving average; 
+2) Remove the trend leaving the seasonal and irregular components; 
+3) Estimate the seasonal component using moving averages.
 
-1. Estimate the trend by a moving average;  
-2. Remove the trend leaving the seasonal and irregular components;  
-3. Estimate the seasonal component using moving averages to smooth out the irregulars.
+At each step, the program selects a moving average among a large set of predefined smoothers, according to the characteristics of the series.
+X-11 also incorporates an automatic detection and correction of (additive) outliers to make the use of linear filters more robust.
 
-Seasonality generally cannot be identified until the trend is known, however a good estimate of the trend cannot be made until the series has been seasonally adjusted. Therefore X-11 uses an iterative approach to estimate the components of a time series. 
 
 The pre-adjusted series ($y$) is decomposed into the following components: trend-cycle ($t$), seasonal component ($s$) and irregular component ($i$). The decomposition can be: 
 
