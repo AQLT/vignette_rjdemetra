@@ -193,7 +193,7 @@ For the moment the seasonal and trading day adjustment can only be done for mont
 
 ## Dataset
 
-In this package the sts_inpr_m database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from January 1990 to December 2017 which are considered to be affected by seasonal and trading days effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro area (EA19):
+In this package the `sts_inpr_m` database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from January 1990 to December 2017 which are considered to be affected by seasonal and trading days effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro area (EA19):
 
 ```{r basic_raw_data_plot}
 library(RJDemetra)
