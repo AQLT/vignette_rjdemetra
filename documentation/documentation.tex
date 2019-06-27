@@ -14,11 +14,24 @@ Seasonal Adjustment Software}
 \Plaintitle{RJDemetra: An R Interface To JDemetra+ Seasonal Adjustment Software}
 
 \Abstract{
-The abstract of the article.
+\pkg{RJDemetra} provides an interface between \proglang{R} and
+\proglang{JDemetra+}, the only the seasonal and trading days adjustment
+software officially recommended by Eurostat to the members of the
+European Statistical System and the European System of Central Banks.
+\pkg{RJDemetra} offers access to the main options and outputs of
+\proglang{JDemetra+}, including the two leading seasonal adjustment
+methods TRAMO-SEATS and X-13ARIMA. Thus, it is possible to use
+user-defined or pre-specified specification and to estimate a RegARIMA
+model including automatic outlier and ARIMA detection, moving holiday
+effects and user-defined regressors. \pkg{RJDemetra} also possible to
+read and write \proglang{JDemetra+} workspaces that are used in
+production. Thus, thanks to all the resources available in \proglang{R},
+it offers huge possibilities to develop tools to improve the production
+of seasonal adjusted series.
 }
 
-\Keywords{\proglang{R}, seasonal adjustment, calendar effects, ARIMA, time series}
-\Plainkeywords{R, seasonal adjustment, calendar effects, ARIMA, time series}
+\Keywords{\proglang{R}, seasonal adjustment, calendar effects, ARIMA, outliers, time series}
+\Plainkeywords{R, seasonal adjustment, calendar effects, ARIMA, outliers, time series}
 
 %% publication information
 %% \Volume{50}
@@ -76,7 +89,7 @@ parametric method based on ARIMA models, and X-13ARIMA\footnote{The
   maintained by the US-Census Bureau.}
 \citep{findleyx12, ladiray1999x11en}, a non-parametric method based on
 moving average. Both methods are recommended by Eurostat and the
-European Central Bank (ECB) to seasonnaly adjust economic indicators.
+European Central Bank (ECB) to seasonally adjust economic indicators.
 These methods proceed in two steps summarized in figure
 \ref{fig:2_step_proc}.
 
@@ -106,7 +119,7 @@ the observed series with a ARIMA-model based method (section
 \ref{sa-seats}).
 
 \hypertarget{pre-adjustment}{%
-\subsection{Pre-adjustment with TRAMO and Reg-ARIMA
+\subsection{Pre-adjustment with TRAMO and RegARIMA
 models}\label{pre-adjustment}}
 
 The \textbf{first step} of seasonal adjustment consists of pre-adjusting
@@ -116,7 +129,7 @@ distinguish outliers, calendar and regression effects. In this step,
 also forecasts and backcasts of the pre-adjusted series are estimated
 which allows applying linear filters at both ends of the series in the
 second step of the seasonal adjustment. The pre-adjustment,
-linearization, of the input series is achieved with a \textbf{RegARIMA}
+linearisation, of the input series is achieved with a \textbf{RegARIMA}
 model (model with ARIMA errors) as specified below.
 
 \[z_t=y_t\beta+x_t\] where
@@ -250,7 +263,7 @@ time series its different signals
 be additive or multiplicative (equivalent to an additive model after
 taking the logarithm).
 
-SEATS decomposes the linearised series into the following components:
+SEATS decomposes the linearized series into the following components:
 
 \begin{itemize}
 \tightlist
@@ -261,7 +274,7 @@ SEATS decomposes the linearised series into the following components:
   \textbf{seasonal component:} captures the spectral peaks at seasonal
   frequencies;\\
 \item
-  \textbf{irregular component:} captures erratic, white-noise behavior,
+  \textbf{irregular component:} captures erratic, white-noise behaviour,
   and hence has a flat spectrum;\\
 \item
   \textbf{transitory component:} a zero-mean stationary component that
@@ -288,8 +301,8 @@ possible (compatible with the stochastic nature of model).
 the National Bank of Belgium (NBB) in cooperation with the Deutsche
 Bundesbank and Eurostat in accordance with the Guidelines of the
 European Statistical System (ESS) \citep{eurostat2015guidelines}. It
-implements the concepts and algorithms used in the two leading SA
-methods: TRAMO-SEATS and X-13ARIMA. Those methods have been
+implements the concepts and algorithms used in the two leading seasonal
+adjustment methods: TRAMO-SEATS and X-13ARIMA. Those methods have been
 re-engineered using an object-oriented approach that enables easier
 handling, extensions and modifications.
 
@@ -307,11 +320,11 @@ used in \proglang{JDemetra+} can be found in the \proglang{JDemetra+}
 manuals and user guides
 \citep{grudkowska2015jdemetrarm, grudkowska2015jdemetraug}.
 
-The package \pkg{RJDemetra} provides an R interface to the seasonal
-adjustment software \proglang{JDemetra+}. \pkg{RJDemetra} uses Java
-libraries of \proglang{JDemetra+}, thus it relies on the \pkg{rJava}
-\citep{rJava} package and Java SE 8 or later version is required. It
-allows to:
+The package \pkg{RJDemetra} \citep{RJDemetra} provides an R interface to
+the seasonal adjustment software \proglang{JDemetra+}. \pkg{RJDemetra}
+uses Java libraries of \proglang{JDemetra+}, thus it relies on the
+\pkg{rJava} \citep{rJava} package and Java SE 8 or later version is
+required. It allows to:
 
 \begin{itemize}
 \tightlist
@@ -320,7 +333,7 @@ allows to:
   pre-defined (section \ref{pre-def-est}) and user-defined specification
   (section \ref{user-def-spec});\\
 \item
-  acces to all the output available in \proglang{JDemetra+} (section
+  access to all the output available in \proglang{JDemetra+} (section
   \ref{sa-obj-struc});\\
 \item
   import and export \proglang{JDemetra+} workspaces (section
@@ -346,16 +359,22 @@ R> devtools::install_github("jdemetra/rjdemetra")
 \end{CodeInput}
 \end{CodeChunk}
 
+For the moment the seasonal and trading day adjustment can only be done
+for monthly, bimonthly (for TRAMO-SEATS only), quarterly and half-yearly
+data. By the end of 2020 \proglang{JDemetra+}, and therefore
+\pkg{RJDemetra}, will be extended to be compatible with every biannual
+frequency (daily, weekly, etc.).
+
 \hypertarget{dataset}{%
 \subsection{Dataset}\label{dataset}}
 
 In this package the sts\_inpr\_m database of Eurostat is included, which
 contains monthly industrial production indices in manufacturing in the
-European Union. It contains 37 time series from january 1990 to december
+European Union. It contains 37 time series from January 1990 to December
 2017 which are considered to be affected by seasonal and trading days
 effects. The data is a \code{ts} object and can be accessed using the
 \code{ipi_c_eu} object. The following snippet of code plots the
-industrial production index of the euro aera (EA19):
+industrial production index of the euro area (EA19):
 
 \begin{CodeChunk}
 
@@ -372,7 +391,7 @@ R> plot(ipi_c_eu[, "EA19"])
 \hypertarget{print-styling}{%
 \subsection{Print styling}\label{print-styling}}
 
-By default, a color styling is used for the \code{print} methods of the
+By default, a colour styling is used for the \code{print} methods of the
 objects created by \pkg{RJDemetra}. It can causes troubles with some
 outputs --- for example with \pkg{rmarkdown} \citep{rmarkdown} --- and
 can be disabled in each \code{print} function with the argument
@@ -387,7 +406,7 @@ R> options(enable_print_style = FALSE)
 \end{CodeChunk}
 
 \hypertarget{pre-def-est}{%
-\section{Estimate a pre-defined RegARIMA and SA
+\section{Estimate a pre-defined RegARIMA and seasonal adjustment
 model}\label{pre-def-est}}
 
 As in \proglang{JDemetra+}, \pkg{RJDemetra} allows to perform seasonal
@@ -410,7 +429,7 @@ are identical for pre-adjustment (column 1) and for seasonal adjustment
   (logarithmic transformation).\\
 \item
   Pre-adjustment for leap-year (not available for TRAMO): in the case of
-  a multiplicaive decomposition; a correction of the February values is
+  a multiplicative decomposition; a correction of the February values is
   applied to the original series (before transformation). The original
   values in February are multiplied by \(\frac{28.25}{29}\) for leap
   years, by \(\frac{28.25}{28}\) for non-leap years and values for other
@@ -557,11 +576,12 @@ different classes (see tables \ref{tab:obj_tab_x13} and
 \ref{tab:obj_tab_tramoseats}). Whereas, the object decomposition differs
 for the two methods. The object user\_defined is empty unless additional
 output was requested by the user (see sub-section \ref{user-def}).
-Finally, when estimating RegARIMA only the regarima object is created.
-All the plots methods are detailed in table \ref{tab:plots_methods}.
+Finally, when estimating RegARIMA only the \code{regarima} object is
+created. All the plots methods are detailed in table
+\ref{tab:plots_methods}.
 
 \begin{longtable}{lll}
-\caption{\label{tab:obj_tab_x13}SA object structure (seasonal adjustment made with \code{x13})}\\
+\caption{\label{tab:obj_tab_x13}\code{SA} object structure (seasonal adjustment made with \code{x13})}\\
 \toprule
 Object & Level & Type [RJDemetra S3 class]\\
 \midrule
@@ -627,7 +647,7 @@ sa\_object & 0 & list [SA, X13]\\
 \end{longtable}
 
 \begin{longtable}{lll}
-\caption{\label{tab:obj_tab_tramoseats}SA object structure (seasonal adjustment made with \code{tramoseats})}\\
+\caption{\label{tab:obj_tab_tramoseats}\code{SA} object structure (seasonal adjustment made with \code{tramoseats})}\\
 \toprule
 Object & Level & Type [RJDemetra S3 class]\\
 \midrule
@@ -710,7 +730,7 @@ Object class (\code{x} object) & Method & Description\\
 \code{regarima} & \code{plot(x, which = 5)} & Partial autocorrelation function (PACF) of residuals\\
 \addlinespace
 \code{regarima} & \code{plot(x, which = 6)} & Raw and linearized series\\
-\code{regarima} & \code{plot(x, which = 7)} & Plots 3 graphics: linearised series, calendar effects and outliers effects\\
+\code{regarima} & \code{plot(x, which = 7)} & Plots 3 graphics: linearized series, calendar effects and outliers effects\\
 \code{decomposition_X11}, \code{decomposition_SEATS} & \code{plot(x)} & S-I ratio: seasonal-irregular (S-I) component and the seasonal factors for each period of the time series (months or quarters)\\
 \code{final} & \code{plot(x, type_chart = sa-trend)} & Plots the raw series, the seasonal adjusted series and the trend\\
 \code{final} or \code{SA} & \code{plot(x, type_chart = cal-seas-irr)} & Plots the calendar effects, the seasonal component and the irregular\\
@@ -718,22 +738,22 @@ Object class (\code{x} object) & Method & Description\\
 \end{longtable}
 
 \hypertarget{regarima}{%
-\subsection{Regarima}\label{regarima}}
+\subsection{RegARIMA}\label{regarima}}
 
-The regarima object contains the provided model specification
+The \code{regarima} object contains the provided model specification
 (\code{specification}; level 2 of the \code{sa_object}), the estimated
-coefficients for the arima processes (\code{arima.coefficients}) and
-regressors (\code{regression.coefficients}), including arma orders
+coefficients for the ARIMA processes (\code{arima.coefficients}) and
+regressors (\code{regression.coefficients}), including ARMA orders
 (\code{arma}). It includes also model quality measures (\code{loglik}),
-regarima specification after its estimation with the estimated effects
+RegARIMA specification after its estimation with the estimated effects
 (e.g.~linearized input series or outliers)(\code{model}), the residuals
-of the regarima model (\code{residuals}), several tests' results for the
+of the RegARIMA model (\code{residuals}), several tests' results for the
 residuals (\code{residuals.stat}) and finally the forecast of the
 pre-adjusted series (\code{forecasts}). All this information can be
 extracted individually by the user or a predefined output can be used by
 calling \code{print()} or \code{summary()} (for more detailed output)
 functions. Also a set of graphs is defined within the function
-\code{plot()}. For regarima by default the first six graphs are
+\code{plot()}. For \code{regarima} by default the first six graphs are
 displayed, but specific ones can be chosen within the argument
 \code{which}. Table \ref{tab:plots_methods} summarizes all the graphs
 available for the \code{sa_object}, as well as its \code{plot()}
@@ -1085,7 +1105,7 @@ adjustment with X-13ARIMA or TRAMO-SEATS):
   adjustment model (including the pre-adjustment with a RegARIMA model).
 \end{enumerate}
 
-Once the specification is created, the regARIMA model can be performed
+Once the specification is created, the RegARIMA model can be performed
 by \code{regarima()}, the seasonal adjustment with X-13ARIMA by
 \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}.
 
@@ -1243,7 +1263,7 @@ R> s_preOut(regarima_good_spec)
 \section[Manipulate JDemetra+ workspaces]{Manipulate \proglang{JDemetra+} workspaces}\label{manipulate-workspace}}
 
 \pkg{RJDemetra} allows to interact with \proglang{JDemetra+} workspaces
-that can be openned by the software. A workspace includes:
+that can be opened by the software. A workspace includes:
 
 \begin{itemize}
 \tightlist
@@ -1251,7 +1271,7 @@ that can be openned by the software. A workspace includes:
   The XML file that enables the user to import the workspace to
   \proglang{JDemetra+} and to display it content;\\
 \item
-  A folder containing several sub-folfders that correspond to the
+  A folder containing several sub-folders that correspond to the
   different types of items created by the user.
 \end{itemize}
 
@@ -1420,7 +1440,7 @@ the seasonal adjustment model:
 \end{itemize}
 
 For example to get all raw time series of the workspace and all seasonal
-adjustmen models of the first multi-processing:
+adjustment models of the first multi-processing:
 
 \begin{CodeChunk}
 
@@ -1470,7 +1490,7 @@ manipulate this objects:
   \code{get_indicators()} to get some indicators;\\
 \item
   \code{jSA2R()} to get the corresponding formatted seasonal adjustment
-  or Reg-ARIMA model.
+  or RegARIMA model.
 \end{itemize}
 
 For example to only get the seasonally adjusted time series:
@@ -1497,7 +1517,7 @@ R> plot(sa_series[["sa"]])
 \end{CodeChunk}
 
 To compute the revisions of the seasonal adjusted series of January 2010
-with an automatic modeling:
+with an automatic modelling:
 
 \begin{CodeChunk}
 
@@ -1522,7 +1542,7 @@ R> plot(revisions_history_j10)
 When performing seasonal adjustment on a large database, the most common
 error comes from the preliminary check used to check the quality of the
 input series and exclude highly problematic ones (with too much
-indendical observations and/or missing values). However, no error is
+identical observations and/or missing values). However, no error is
 returned when using the \code{jx13()} function but
 \code{get_indicators()} will only return \code{NULL} objects:
 
@@ -1571,6 +1591,13 @@ R> colnames(ipi_sa_series) <- colnames(ipi_c_eu)
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
+
+Ouvrir sur les possibilités que ça apporte par rapport aux autres
+package \citep[\citet{x12}]{seasonal}, notamment en production,
+l'avantage que ce soit validé par Eurostat, etc.
+
+\pkg{ggdemetra} \citep{ggdemetra}, \pkg{rjdqa} \citep{rjdqa},
+\pkg{persephone} \citep{persephone}
 
 \hypertarget{acknowledgments}{%
 \section*{Acknowledgments}\label{acknowledgments}}
