@@ -1592,16 +1592,48 @@ R> colnames(ipi_sa_series) <- colnames(ipi_c_eu)
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
-Ouvrir sur les possibilités que ça apporte par rapport aux autres
-package \citep[\citet{x12}]{seasonal}, notamment en production,
-l'avantage que ce soit validé par Eurostat, etc.
+\proglang{JDemetra+} is a powerful tool for seasonal and trading days
+adjustments. It implements the two leading methods, TRAMO-SEATS and
+X-13ARIMA, through a rich graphical interface. Besides seasonal
+adjustment, JDemetra+ bundles other time series models that are useful
+in the production or analysis of economic statistics, including for
+instance outlier detection, nowcasting, temporal disaggregation or
+benchmarking. It is also the only software officially recommended by
+Eurostat for seasonal and calendar adjustment.
 
-\pkg{ggdemetra} \citep{ggdemetra}, \pkg{rjdqa} \citep{rjdqa},
-\pkg{persephone} \citep{persephone}
+Therefore, the package \pkg{RJDemetra}, being based on the same
+libraries of JDemetra+, uses certified and tested algorithms. It also
+offers huge opportunities to producers and researchers. Indeed,
+\proglang{JDemetra+} being widely used in production, it allows to:
 
-\hypertarget{acknowledgments}{%
-\section*{Acknowledgments}\label{acknowledgments}}
-\addcontentsline{toc}{section}{Acknowledgments}
+\begin{itemize}
+\tightlist
+\item
+  Easily create tools that can be used in production. For example
+  \pkg{rjdqa} \citep{rjdqa} reproduces Statistics Canada dashboard, used
+  to provide a snapshot snapshot of an single seasonal adjustment model
+  at a point in time and to point out some possible problems.\\
+\item
+  Customize the outputs to the need of the producers of a specific
+  institution. For example to goal of \pkg{persephone}
+  \citep{persephone} is to have enable easy processing during production
+  of seasonally adjusted series in Statistics Austria.\\
+\item
+  Extend the current \proglang{R} package to use the same seasonal
+  adjustment methods used in production. For example \pkg{ggdemetra}
+  \citep{ggdemetra} extend the \pkg{ggplot2} \citep{ggplot2} to add
+  seasonal adjustment statistics to plots (diagnostics, outliers, ARIMA
+  models, seasonally adjusted series, etc.).
+\end{itemize}
+
+Moreover, directly manipulate the Java objects makes \pkg{RJDemetra}
+much more performant than others \proglang{R} packages, specially with
+large scale seasonal adjustment or to conduct studies.
+
+The package \pkg{RJDemetra} will also evolved with \proglang{JDemetra+}
+and integrate the new developments on seasonal adjustment methods, for
+example the future extension of the methods to series of all frequencies
+(weekly, daily, etc.).
 
 \renewcommand\refname{References}
 \bibliography{biblio.bib}
