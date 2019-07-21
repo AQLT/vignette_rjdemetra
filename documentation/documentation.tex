@@ -462,15 +462,15 @@ are identical for pre-adjustment (column 1) and for seasonal adjustment
   \citep{maravall2009identification}.
 \end{itemize}
 
-\begin{table}[t]
+\begin{table}
 
 \caption{\label{tab:pre_def_ts}Pre-defined specification for TRAMO and TRAMO-SEATS}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{3pt}r{3pt}){1-2}
+\cmidrule(l{2pt}r{2pt}){1-2}
 TRAMO & TRAMO-SEATS & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 TR0 & RSA0 & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -485,15 +485,15 @@ TRfull (default) & RSAfull (default) & test & yes & test & test & test (Include 
 \end{tabular}
 \end{table}
 
-\begin{table}[t]
+\begin{table}
 
 \caption{\label{tab:pre_def_x13}Pre-defined specification for RegARIMA and X-13ARIMA}
 \centering
 \fontsize{7}{9}\selectfont
-\begin{tabular}{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
+\begin{tabular}[t]{c>{\centering\arraybackslash}p{1.7cm}>{\centering\arraybackslash}p{1.cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}>{\centering\arraybackslash}p{0.9cm}c}
 \toprule
 \multicolumn{2}{c}{Specification} & \multicolumn{1}{c}{} \\
-\cmidrule(l{3pt}r{3pt}){1-2}
+\cmidrule(l{2pt}r{2pt}){1-2}
 RegARIMA & X-13ARIMA & Trans-formation & Pre-adjust-ment for leap-year & Working days & Trading days & Easter effect & Outliers & ARIMA model\\
 \midrule
 RG0 &  & no & no & no & no & no & no & (0,1,1)(0,1,1)\\
@@ -501,7 +501,6 @@ RG1 & RSA1 & test & no & no & no & no & test & (0,1,1)(0,1,1)\\
 RG2c & RSA2c & test & test & test & no & test & test & (0,1,1)(0,1,1)\\
 RG3 & RSA3 & test & no & no & no & no & test & AMI\\
 RG4c & RSA4c & test & test & test & no & test & test & AMI\\
-\addlinespace
 RG5c (default) & RSA5 (default) & test & test & no & test & test & test & AMI\\
 \bottomrule
 \end{tabular}
@@ -580,7 +579,7 @@ Finally, when estimating RegARIMA only the \code{regarima} object is
 created. All the plots methods are detailed in table
 \ref{tab:plots_methods}.
 
-\begin{longtable}{lll}
+\begin{longtable}[t]{lll}
 \caption{\label{tab:obj_tab_x13}\code{SA} object structure (seasonal adjustment made with \code{x13})}\\
 \toprule
 Object & Level & Type [RJDemetra S3 class]\\
@@ -646,7 +645,7 @@ sa\_object & 0 & list [SA, X13]\\
 \bottomrule
 \end{longtable}
 
-\begin{longtable}{lll}
+\begin{longtable}[t]{lll}
 \caption{\label{tab:obj_tab_tramoseats}\code{SA} object structure (seasonal adjustment made with \code{tramoseats})}\\
 \toprule
 Object & Level & Type [RJDemetra S3 class]\\
@@ -718,7 +717,7 @@ sa\_object & 0 & list [SA, X13]\\
 \bottomrule
 \end{longtable}
 
-\begin{longtable}{>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{6cm}}
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{6cm}}
 \caption{\label{tab:plots_methods}Plots available with the \pkg{RJDemetra} package.}\\
 \toprule
 Object class (\code{x} object) & Method & Description\\
