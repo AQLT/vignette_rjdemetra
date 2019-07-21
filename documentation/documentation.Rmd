@@ -11,7 +11,7 @@ title:
   # If you use tex in the formatted title, also supply version without
   plain:     "RJDemetra: An R Interface To JDemetra+ Seasonal Adjustment Software"
 abstract: >
-  \pkg{RJDemetra} provides an interface between \proglang{R} and \proglang{JDemetra+}, the only the seasonal and trading days adjustment software officially recommended by Eurostat to the members of the European Statistical System and the European System of Central Banks. \pkg{RJDemetra} offers access to the main options and outputs of \proglang{JDemetra+}, including the two leading seasonal adjustment methods TRAMO-SEATS and X-13ARIMA. Thus, it is possible to use user-defined or pre-specified specification and to estimate a RegARIMA model including automatic outlier and ARIMA detection, moving holiday effects and user-defined regressors. \pkg{RJDemetra} also possible to read and write \proglang{JDemetra+} workspaces that are used in production. Thus, thanks to all the resources available in \proglang{R}, it offers huge possibilities to develop tools to improve the production of seasonal adjusted series.
+  \pkg{RJDemetra} provides an interface between \proglang{R} and \proglang{JDemetra+}, the only seasonal and trading days adjustment software officially recommended by Eurostat to the members of the European Statistical System and the European System of Central Banks. \pkg{RJDemetra} offers access to main options and outputs of \proglang{JDemetra+}, including the two leading seasonal adjustment methods TRAMO-SEATS and X-13ARIMA. Thus, it is possible to use user-defined or pre-specified specification and to estimate a RegARIMA model including automatic outlier and ARIMA detection, moving holiday effects and user-defined regressors. With \pkg{RJDemetra} it is also possible to read and write \proglang{JDemetra+} workspaces that are used in production. Thus, thanks to all the resources available in \proglang{R}, it offers large possibilities to develop tools to improve the production of seasonal adjusted series.
   
 keywords:
   # at least one keyword must be supplied
@@ -61,13 +61,13 @@ options(enable_print_style = FALSE)
 
 # Introduction
 
-Since the 20th century, more and more infra-annual statistics are produced, especially by national institutes, to analyse the short-term evolution of an economy. It is for example the case of the gross domestic product (GDP), unemployment rate, household consumption of goods and industrial production indices. However, most of those time series are affected by seasonal and trading days effects. A seasonal effect is an effect that occur in the same calendar month with similar magnitude and direction from year to year. For instance, automobile production is usually lower during summer, due to holidays, and chocolate sales are usually higher in December, due to Christmas. Trading days effect is the fact that a time series can be affected by each calendar month’s weekday composition. For example retail sales are usually higher on Saturday, thus they are likely to be higher in months with a surplus of weekend days.
+Since the 20th century, more and more infra-annual statistics are produced, especially by national institutes, to analyse the short-term evolution of economies. It is for example the case of the gross domestic product (GDP), unemployment rate, household consumption of goods and industrial production indices. However, most of those time series are affected by seasonal and trading days effects. A seasonal effect is an effect that occurs in the same calendar month with similar magnitude and direction from year to year. For instance, automobile production is usually lower during summer, due to holidays, and chocolate sales are usually higher in December, due to Christmas. Trading days effect appears when a time series is affected by calendar month’s weekday composition. For example retail sales are usually higher on Saturday, thus they are likely to be higher in months with a surplus of weekend days.
 
-Therefore, seasonal and trading days effects can make it difficult to analyse the infra-annual movements of a time series or to make spatial comparison. That’s why time series are often seasonally and trading days adjusted and seasonal adjustment is the process of removing the effects of seasonal and trading day fluctuations.
+Seasonal and trading days effects can hamper the analysis of infra-annual movements of a time series or the spatial comparison. This is the reason why time series are often seasonally and trading days adjusted, where seasonal adjustment is the process of removing the effects of seasonal and trading day fluctuations.
 
 # Theory behind seasonal adjustment
 
-The most popular seasonal adjustment methods are TRAMO-SEATS[^1] [@gomez1996programs; @caporello2004program], a parametric method based on ARIMA models, and X-13ARIMA[^2] [@findleyx12; @ladiray1999x11en], a non-parametric method based on moving average. Both methods are recommended by Eurostat and the European Central Bank (ECB) to seasonally adjust economic indicators. These methods proceed in two steps summarized in figure \ref{fig:2_step_proc}.
+The most popular seasonal adjustment methods are TRAMO-SEATS[^1] [@gomez1996programs; @caporello2004program], a parametric method based on ARIMA models, and X-13ARIMA[^2] [@findleyx12; @ladiray1999x11en], a non-parametric method based on moving averages. Both methods are recommended by Eurostat and the European Central Bank (ECB) for adjusting economic indicators. These two methods proceed in two steps, summarized in figure \ref{fig:2_step_proc}.
 
 [^1]: The program \proglang{TRAMO-SEATS} was developed by Gianluca Caporello and Agustin Maravall --- with programming support from Domingo Perez and Roberto Lopez --- at the Bank of Spain. It is based on the program TRAMO-SEATS, previously developed by Victor Gomez and Agustin Maravall.
 
@@ -80,14 +80,14 @@ The most popular seasonal adjustment methods are TRAMO-SEATS[^1] [@gomez1996prog
 \label{fig:2_step_proc}
 \end{figure}
 
-In the **first step** of seasonal adjustment, called **pre-adjustment** or **linearisation**, consists of pre-adjusting the time series by removing from it the deterministic effects (calendar effects, outliers...) and estimating missing observations. In the **second part** of seasonal adjustment, called the **decomposition**, the pre-adjusted series is decomposed to determine the seasonal component. As a result of seasonal adjustment, the final seasonally adjusted series shall be free of seasonal and calendar-related movements.
+The **first step**, called **pre-adjustment** or **linearisation**, consists of pre-adjusting the time series by removing the deterministic effects and estimating missing observations. Next, in the **second part** of seasonal adjustment, called the **decomposition**, the pre-adjusted series is decomposed in order to determine the seasonal component. As a result of this process, the final seasonally adjusted series shall be free of seasonal and calendar-related movements.
  
-Whereas the pre-adjustment step is very similar in X-13ARIMA and in TRAMO-SEATS (section \ref{pre-adjustment}), this is not the case with the decomposition. In X-13ARIMA, the X-11 algorithm decomposes the time series by means of linear filters (section \ref{sa-x11}). In TRAMO-SEATS, SEATS (Signal Extraction in ARIMA Time Series) decomposes the observed series with a ARIMA-model based method (section \ref{sa-seats}).
+The pre-adjustment step is very similar in X-13ARIMA and in TRAMO-SEATS (section \ref{pre-adjustment}), whereas the decomposition differs between the two methods. In X-13ARIMA, the X-11 algorithm decomposes the time series by means of linear filters (section \ref{sa-x11}). In TRAMO-SEATS, SEATS (Signal Extraction in ARIMA Time Series) decomposes the observed series with a ARIMA-model based method (section \ref{sa-seats}).
 
 
 ## Pre-adjustment with TRAMO and RegARIMA models {#pre-adjustment}
 
-The **first step** of seasonal adjustment consists of pre-adjusting the time series by removing from it the deterministic effects and estimating missing observations. Among deterministic effects, we distinguish outliers, calendar and regression effects. In this step, also forecasts and backcasts of the pre-adjusted series are estimated which allows applying linear filters at both ends of the series in the second step of the seasonal adjustment. The pre-adjustment, linearisation, of the input series is achieved with a **RegARIMA** model (model with ARIMA errors) as specified below. 
+As aforementioned, the **first step** of seasonal adjustment consists of pre-adjusting the time series by removing from it the deterministic effects like outliers, calendar and regression effects. This step estimates also the missing observations, as well as produces forecasts and backasts of the pre-adjusted series which allows applying linear filters at both ends of the series in the decomposition part of the seasonal adjustment. All this is achieved with a **RegARIMA** model (model with ARIMA errors) as specified below. 
 
 $$z_t=y_t\beta+x_t$$
 where
@@ -127,31 +127,34 @@ $$\delta(B)=(1-B)^d(1-B^s)^{d_s}$$
 * $d$ - regular differencing order (in the package and in \proglang{JDemetra+} $d \le 1$);
 * $d_s$ - seasonal differencing order (in the package and in \proglang{JDemetra+} $d_s \le 1$);
 
-An automatic modelling is also implemented in both methods to: determine the decomposition of the series, detect outliers and calendar effects and to adjust residuals to an ARIMA models. A detailed description can be found in \cite{gomez1998automatic}.
+Furthermore, in this step an automatic modelling is implemented (in both methods) to: determine the decomposition of the series, detect outliers and calendar effects and to adjust residuals to an ARIMA models. A detailed description can be found in \cite{gomez1998automatic}.
 
 ## Decomposition with X-11 {#sa-x11}
 
-X-11 is an iterative non-parametric method that decomposes the time series by means of linear filters [@findleyx12; @ladiray1999x11en].
-The basic procedure consists of a simple 3-step algorithm:
- 
-1) Estimate the trend by a moving average; 
-2) Remove the trend leaving the seasonal and irregular components; 
-3) Estimate the seasonal component using moving averages.
-
-At each step, the program selects a moving average among a large set of predefined smoothers, according to the characteristics of the series.
-X-11 also incorporates an automatic detection and correction of (additive) outliers to make the use of linear filters more robust.
-
-
-The pre-adjusted series ($y$) is decomposed into the following components: trend-cycle ($t$), seasonal component ($s$) and irregular component ($i$). The decomposition can be: 
+In this step, the pre-adjusted series ($y$) is decomposed into the following components: trend-cycle ($t$), seasonal component ($s$) and irregular component ($i$), where the decomposition can be: 
 
 * additive ($y = t + s + i$);  
 * multiplicative ($y = t \times s \times i$);  
 * log-additive ($\log(y) = \log(t) + \log(s) + \log(i)$);  
 * pseudo-additive ($y = t \times (s + i - 1)$). 
 
+In X-11, which is an iterative non-parametric method, the decomposition is achieved by means of linear filters [@findleyx12; @ladiray1999x11en].
+The basic procedure consists of a simple 3-step algorithm:
+ 
+1) Estimate the trend by means of moving averages; 
+2) Remove the trend and leave the seasonal and irregular components; 
+3) Estimate the seasonal component using moving averages.
+
+At each step, the program selects a moving average among a large set of predefined smoothers, according to the characteristics of the series.
+X-11 also incorporates an automatic detection and correction of (additive) outliers to make the use of linear filters more robust.
+
+
 ## Decomposition with SEATS {#sa-seats}
 
-SEATS is a program for decomposing a time series into its unobserved components, following an ARIMA model based method for extracting from a time series its different signals [@gomez1996programs; @caporello2004program]. The decomposition can be additive or multiplicative (equivalent to an additive model after taking the logarithm).
+SEATS is a program for decomposing time series into their unobserved components following an ARIMA model that extracts from a time series its different signals [@gomez1996programs; @caporello2004program]. The decomposition can be:
+
+* additive or ;
+* multiplicative (equivalent to an additive model after taking the logarithm).
 
 SEATS decomposes the linearized series into the following components:
 
@@ -160,22 +163,22 @@ SEATS decomposes the linearized series into the following components:
 - **irregular component:** captures erratic, white-noise behaviour, and hence has a flat spectrum;  
 - **transitory component:** a zero-mean stationary component that picks up transitory fluctuations that should not contaminate the trend-cycle or seasonal component and are not white-noise.
 
-The components are determined and fully derived from the structure of the ARIMA model for the observed series, which can be directly identified from the data. 
+The components are determined and fully derived from the structure of the ARIMA model for the observed series.
 
-The decomposition assumes orthogonal components, and each one will have in turn an ARIMA expression. In order to identify the components, we will require that (except for the irregular one) they be clean of noise. This is called the "canonical" property, and implies that no additive white noise can be extracted from a component that is not the irregular one. The variance of the latter is, in this way, maximized, and, on the contrary, the trend-cycle and seasonal component are as stable as possible (compatible with the stochastic nature of model). 
+The decomposition assumes orthogonal components, and each one will have in turn an ARIMA expression. In order to identify the components, it is required that (except for the irregular one) they are clean of noise. This is called the "canonical" property, and implies that no additive white noise can be extracted from a component that is not the irregular one. The variance of the latter is, in this way, maximized, and, on the contrary, the trend-cycle and seasonal component are as stable as possible (compatible with the stochastic nature of model). 
 
 \section[JDemetra+ and RJDemetra]{\proglang{JDemetra+} and \pkg{RJDemetra}}
 
-\proglang{JDemetra+} is a tool for seasonal adjustment (SA) developed by the National Bank of Belgium (NBB) in cooperation with the Deutsche Bundesbank and Eurostat in accordance with the Guidelines of the European Statistical System (ESS) [@eurostat2015guidelines]. It implements the concepts and algorithms used in the two leading seasonal adjustment methods: TRAMO-SEATS and X-13ARIMA. Those methods have been re-engineered using an object-oriented approach that enables easier handling, extensions and modifications.
+\proglang{JDemetra+} is a tool for seasonal adjustment (SA) developed by the National Bank of Belgium (NBB) in cooperation with the Deutsche Bundesbank and Eurostat in accordance with the Guidelines of the European Statistical System (ESS) [@eurostat2015guidelines]. It implements the concepts and algorithms used in the two leading seasonal adjustment methods: TRAMO-SEATS and X-13ARIMA. Those methods have been re-engineered using an object-oriented approach that facilitates estimations handling, extensions and modifications.
 
 \proglang{JDemetra+} has been [officially recommended](https://ec.europa.eu/eurostat/cros/system/files/Jdemetra_%20release.pdf), since 2 February 2015, to the members of the ESS and the European System of Central Banks as software for seasonal and calendar adjustment of official statistics.
 
-Besides seasonal adjustment, \proglang{JDemetra+} bundles other time series models that are useful in the production or analysis of economic statistics, including for instance outlier detection, nowcasting, temporal disaggregation or benchmarking. More details on the methodology used in \proglang{JDemetra+} can be found in the \proglang{JDemetra+} manuals and user guides [@grudkowska2015jdemetrarm; @grudkowska2015jdemetraug].
+Besides seasonal adjustment, \proglang{JDemetra+} bundles other time series models that are useful in the production and analysis of economic statistics, including for instance outlier detection, nowcasting, temporal disaggregation or benchmarking. More details on the methodology used in \proglang{JDemetra+} can be found in the \proglang{JDemetra+} manuals and user guides [@grudkowska2015jdemetrarm; @grudkowska2015jdemetraug].
 
-The package \pkg{RJDemetra} [@RJDemetra] provides an R interface to the seasonal adjustment software \proglang{JDemetra+}. \pkg{RJDemetra} uses Java libraries of \proglang{JDemetra+}, thus it relies on the \pkg{rJava} [@rJava] package and Java SE 8 or later version is required. It allows to:
+The package \pkg{RJDemetra} [@RJDemetra] provides an R interface to the seasonal adjustment software \proglang{JDemetra+}. \pkg{RJDemetra} uses Java libraries of \proglang{JDemetra+}, therfore relies on the \pkg{rJava} [@rJava] package. Consequently Java SE 8 or later versions are required. The package allows to:
 
-* perform seasonal adjustment with TRAMO-SEATS and X-13ARIMA with pre-defined (section \ref{pre-def-est}) and user-defined specification (section \ref{user-def-spec});  
-* access to all the output available in \proglang{JDemetra+} (section \ref{sa-obj-struc});  
+* perform seasonal adjustment with TRAMO-SEATS and X-13ARIMA with pre-defined (section \ref{pre-def-est}) and user-defined specifications (section \ref{user-def-spec});  
+* access all outputs available in \proglang{JDemetra+} (section \ref{sa-obj-struc});  
 * import and export \proglang{JDemetra+} workspaces (section \ref{manipulate-workspace}).
 
 It can be installed from CRAN:
@@ -193,7 +196,7 @@ For the moment the seasonal and trading day adjustment can only be done for mont
 
 ## Dataset
 
-In this package the `sts_inpr_m` database of Eurostat is included, which contains monthly industrial production indices in manufacturing in the European Union. It contains 37 time series from January 1990 to December 2017 which are considered to be affected by seasonal and trading days effects. The data is a \code{ts} object and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro area (EA19):
+The package \pkg{RJDemetra} includes the `sts_inpr_m` database of the Eurostat, which contains monthly industrial production indices in manufacturing for the European Union. It contains 37 time series from January 1990 to December 2017 which are considered to be affected by seasonal and trading days effects. The data are \code{ts} objects and can be accessed using the \code{ipi_c_eu} object. The following snippet of code plots the industrial production index of the euro area (EA19):
 
 ```{r basic_raw_data_plot}
 library(RJDemetra)
@@ -211,14 +214,14 @@ options(enable_print_style = FALSE)
 
 # Estimate a pre-defined RegARIMA and seasonal adjustment model {#pre-def-est}
 
-As in \proglang{JDemetra+}, \pkg{RJDemetra} allows to perform seasonal adjustment using pre-defined model specifications. The pre-defined specifications correspond to most commonly used specifications and users are recommended to start their analysis with one of them. They are separately defined for TRAMO-SEATS and X-13ARIMA estimation methods. It is also possible to perform only the  first step of seasonal adjustment (the RegARIMA estimation). The pre-defined model specifications are described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2). With more details, setting described in tables tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13} are:
+As in \proglang{JDemetra+}, \pkg{RJDemetra} allows to perform seasonal adjustment using pre-defined model specifications that are the most commonly used specifications and are recommended to users for the start of their analysis. They are separately defined for TRAMO-SEATS and X-13ARIMA methods. It is also possible to perform only the  first step of seasonal adjustment; i.e. the RegARIMA estimation. The pre-defined model specifications are described in detail in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. They are identical for pre-adjustment (column 1) and for seasonal adjustment (column 2). The settings described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13} refer to:
 
-* Transformation test: a test to choose between an additive decomposition (no transformation) and a multiplicative decomposition (logarithmic transformation).  
-* Pre-adjustment for leap-year (not available for TRAMO): in the case of a multiplicative decomposition; a correction of the February values is applied to the original series (before transformation). The original values in February are multiplied by $\frac{28.25}{29}$ for leap years, by $\frac{28.25}{28}$  for non-leap years and values for other months are not modified. In the case of multiplicative models, this is equivalent to adding a leap year regressor [@bell1992lengthmonthadj].  
-* Working days/trading days: a pre-test is made for a presence of a working day/trading day effect. In TRAMO an automatic choice between working days and trading days regressors is done with "RSAFull".  
-* Easter: a pre-test for a presence of  the Easter effect. The default length of the Easter effect is 6 days (for TRAMO-SEATS specifications) and for X-13ARIMA an automatic detection of the duration is done (1, 8 or 15 days).  
+* Transformation: test to choose between an additive decomposition (no transformation) and a multiplicative decomposition (logarithmic transformation).  
+* Pre-adjustment for leap-year (not available for TRAMO): in the case of a multiplicative decomposition a correction of the February values is applied to the original series (before transformation). The original values in February are multiplied by $\frac{28.25}{29}$ for leap years, by $\frac{28.25}{28}$  for non-leap years and values for other months are not modified. In the case of multiplicative models, this is equivalent to adding a leap year regressor [@bell1992lengthmonthadj].  
+* Working days/trading days: test for the presence of working day/trading day effects. In TRAMO an automatic choice between working days and trading days regressors is done with "RSAFull".  
+* Easter: pre-test for the presence of  the Easter effect. For TRAMO-SEATS the default length of the Easter effect is 6 days and for X-13ARIMA an automatic detection of the duration is done (1, 8 or 15 days).  
 * Outliers: an automatic identification of three types of outliers: AO (additive outlier), LS (level shift) and TC (transitory change), using a default critical value. The automatic identification of SO (seasonal outlier) is not enabled by default.  
-* ARIMA model: the choice between fixing the ARIMA model structure to (0,1,1)(0,1,1) (Airline model) or searching for the ARIMA model using an automatic model identification procedure. The Airline model is used as a default model in several TRAMO-SEATS and X-13ARIMA specifications because it has been shown in many studies that this model is appropriate for many real seasonal monthly or a quarterly time series. Moreover, the Airline model approximates well many other models and provides an excellent "benchmark" model [@maravall2009identification].
+* ARIMA model: the choice between fixing the ARIMA model structure to (0,1,1)(0,1,1) (Airline model) or searching for ARIMA model orders using an automatic model identification procedure. The Airline model is used as a default model in several TRAMO-SEATS and X-13ARIMA specifications as it has been shown in several studies that it is appropriate in many cases for real seasonal monthly or a quarterly time series. Moreover, the Airline model approximates well many other models and provides an excellent "benchmark" model [@maravall2009identification].
 
 
 ```{r pre_def_ts, echo=FALSE, results='asis'}
@@ -265,7 +268,7 @@ kable(pre_def_spec_x13, "latex", booktabs = T, caption = "Pre-defined specificat
 ```
 
 
-Four functions can be used in \pkg{RJDemetra} to perform an estimation with the pre-defined specification:
+To estimate a model with a pre-defined specification the following four functions can be used in \pkg{RJDemetra}:
 
 * RegARIMA
   + X-13ARIMA method: \code{regarima_x13()} 
@@ -273,6 +276,8 @@ Four functions can be used in \pkg{RJDemetra} to perform an estimation with the 
 * Seasonal adjustment
   + X-13ARIMA method: \code{x13()} 
   + TRAMO-SEATS method: \code{tramoseats()}
+
+Where the second argument refers to model specifications as described in table \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}. 
 
 For example:
 
@@ -284,13 +289,13 @@ sax13 <- x13(myseries, spec = "RSA3", userdefined = NULL)
 sats <- tramoseats(myseries, spec = "RSAfull", userdefined = NULL)
 ```
 
-In section \ref{user-def-spec} it is presented how to modify model specifications, including the possibility to incorporate user-defined regressors.
+As aforementioned the model specifications can be modified by users, including the possibility to incorporate user-defined regressors. How to do it is described in section \ref{user-def-spec}.
 
 # Class object structure {#sa-obj-struc}
 
-In section \ref{pre-def-est} it was presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. In this section the outcome will be described in detail. 
+To recap, section \ref{pre-def-est} presented how to run a RegARIMA and complete seasonal adjustment estimation with pre-defined model specifications. This section, in turn, presents the outcome of it.
 
-As a result of seasonal adjustment estimation (e.g. function \code{x13} or \code {tramoseats}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA", "X13")} or \code{c("SA", "TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} consist of lists of S3 class sub-objects. For each of the class \code{print} and \code{plot} methods are defined. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab_x13} for a seasonal adjustment made with \code{x13} and in \ref{tab:obj_tab_tramoseats} for a seasonal adjustment made with \code{tramoseats}. The \code{sa_object} contains the following five objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. Independently which of the two estimation methods is used, the \code{regarima}, \code{final} and \code{diagnostics} objects contain the same components, though with different classes (see tables \ref{tab:obj_tab_x13} and \ref{tab:obj_tab_tramoseats}). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the \code{regarima} object is created. All the plots methods are detailed in table \ref{tab:plots_methods}.
+As a result of seasonal adjustment estimation (e.g. function \code{x13} or \code {tramoseats}) a S3 class object (\code{sa_object}) is created. It has a class \code{c("SA", "X13")} or \code{c("SA", "TRAMO_SEATS")} depending on the used estimation method. The \code{sa_object} is a list of the following S3 class sub-objects: **regarima**, **decomposition**, **final**, **diagnostics** and **user_defined**. The complete structure of the \code{sa_object} is presented in table \ref{tab:obj_tab_x13} for seasonal adjustment made with \code{x13} and in table \ref{tab:obj_tab_tramoseats} for seasonal adjustment made with \code{tramoseats}. Independently which of the two estimation methods is used, the \code{regarima}, \code{final} and \code{diagnostics} objects contain the same components, though with different classes (see tables \ref{tab:obj_tab_x13} and \ref{tab:obj_tab_tramoseats}). Whereas, the object decomposition differs for the two methods. The object user_defined is empty unless additional output was requested by the user (see sub-section \ref{user-def}). Finally, when estimating RegARIMA only the \code{regarima} object is created. For each of the class \code{print} and \code{plot} methods are defined. All the plots methods are detailed in table \ref{tab:plots_methods}.
 
 ```{r obj_tab_x13, echo=FALSE, results='asis'}
 object=c("sa_object", "regarima", "specification", "estimate", "transform", 
@@ -405,7 +410,7 @@ kable(plot_methods, "latex", longtable = T,
 
 ## RegARIMA
 
-The \code{regarima} object contains the provided model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the ARIMA processes (\code{arima.coefficients}) and regressors (\code{regression.coefficients}), including ARMA orders (\code{arma}). It includes also model quality measures (\code{loglik}), RegARIMA specification after its estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), the residuals of the RegARIMA model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user or a predefined output can be used by calling \code{print()} or \code{summary()} (for more detailed output) functions. Also a set of graphs is defined within the function \code{plot()}. For \code{regarima} by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table \ref{tab:plots_methods} summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
+The \code{regarima} object contains provided by the user model specification (\code{specification}; level 2 of the \code{sa_object}), the estimated coefficients for the ARIMA processes (\code{arima.coefficients}) and for the regressors (\code{regression.coefficients}), including ARMA orders (\code{arma}). The object includes also model quality measures (\code{loglik}), RegARIMA specification after its estimation with the estimated effects (e.g. linearized input series or outliers)(\code{model}), residuals of the RegARIMA model (\code{residuals}), several tests’ results for the residuals (\code{residuals.stat}) and finally the forecast of the pre-adjusted series (\code{forecasts}). All this information can be extracted individually by the user by referring to different parts of the S3 class object or for a predefined output functions \code{print()} or \code{summary()} can be used. Furthermore graphical presentations are also available with the function \code{plot()} that displays a set of graphs. For \code{regarima} by default the first six graphs are displayed, but specific ones can be chosen within the argument \code{which}. Table \ref{tab:plots_methods} summarizes all the graphs available for the \code{sa_object}, as well as its \code{plot()} options.
 
 ```{r}
 sax13$regarima
@@ -415,14 +420,14 @@ plot(sax13$regarima, which = 2)
 
 ## Decomposition
 
-As afore-mentioned the decomposition method differs between TRAMO-SEATS and X-13ARIMA, where SEATS is based on ARIMA-model and X-11-algorithm on linear filters. Therefore also the composition of this object differs when estimating with the two methods (tables \ref{tab:obj_tab_x13} and \ref{tab:obj_tab_tramoseats}). The only common part is the first two sub-objects with the model specification (\code{specification}) and information on the decomposition mode (\code{mode}; e.g.: additive).
+As aforementioned the decomposition method differs between TRAMO-SEATS and X-13ARIMA, where SEATS is based on ARIMA-model and X-11-algorithm on linear filters. Consequently the composition of this object differs between the two methods (tables \ref{tab:obj_tab_x13} and \ref{tab:obj_tab_tramoseats}). The only common part is the first two sub-objects with the model specification (\code{specification}) and information on the decomposition mode (\code{mode}; e.g.: additive).
 
 Then, the \code{decomposition_X11} object comprises quality measures on the decomposition (\code{mstats}), namely the $M$ and $Q$ statistics. It contains also the final unmodified S-I ratios $d8$ and final seasonal factors $d10$ (\code{si_ratio}), as well as the information on the final seasonal filter (\code{s_filter}) and trend filter(\code{t_filter}). The code below presents the output for X-11 decomposition:
 ```{r}
 sax13$decomposition
 ```
 
-As a reminder, in SEATS it is assumed that each component of the linearized series (received from TRAMO) is an outcome of a linear stochastic process and SEATS estimates an ARIMA model for each component (i.e. trend, seasonal, transitory and irregular). Subsequently, the \code{decomposition_SEATS} object contains the information on the estimated ARIMA models (\code{model}), the linearized components, as obtained from TRAMO (\code{linearized}), and the theoretical components calculated from the ARIMA models (\code{components}). The code below presents the output for the SEATS decomposition, with the information on the ARIMA models:
+As a reminder, in SEATS it is assumed that each component of the linearized series (received from TRAMO) is an outcome of a linear stochastic process and SEATS estimates an ARIMA model for each component (i.e. trend, seasonal, transitory and irregular). Therfore the \code{decomposition_SEATS} object contains the information on the estimated ARIMA models (\code{model}), the linearized components - as obtained from TRAMO (\code{linearized}) - and the theoretical components calculated from the ARIMA models (\code{components}). The code below presents the output for the SEATS decomposition, with the information on the ARIMA models:
 
 ```{r}
 sats$decomposition
