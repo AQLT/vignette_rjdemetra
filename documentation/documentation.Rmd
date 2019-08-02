@@ -442,11 +442,11 @@ sats$final
 ## Diagnostics
 This part of the \code{sa_object} includes several diagnostics on the presence of seasonality in the input series and on the quality of the seasonal adjustment.
 
-The test for the seasonality presence (\code{combined_test}) are performed both on the entire series and in the last 3 years.
+The tests for the seasonality presence (\code{combined_test}) are performed both on the entire series and in the last 3 years.
 
-Whereas, the quality checking is grouped into two sets. The first looks at the contribution of each estimated component to the variance of the original series (\code{variance_decomposition}). The second verifies, with different tests, that there is no seasonal pattern left in the seasonally adjusted series and in the irregular component (\code{residuals_test}).
+As regards the seasonal adjustment quality checks, they are grouped into two sets. The first looks at the contribution of each estimated component to the variance of the original series (\code{variance_decomposition}). The second verifies, with different tests, that there is no seasonal pattern left in the seasonally adjusted series and in the irregular component (\code{residuals_test}).
 
-All the checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
+All the above checks (except \code{combined_seasonality_test}), together with a detailed description, are displayed when printing the diagnostics object.
 
 ```{r}
 sats$diagnostics
@@ -454,9 +454,9 @@ sats$diagnostics
 
 ## User-defined {#user-def}
 
-As presented in the tables \ref{tab:obj_tab_x13} and \ref{tab:obj_tab_tramoseats} and in the previous sections the \code{sa_object} has a defined structure with a defined content. Nevertheless the user can extract additional output from the seasonal adjustment estimation that will be stored under \code{user_defined} object in a form of a list.  In order extract the additional output the extra variables need to be defined as characters under the argument \code{userdefined} of the functions \code{x13()} or \code{tramoseats()}.
+As presented in the tables \ref{tab:obj_tab_x13} and \ref{tab:obj_tab_tramoseats} and in the previous sections the \code{sa_object} has a defined structure with a defined content. Nevertheless users can also extract additional output from the seasonal adjustment estimation and this will be stored under \code{user_defined} object in a form of a list.  In order to receive the additional output extra variables need to be defined as characters under the argument \code{userdefined} of the functions \code{x13()} or \code{tramoseats()}.
 
-For example, to extract the additional tables $c10$ and $d16$  the following need to be specified in the function argument:
+For example, to receive additionally tables $c10$ and $d16$  the following need to be specified in the function argument:
 
 ```{r}
 sa_usrdef <- x13(myseries, spec = "RSA3", 
@@ -464,7 +464,7 @@ sa_usrdef <- x13(myseries, spec = "RSA3",
 sa_usrdef$user_defined
 ```
 
-The list of all available variables can be extracted with the following functions:
+The list of all available variables can be obtained with the following functions:
 
 *  \code{user_defined_variables("X13-ARIMA")}
 *  \code{user_defined_variables("TRAMO-SEATS")}
@@ -472,15 +472,19 @@ The list of all available variables can be extracted with the following function
 
 # Model specification: creation and modification {#user-def-spec}
 
-The user can also create its own specification, modifying a pre-defined specification (described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}) or a previously defined specification. For that, they are two functions for each method (RegARIMA model or seasonal adjustment with X-13ARIMA or TRAMO-SEATS):
+Users can also create their own specifications by modifying pre-defined specifications (as described in tables \ref{tab:pre_def_ts} and \ref{tab:pre_def_x13}) or previously defined specifications or models. For that, there are two functions for each method (X-13ARIMA and TRAMO-SEATS) - one for the RegARIMA model and one for the entire seasonal adjustment: 
 
-1. One to create a specification from a pre-defined \proglang{JDemetra+} model specification. The corresponding functions are: \code{regarima_spec_x13()} and \code{regarima_spec_tramoseats()} for the RegARIMA model, and \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal adjustment model (including the pre-adjustment with a RegARIMA model).
+* RegARIMA model: \code{regarima_spec_x13()} for X-13ARIMA and \code{regarima_spec_tramoseats()} for TRAMO-SEATS;
+* seasonal adjustment: \code{x13_spec()} for X-13ARIMA and \code{tramoseats_spec()} for TRAMO-SEATS.
 
-2. One to create a specification from a previous specification or a model. The corresponding functions are: \code{regarima_spec_x13()} and \code{regarima_tramoseats()} for the RegARIMA model, and \code{x13_spec()} and \code{tramoseats_spec()} for the entire seasonal adjustment model (including the pre-adjustment with a RegARIMA model).
+As mentionned above, the input of the functions can be a pre-defined \proglang{JDemetra+} model specification, previously modified specification or a model.  
 
-Once the specification is created, the RegARIMA model can be performed by \code{regarima()}, the seasonal adjustment with X-13ARIMA by \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}.
+Once the specification is created, the estimations can be performed for: 
 
-For example, to create its own RegARIMA model for the TRAMO-SEATS method by adding an additive outlier in October 2009:
+* RegARIMA model by \code{regarima()} and;
+* seasonal adjustment with X-13ARIMA by \code{x13()} and with TRAMO-SEATS by \code{tramoseats()}.
+
+The example below ilustrates how to create its own RegARIMA model for the TRAMO-SEATS method by adding an additive outlier in October 2009:
 
 ```{r}
 regarima_ts_spec <- regarima_spec_tramoseats(spec = "TRfull",
@@ -492,7 +496,7 @@ regarima_ts_model <- regarima(series = ipi_c_eu[, "EA19"],
 regarima_ts_model
 ```
 
-And to modify the specification of the x-13ARIMA model of the object \code{sa_usrdef}, defined in section \ref{user-def}, changing the seasonal filter and performing a working day adjustment:
+And how to modify the specification of the X-13ARIMA object \code{sa_usrdef} (defined in section \ref{user-def}) by changing the seasonal filter and performing a working day adjustment:
 ```{r}
 sa_x13_spec <- x13_spec(spec = sa_usrdef,
                          tradingdays.option = "WorkingDays",
@@ -501,9 +505,9 @@ sa_x13_model <- x13(series = ipi_c_eu[, "EA19"],
                     spec = sa_x13_spec)
 ```
 
-Almost all the specification variables available in \proglang{JDemetra+} can be used in \pkg{RJDemetra}. For more details see the help of the corresponding function or the documentation of \proglang{JDemetra+}.
+Almost all the specification variables available in \proglang{JDemetra+} can be used in \pkg{RJDemetra}. For more details see the help page for the corresponding function or the documentation of \proglang{JDemetra+}.
 
-To prevent from wrong user-defined specification, they are also automatic checks in \pkg{RJDemetra}, like in \proglang{JDemetra+}. For example, to pre-specify an outlier or a user-defined variable you have to enable them (setting the parameter \code{usrdef.outliersEnabled} or \code{usrdef.varEnabled} to \code{TRUE}); or to fix the coefficient of an outlier or a user-defined regressor you have to specify the transformation function (\code{transform.function}, it cannot be automatic). Those checks are done each time a new specification is create. Therefore, some specifications cannot be set in two stages. For example, fixing the coefficient of an outlier has to be done at the same time when the outliers are defined. The following code doesn't fix the coefficient of the outlier previously in January 2001:
+To prevent from wrong user specification, there are automatic checks in \pkg{RJDemetra}, like in \proglang{JDemetra+}. For example, to pre-specify an outlier or a user-defined variable you have to enable them (setting the parameter \code{usrdef.outliersEnabled} or \code{usrdef.varEnabled} to \code{TRUE}); or to fix the coefficient of an outlier or a user-defined regressor you have to specify the transformation function (\code{transform.function}, it cannot be automatic). Those checks are done each time a new specification is created. Therefore, some specifications cannot be set in two stages. For example, fixing the coefficient of an outlier has to be done at the same time when the outliers are defined. The following code doesn't fix the coefficient of the outlier previously defined for January 2001:
 
 ```{r}
 regarima_wrong_spec <- regarima_spec_tramoseats(spec = regarima_ts_model,
@@ -511,7 +515,7 @@ regarima_wrong_spec <- regarima_spec_tramoseats(spec = regarima_ts_model,
              usrdef.outliersCoef =  -0.8)
 ```
 
-To fix it you have to re-defined the outlier:
+To fix it you have to re-define the outlier:
   
 ```{r}
 regarima_good_spec <- regarima_spec_tramoseats(spec = regarima_ts_model,
@@ -520,7 +524,7 @@ regarima_good_spec <- regarima_spec_tramoseats(spec = regarima_ts_model,
              usrdef.outliersDate = "2009-10-01",
              usrdef.outliersCoef =  -0.8)
 ```
-The documentation for the functions modifying specifications provide information on the interdependencies between different arguments. The package offers also functions to display different part of the model specification. These are presented under the entry \code{specification} of the package documentation.  For instance, from the example above, we can check which user defined variables were enabled and with which parameters.
+The documentation for the functions used to modify specifications provide information on the interdependencies between different arguments. The package offers also functions to display different parts of the model specification. These are presented under the entry \code{specification} of the package documentation.  For instance, from the example above, we can check which user defined variables were enabled and with which parameters.
 
 In the first case (wrongly specified), an outlier was pre-defined but its coefficient was not fixed: 
 
@@ -541,23 +545,23 @@ s_preOut(regarima_good_spec)
 
 \pkg{RJDemetra} allows to interact with \proglang{JDemetra+} workspaces that can be opened by the software. A workspace includes:
 
-- The XML file that enables the user to import the workspace to \proglang{JDemetra+} and to display it content;  
-- A folder containing several sub-folders that correspond to the different types of items created by the user.
+- An XML file that enables users to import a workspace to \proglang{JDemetra+} and to display its content;  
+- A folder containing several sub-folders that correspond to different types of items created by the user.
 
-Each workspace can contain several multi-processings and each multi-processing stores the results of the seasonal adjustment procedure performed with the TRAMO-SEATS or X-13ARIMA methods.
+Each workspace can contain several multi-processings and each multi-processing stores results of the seasonal adjustment procedure performed with the TRAMO-SEATS or X-13ARIMA methods.
 
-Export models to workspace allows to store easily the seasonal adjustment models, to change the specifications with the \proglang{JDemetra+} graphical interface and to give models users unfamiliar with \proglang{R}.
+Exporting models to workspace allows to store easily the seasonal adjustment models, to change specifications with the \proglang{JDemetra+} graphical interface and to give models to users unfamiliar with \proglang{R}.
 
 ## Export a workspace {#export-wk}
 
-Four functions have to be used to export models:
+Four functions can to be used to export models:
 
 - \code{new_workspace()} to create a workspace;  
 - \code{new_multiprocessing()} to create a multi-processing in a workspace;  
 - \code{add_sa_item()} to add a seasonal adjustment model to a multi-processing;  
 - \code{save_workspace()} to export the workspace.  
 
-The following command export the seasonal adjustment models compute by TRAMO-SEATS and X-13ARIMA:
+The following commands export seasonal adjustment models computed by TRAMO-SEATS and X-13ARIMA:
 
 ```{r}
 myseries <- ipi_c_eu[, "EA19"]
@@ -565,13 +569,13 @@ sa_x13 <- x13(myseries)
 sa_ts <- tramoseats(myseries)
 ```
 
-To create a workspace and a multi-processing names "MP-1":
+First, to create a workspace and a multi-processing named "MP-1" the following need to be executed:
 ```{r}
 wk <- new_workspace()
 new_multiprocessing(wk, name = "MP-1")
 ```
 
-The two models will be added in the multiprocessing "MP1": the name of the seasonal adjustment model computed with X-13ARIMA will be "SA with X13" and the one with TRAMO-SEATS will be "SA with TramoSeats":
+Then, the two models will be added in the multiprocessing "MP1": the name of the seasonal adjustment model computed with X-13ARIMA will be "SA with X13" and the one with TRAMO-SEATS will be "SA with TramoSeats":
 
 ```{r}
 add_sa_item(wk, multiprocessing = "MP-1",
@@ -580,7 +584,7 @@ add_sa_item(wk, multiprocessing =  "MP-1",
             sa_obj = sa_ts, name = "SA with TramoSeats")
 ```
 
-The workspace exported is named "workspace.xml":
+The exported workspace is named "workspace.xml":
 ```{r}
 dir <- tempdir()
 save_workspace(wk, file =  file.path(dir, "workspace.xml"))
@@ -589,14 +593,14 @@ save_workspace(wk, file =  file.path(dir, "workspace.xml"))
 
 ## Import a workspace
 
-Height functions can be used to import a workspace: 
+The following functions can be used to import a workspace: 
 
 - \code{load_workspace()} to load a workspace;  
-- \code{compute()} to compute the multi-processings: by default a workspace only contains definitions, computation is needed to get the seasonal adjustment model;  
-- \code{get_model()} to get the seasonal adjusted models;  
-- \code{get_ts()} to get the input raw time series,  \code{get_object()} and \code{get_all_objects} to navigate inside the workspace (extract a multi-processing or a seasonal adjustment model), \code{get_name()} to get the names of the multiprocessings or the seasonal adjustment models and \code{count()} to count the number of multiprocessing or seasonal adjustment models.
+- \code{compute()} to compute multi-processings: by default a workspace contains only definitions, therfore computation is needed to get the seasonal adjustment model;  
+- \code{get_model()} to get the seasonal adjustment models;  
+- \code{get_ts()} to get the input raw time series,  \code{get_object()} and \code{get_all_objects} to navigate inside a workspace (extract a multi-processing or a seasonal adjustment model), \code{get_name()} to get names of the multiprocessings or the seasonal adjustment models, and \code{count()} to count the number of multiprocessings or seasonal adjustment models.
 
-For instance, to import the workspace created in section \ref{export-wk} and to get the first multiprocessing and the first seasonal adjustment model:
+For instance, the following need to be run to import the workspace created in section \ref{export-wk} and to get the first multiprocessing and the first seasonal adjustment model:
 
 ```{r}
 wk <- load_workspace(file =  file.path(dir, "workspace.xml"))
@@ -609,44 +613,44 @@ To get the number of seasonal adjustment models in the multiprocessing:
 count(mp1)
 ```
 
-And the name of the first seasonal adjustment model in \proglang{JDemetra+}:
+And to receive the name of the first seasonal adjustment model in \proglang{JDemetra+}:
 ```{r}
 get_name(sa_item1) 
 ```
 
-Raw time series and seasonal adjustment model can now be imported:
+Finally, raw time series and seasonal adjustment model can now be imported:
 ```{r}
 raw_ts <- get_ts(sa_item1)
 compute(wk)
 sa_model1 <- get_model(sa_item1, workspace = wk)
 ```
 
-\code{get_ts()} and \code{get_model()} can also be used directly to the workspace or a multiprocessing to import all the raw time series or all the seasonal adjustment model:
+\code{get_ts()} and \code{get_model()} can also be used directly on a workspace or on a multiprocessing to import all the raw time series or all the seasonal adjustment model:
 
-- for a multiprocessing the result is a list which each element contains the information of a seasonal adjustment model;  
-- for a workspace the result is a list of length the number of multi-processing and which each element contains a list with the information of each seasonal adjustment model.
+- for a multiprocessing the result is a list which each element contains the information on the seasonal adjustment model;  
+- for a workspace the result is a list of number of multi-processings length and which each element contains a list with the information on each seasonal adjustment model.
 
-For example to get all raw time series of the workspace and all seasonal adjustment models of the first multi-processing:
+For example to get all raw time series of the workspace and all seasonal adjustment models of the first multi-processing the following need to be run:
 
 ```{r, eval=FALSE}
 all_raw_ts <- get_ts(wk)
 sa_models_of_mp1 <- get_model(mp1, workspace = wk)
 ```
 
-The imports of seasonal adjustment models from a workspace works well when it has been created throw \pkg{RJDemetra}. They may be some troubles when importing a workspace created with \proglang{JDemetra+}, in particular:
+The imports of seasonal adjustment models from a workspace work well when they have been created through \pkg{RJDemetra}. Troubles might occur when importing a workspace created with \proglang{JDemetra+}, in particular:
 
-- Seasonal adjustment models with ramp effect or intervention variables will be partially imported: the result of the imported model will be correct but changing the specification (throw \code{x13_spec()} or \code{tramoseats_spec()}) will erase them.  
+- Seasonal adjustment models with ramp effect or intervention variables will be partially imported: the result of the imported model will be correct but changing the specification (through \code{x13_spec()} or \code{tramoseats_spec()}) will erase them.  
 - Seasonal adjustment models with no pre-processing (X-11 specification) are not supported: \code{NULL} object will be returned.  
 
 # Advanced usage and examples
 
-By default, \code{x13()}, \code{tramoseats()}, \code{regarima_x13()} and \code{regarima_tramoseats()} export a lot of diagnostics and indicators. However, it can be really time-consuming, specially when we deal with a lot of times series and if we only need a few indicators. To customize the output and only get what is needed, they are four associated functions extract the Java model associated to the seasonal adjustment: \code{jx13()}, \code{jtramoseats()}, \code{jregarima_x13()} and \code{jregarima_tramoseats()}. Three other functions can be used to manipulate this objects:
+By default, \code{x13()}, \code{tramoseats()} and \code{regarima()} export a large number of diagnostics and indicators. This might be time-consuming, especially when dealing with many series and only a few indicators are needed. To customise the output and receive only the needed indicators, four functions extracting the associated seasonal adjustment Java model can be used: \code{jx13()}, \code{jtramoseats()}, \code{jregarima_x13()} and \code{jregarima_tramoseats()}. Three other functions can be used to manipulate these objects:
 
 - \code{get_dictionary()} to get the list of indicators that can be extracted;  
-- \code{get_indicators()} to get some indicators;  
+- \code{get_indicators()} to get selected indicators;  
 - \code{jSA2R()} to get the corresponding formatted seasonal adjustment or RegARIMA model.
 
-For example to only get the seasonally adjusted time series:
+For example to only receive the seasonally adjusted time series:
 
 ```{r}
 sa_jx13 <- jx13(myseries)
@@ -670,19 +674,19 @@ revisions_history_j10 <- ts(revisions_history_j10,
 plot(revisions_history_j10)
 ```
 
-When performing seasonal adjustment on a large database, the most common error comes from the preliminary check used to check the quality of the input series and exclude highly problematic ones (with too much identical observations and/or missing values). However, no error is returned when using the \code{jx13()} function but \code{get_indicators()} will only return \code{NULL} objects:
+When performing seasonal adjustment on a large database, the most common error results from the preliminary check (used to verify the quality of the input series) when excluding highly problematic series (with too many identical observations and/or missing values). In this case, the \code{jx13()} function will not give an error but \code{get_indicators()} will only return a \code{NULL} objects:
 ```{r}
 identical_ts <- ts(0,start = 2010, end = 2015, frequency = 12)
 get_indicators(jx13(identical_ts), "sa", "sa_f")
 ```
-To disable this preliminary check, you just have to create a new specification with the parameter `preliminary.check = FALSE`:
+To disable this preliminary check, you need to create a new specification with the parameter `preliminary.check = FALSE`:
 ```{r}
 myspec <- x13_spec(preliminary.check = FALSE)
 my_indicators <- get_indicators(jx13(identical_ts, myspec)
                                 , "sa", "sa_f")
 ```
 
-It can then be done to for example to perform a large scale seasonal adjustment. Here, with our database on industrial production indices:
+This might be useful when performing large scale seasonal adjustment. For example with our database on industrial production indices:
 ```{r, cache = TRUE}
 ipi_sa_series <- lapply(colnames(ipi_c_eu),function(series){
   sa_jx13 <- jx13(ipi_c_eu[,series], myspec)
